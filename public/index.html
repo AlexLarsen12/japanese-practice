@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="styles.css" rel="stylesheet">
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <nav>
+      <button id="home">Home</button>
+      <button id="word-addition">Add/Modify a word!</button>
+    </nav>
+    <h1>Total words* known: <span id="known-words"></span></h1>
+    <!-- THIS IS THE CONTENT FOR INFORMATION ABOUT A WORD-->
+    <div id="word-info" class="hidden display-box"></div>
+
+    <!-- THIS IS THE CONTENT FOR A DICTIONARY OF THE WORDS!-->
+    <div id="dictionary"></div>
+
+    <!-- THIS IS THE CONTENT FOR WORD ADDITION-->
+    <div id="word-addition-parent" class="hidden">
+      <select name="type" id="add-word">
+        <option value="radical">Radical</option>
+        <option value="kanji">Kanji</option>
+        <option value="vocabulary">Vocabulary</option>
+      </select>
+      <form id="word-input"></form>
+    </div>
+  </body>
+</html>

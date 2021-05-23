@@ -1,0 +1,86 @@
+.box, .display-box, #word-info {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 300px;
+
+  text-align: center;
+}
+
+p {
+  font-size: 16pt;
+}
+
+form > div > p {
+  font-size: 12pt;
+}
+
+body {
+  text-align: center;
+}
+
+h1 {
+  display: inline;
+  color:rgb(23, 77, 148);
+}
+
+span {
+  font-size: 48pt;
+  font-weight: bold;
+}
+
+#word-addition-parent {
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#word-info {
+  width: 750px;
+  height: 400px;
+  padding-left: 15px;
+  padding-right: 15px;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+}
+
+
+#word-input {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+select {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+input {
+  margin: 10px;
+}
+
+.radical {
+  border: solid green 3px;
+  color: green;
+}
+
+.vocabulary {
+  border: solid purple 3px;
+  color: purple;
+}
+
+.kanji {
+  border: solid red 3px;
+  color: red;
+}
+
+.hidden {
+  display: none !important;
+}
