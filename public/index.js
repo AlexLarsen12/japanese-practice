@@ -8,10 +8,24 @@
   function init() {
     refreshDictionary();
     id("add-word").addEventListener("change", changeWordType);
+    id("search").addEventListener("input", searchWords);
     id("home").addEventListener("click", goHome);
     id("word-addition").addEventListener("click", goToWordModification);
 
     populateForm("radical");
+  }
+
+  function searchWords() {
+    let words = id("dictionary").children;
+    for (let i = 0; i < words.length; i++) {
+      words[i].classList.add("hidden");
+      let word = this.value.toLowerCase();
+      for (let j = 0; j < words[i].children.length; j++) {
+        if (words[i].children[j].textContent.match(word)) {
+          words[i].classList.remove("hidden");
+        }
+      }
+    }
   }
 
   function goToWordModification() {
