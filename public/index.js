@@ -13,9 +13,62 @@
       openPage("dictionary");
     });
     id("word-addition").addEventListener("click", () => openPage("word-addition-parent"));
-    id("study-btn").addEventListener("click", () => openPage("study"));
+    id("study-btn").addEventListener("click", function() {
+      studyRandomWord();
+      openPage("study");
+    });
 
     populateForm("radical");
+  }
+
+  function studyRandomWord() {
+    fetch('/randomWord')
+      .then(statusCheck)
+      .then(res => res.json())
+      .then(showRandomWord)
+      .catch(console.error);
+  }
+
+  function showRandomWord(resp) {
+    id("study").innerHTML = "";
+    let parent = document.createElement("div");
+    parent.className = "display-box";
+    parent.classList.add(resp.type);
+
+    let word = document.createElement("p");
+    word.textContent = resp.jp;
+    parent.appendChild(word);
+
+    let input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Guess here!";
+    input.id = "submit-study";
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        checkAnswer(resp);
+      }
+    })
+
+    parent.appendChild(input);
+    id("study").appendChild(parent);
+  }
+
+  function checkAnswer(resp) {
+    let listToMatch;
+    if (resp.type === "radical") {
+      listToMatch = [resp.en];
+    } else {
+      listToMatch = JSON.parse(resp.en);
+    }
+    console.log(listToMatch);
+
+    let matchMsg = "You didn't find a match :(";
+    for (let i = 0; i < listToMatch.length; i++) {
+      if (id("submit-study").value.toString().match(listToMatch[i].toLowerCase())) {
+        matchMsg = "matched with: " + id("submit-study").value.toString().match(listToMatch[i]);
+      }
+    }
+    console.log(matchMsg);
   }
 
   function openPage(id) {
