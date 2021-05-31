@@ -4,7 +4,6 @@
 
   window.addEventListener("load", init);
 
-
   function init() {
     refreshDictionary();
     id("add-word").addEventListener("change", changeWordType);
