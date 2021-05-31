@@ -129,6 +129,18 @@ app.post('/removeWord', async function(req, res) {
   }
 });
 
+app.get("/randomWord", async function(req, res) {
+  let table = WORD_TYPES[Math.floor(Math.random() * WORD_TYPES.length)];
+
+  try {
+    let db = await getDBConnection();
+    let results = await db.all("SELECT * FROM " + table);
+    res.json(results[Math.floor(Math.random() * results.length)]);
+  } catch(err) {
+    res.status(500).send("There's an error!");
+  }
+});
+
 
 /** -- helper functions -- */
 
@@ -169,7 +181,6 @@ function formatKanji(kanji) {
   word["known-readings"] = JSON.stringify(kanji["known-readings"].split("\\,"));
   word["radical-composition"] = JSON.stringify(kanji["radical-composition"].split("\\,"));
   word["known-vocabulary"] = JSON.stringify(kanji["known-vocab"].split("\\,"));
-  console.log(kanji["known-vocab"]);
 
   return word;
 }

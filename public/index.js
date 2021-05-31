@@ -8,10 +8,24 @@
     refreshDictionary();
     id("add-word").addEventListener("change", changeWordType);
     id("search").addEventListener("input", searchWords);
-    id("home").addEventListener("click", goHome);
-    id("word-addition").addEventListener("click", goToWordModification);
+    id("home").addEventListener("click", function() {
+      id("word-info").innerHTML = "";
+      openPage("dictionary");
+    });
+    id("word-addition").addEventListener("click", () => openPage("word-addition-parent"));
+    id("study-btn").addEventListener("click", () => openPage("study"));
 
     populateForm("radical");
+  }
+
+  function openPage(id) {
+    let divs = document.querySelector("main").children;
+    for (let i = 0; i < divs.length; i++) {
+      divs[i].classList.add("hidden");
+      if (divs[i].id === id) {
+        divs[i].classList.remove("hidden");
+      }
+    }
   }
 
   function searchWords() {
@@ -27,21 +41,8 @@
     }
   }
 
-  function goToWordModification() {
-    id("word-addition-parent").classList.remove("hidden");
-    id("word-info").classList.add("hidden");
-    id("dictionary").classList.add("hidden");
-  }
-
   function changeWordType() {
     populateForm(this.value);
-  }
-
-  function goHome() {
-    id("word-addition-parent").classList.add("hidden");
-    id("word-info").classList.add("hidden");
-    id("word-info").innerHTML = "";
-    id("dictionary").classList.remove("hidden");
   }
 
   function populateForm(type) {
@@ -197,7 +198,7 @@
       .then(statusCheck)
       .then(resp => resp.text())
       .then(refreshDictionary)
-      .then(goHome)
+      .then(() => openPage("dictionary"))
       .catch(console.error);
   }
 

@@ -8,23 +8,28 @@
     <nav>
       <button id="home">Home</button>
       <button id="word-addition">Add/Modify a word!</button>
+      <button id="study-btn">Study!</button>
       <input type="text" id="search">
     </nav>
     <h1>Total words* known: <span id="known-words"></span></h1>
-    <!-- THIS IS THE CONTENT FOR INFORMATION ABOUT A WORD-->
-    <div id="word-info" class="hidden display-box"></div>
+    <main>
+      <!-- THIS IS THE CONTENT FOR INFORMATION ABOUT A WORD-->
+      <div id="word-info" class="hidden display-box"></div>
 
-    <!-- THIS IS THE CONTENT FOR A DICTIONARY OF THE WORDS!-->
-    <div id="dictionary"></div>
+      <!-- THIS IS THE CONTENT FOR A DICTIONARY OF THE WORDS!-->
+      <div id="dictionary"></div>
 
-    <!-- THIS IS THE CONTENT FOR WORD ADDITION-->
-    <div id="word-addition-parent" class="hidden">
-      <select name="type" id="add-word">
-        <option value="radical">Radical</option>
-        <option value="kanji">Kanji</option>
-        <option value="vocabulary">Vocabulary</option>
-      </select>
-      <form id="word-input"></form>
-    </div>
+      <!-- THIS IS THE CONTENT FOR WORD ADDITION-->
+      <div id="word-addition-parent" class="hidden">
+        <select name="type" id="add-word">
+          <option value="radical">Radical</option>
+          <option value="kanji">Kanji</option>
+          <option value="vocabulary">Vocabulary</option>
+        </select>
+        <form id="word-input"></form>
+      </div>
+
+      <div id="study" class="hidden"></div>
+    </main>
   </body>
 </html>
