@@ -49,8 +49,8 @@
     let form = id("word-input");
     form.innerHTML = "";
 
-    let en = createInputElement("English", "en");
-    let jp = createInputElement("Japanese", "jp");
+    let en = createInputElement("English", "en", "mouth");
+    let jp = createInputElement("Japanese", "jp", "口");
 
     let submit = document.createElement("input");
     submit.type = "submit";
@@ -69,15 +69,15 @@
   }
 
   function createVocabularyForm(form) {
-    let knownReadings = createInputElement("Known Readings", "known-readings");
-    let kanjiComposition = createInputElement("Kanji Composition", "kanji-composition");
+    let knownReadings = createInputElement("Known Readings", "known-readings", "こう");
+    let kanjiComposition = createInputElement("Kanji Composition", "kanji-composition", "口");
 
     let spacer = document.createElement("p");
     spacer.textContent = " ---- SENTENCE INFORMATION BELOW ----"
 
-    let sentencesEnglish = createInputElement("Sentences - English", "sentence-en");
-    let sentencesJapanese = createInputElement("Sentences - Japanese", "sentence-jp");
-    let vocabInSentences = createInputElement("Sentences - Vocab Involved", "sentence-vocab");
+    let sentencesEnglish = createInputElement("Sentences - English", "sentence-en", "There is some sauce on your mouth.");
+    let sentencesJapanese = createInputElement("Sentences - Japanese", "sentence-jp", "口にソースがついていますよ");
+    let vocabInSentences = createInputElement("Sentences - Vocab Involved", "sentence-vocab", "口");
 
     form.appendChild(knownReadings);
     form.appendChild(kanjiComposition);
@@ -88,16 +88,16 @@
   }
 
   function createKanjiForm(form) {
-    let knownReadings = createInputElement("Known Readings", "known-readings");
-    let radicalComposition = createInputElement("Radical Composition", "radical-composition");
-    let knownVocab = createInputElement("Known Vocabulary", "known-vocab");
+    let knownReadings = createInputElement("Known Readings", "known-readings", "こう");
+    let radicalComposition = createInputElement("Radical Composition", "radical-composition", "口");
+    let knownVocab = createInputElement("Known Vocabulary", "known-vocab", "口\\,人口");
 
     form.appendChild(knownReadings);
     form.appendChild(radicalComposition);
     form.appendChild(knownVocab);
   }
 
-  function createInputElement(text, name) {
+  function createInputElement(text, name, placeholder) {
     let inputDiv = document.createElement("div");
 
     let inputDescriptor = document.createElement("p");
@@ -106,6 +106,8 @@
     let inputElement = document.createElement("input");
     inputElement.type = "text";
     inputElement.name = name;
+    inputElement.placeholder = placeholder;
+
 
     inputDiv.appendChild(inputDescriptor);
     inputDiv.appendChild(inputElement);
