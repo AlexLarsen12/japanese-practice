@@ -11,48 +11,49 @@ app.use(multer().none());
 const sqlite3 = require("sqlite3");
 const sqlite = require("sqlite");
 
-const WORD_TYPES = ["Radicals", "Kanji", "Vocabulary"];
+const WORD_TYPES = ["Radical", "Kanji", "Vocabulary"];
 const VOCAB = "Vocabulary";
 const KANJI = "Kanji";
-const RADICALS = "Radicals";
+const RADICAL = "Radical";
 
+// Returns the word that is specified. Requires also query parameter of "type" to be passed in.
+// "type" can be - "vocabulary", "kanji", or "radical".
 app.get('/word/:word', async function(req, res) {
   let type = req.query["type"];
   if (!type) {
     res.type("text");
     res.status(400).send("Please input a type!");
-  }
+  } else {
+    let word = req.params.word;
+    // line below makes sure it's in proper format for querying database.
+    type = type.toLowerCase().charAt(0).toUpperCase() + type.slice(1);
 
-  let word = req.params.word;
-  type = type.toLowerCase().charAt(0).toUpperCase() + type.slice(1);
-  if (type === "Radical") {
-    type = RADICALS;
-  }
+    try {
+      if (!WORD_TYPES.includes(type)) {
+        res.type("text");
+        res.status(400).send("Sorry, this word type is unrecognized");
+      } else {
+          let resp = await getWord(type, word);
 
-  try {
-    if (!WORD_TYPES.includes(type)) {
-      res.type("text");
-      res.status(400).send("Sorry, this word type is unrecognized");
-    } else {
-        let resp = await getWord(type, word);
-
-        if (resp) {
-          resp = formatResponse(resp, type);
-          res.json(resp);
-        } else {
-          res.type("text");
-          res.status(400).send("Word isn't known yet!!!");
-        }
+          if (resp) {
+            resp = formatResponse(resp, type);
+            res.json(resp);
+          } else {
+            res.type("text");
+            res.status(400).send("Word isn't known yet!!!");
+          }
+      }
+    } catch(err) {
+      res.status(500).send(err);
     }
-  } catch(err) {
-    res.status(500).send(err);
   }
 });
 
+// returns all words in a list!
 app.get("/allWords", async function(req, res) {
   try {
     let db = await getDBConnection();
-    let radicals = await db.all("SELECT * FROM Radicals");
+    let radical = await db.all("SELECT * FROM Radical");
 
     let kanji = await db.all("SELECT * FROM Kanji");
     for (let i = 0; i < kanji.length; i++) {
@@ -64,7 +65,7 @@ app.get("/allWords", async function(req, res) {
       vocab[i] = formatResponse(vocab[i], VOCAB);
     }
 
-    res.json(radicals.concat(kanji).concat(vocab));
+    res.json(radical.concat(kanji).concat(vocab));
   } catch(err) {
     res.type("text");
     res.status(500).send(err);
@@ -76,9 +77,6 @@ app.post("/postWord", async function (req, res) {
 
   // this line is to uppercase everything to be in the Table format.
   let type = req.body.type.toLowerCase().charAt(0).toUpperCase() + req.body.type.slice(1);
-  if (type === "Radical") {
-    type = RADICALS;
-  }
 
   if (!WORD_TYPES.includes(type)) {
     res.status(400).send("Unrecognized word type");
@@ -86,26 +84,48 @@ app.post("/postWord", async function (req, res) {
     try {
       let db = await getDBConnection();
 
-      if (type === RADICALS) {
-        let qry = "INSERT INTO " + type + "(jp, en, type) VALUES(?, ?, ?)";
-        await db.all(qry, [req.body.jp, req.body.en, req.body.type]);
-      } else if (type === VOCAB) {
-        let newWord = formatVocabulary(req.body);
-        let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences) VALUES(?, ?, ?, ?, ?, ?)";
-        await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-        newWord.type, newWord["kanji-composition"], newWord.sentences]);
+      // really long line below just checks to see if the word exists!
+      if ((await db.all("SELECT * FROM " + type + " WHERE jp = ?", req.body.jp)).length !== 0) {
+        res.type("text").status(400).send("this word already exists!");
       } else {
-        let newWord = formatKanji(req.body);
-        let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary) VALUES (?, ?, ?, ? , ?, ?)";
-        await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-        newWord.type, newWord["radical-composition"], newWord["known-vocabulary"]]);
+        if (type === RADICAL) {
+          let qry = "INSERT INTO " + type + "(jp, en, type) VALUES(?, ?, ?)";
+          await db.all(qry, [req.body.jp, req.body.en, req.body.type]);
+        } else if (type === VOCAB) {
+          let newWord = formatVocabulary(req.body);
+          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences) VALUES(?, ?, ?, ?, ?, ?)";
+          await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
+          newWord.type, newWord["kanji-composition"], newWord.sentences]);
+        } else {
+          let newWord = formatKanji(req.body);
+          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary) VALUES (?, ?, ?, ? , ?, ?)";
+          await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
+          newWord.type, newWord["radical-composition"], newWord["known-vocabulary"]]);
+        }
+        res.send("successful addition!");
       }
-
-      // await db.close();
-      res.send("successful addition!");
+      await db.close();
     } catch(err) {
       res.status(500).send("uh oh you done F'd up");
     }
+  }
+});
+
+app.post('/removeWord', async function(req, res) {
+
+  try {
+    let db = await getDBConnection();
+    let type = req.body.type;
+    type = type.toLowerCase().charAt(0).toUpperCase() + type.slice(1);
+    if (!WORD_TYPES.includes(type)) {
+      res.status(400).send("WORD TYPE NOT RECOGNIZED");
+    } else {
+      await db.run("DELETE FROM " + type + " WHERE jp = ?", req.body.word);
+      res.send("nice work brother");
+    }
+    await db.close();
+  } catch(err) {
+    res.status(500).send("whoa bro stop messing up");
   }
 });
 

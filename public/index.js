@@ -29,7 +29,6 @@
     id("word-info").classList.add("hidden");
     id("word-info").innerHTML = "";
     id("dictionary").classList.remove("hidden");
-    id("")
   }
 
   function populateForm(type) {
@@ -111,18 +110,17 @@
   function createEntry(e) {
     e.preventDefault();
     let params = new FormData(id("word-input"));
+    id("word-input").reset();
     params.append("type", id("add-word").value);
     fetch('/postWord', {method : "POST", body : params})
     .then(statusCheck)
-    .then(function () {
-      id("dictionary").innerHTML = "";
-      refreshDictionary();
-    })
+    .then(refreshDictionary)
     .catch(console.error);
   }
 
   function processWords(words) {
     id("known-words").textContent = words.length;
+    id("dictionary").innerHTML = "";
     for (let i = 0; i < words.length; i++) {
       let container = document.createElement("div");
       container.classList.add("box");
@@ -176,9 +174,23 @@
     .catch(console.error);
   }
 
+  function removeWord() {
+    let params = new FormData();
+    params.append('type', this.classList[this.classList.length-1]); // this is also sus
+    params.append('word', this.children[0].textContent);
+    fetch('/removeWord', {method: "POST", body: params})
+      .then(statusCheck)
+      .then(resp => resp.text())
+      .then(refreshDictionary)
+      .then(goHome)
+      .catch(console.error);
+  }
+
   function populateWordInfo(word) {
     let parent = id("word-info");
+    parent.className = "display-box"; // don't do this lol
     parent.classList.add(word.type);
+    parent.addEventListener("dblclick", removeWord);
 
     let jp = document.createElement("p");
     jp.textContent = word.jp;
@@ -231,12 +243,12 @@
       }
       parent.appendChild(vocab);
 
-      let radicals = document.createElement("p");
-      radicals.textContent = word.radical_composition[0];
+      let radical = document.createElement("p");
+      radical.textContent = word.radical_composition[0];
       for (let i = 1; i < word.radical_composition.length; i++) {
-        radicals.textContent += ", " + word.radical_composition[i];
+        radical.textContent += ", " + word.radical_composition[i];
       }
-      parent.appendChild(radicals);
+      parent.appendChild(radical);
     }
   }
 
