@@ -125,7 +125,6 @@ app.post('/modifyWord', async function(req, res) {
     if (table === RADICAL) {
       res.status(400).send("Cannot add meanings to radicals. There should be one primary meaning only");
     } else if (table === KANJI) {
-      console.log(req.body);
       word.en = JSON.parse(word.en);
       let enAddition = req.body.en.split("\\,");
       if (enAddition[0] !== "") {
@@ -158,11 +157,51 @@ app.post('/modifyWord', async function(req, res) {
                    [word.en, word.known_readings, word.radical_composition, word.known_vocabulary, word.jp]);
       res.json(word);
     } else if (table === VOCAB) {
+
+      word.en = JSON.parse(word.en);
+      let enAddition = req.body.en.split("\\,");
+      if (enAddition[0] !== "") {
+        word.en = word.en.concat(enAddition);
+      }
+      word.en = JSON.stringify(word.en);
+
+      word.known_readings = JSON.parse(word.known_readings);
+      let readingAddition = req.body["known-readings"].split("\\,");
+      if (readingAddition[0] !== "") {
+        word.known_readings = word.known_readings.concat(readingAddition);
+      }
+      word.known_readings = JSON.stringify(word.known_readings);
+
+      word.kanji_composition = JSON.parse(word.kanji_composition);
+      let kanjiAddition = req.body["kanji-composition"].split("\\,");
+      if (kanjiAddition[0] !== "") {
+        word.kanji_composition = word.kanji_composition.concat(kanjiAddition);
+      }
+      word.kanji_composition = JSON.stringify(word.kanji_composition);
+
+      word.sentences= JSON.parse(word.sentences);
+      if (req.body["sentence-jp"].split("\\,")[0] !== "") { // if there's a sentence
+        for (let i = 0; i < req.body["sentence-jp"].split("\\,").length; i++) { //assume clients aren't idiots
+          let sentenceObj = {};
+          let englishSentence = req.body["sentence-en"].split("\\,")[i];
+          sentenceObj.en = englishSentence;
+          let jpSentence = req.body["sentence-jp"].split("\\,")[i];
+          sentenceObj.jp = jpSentence;
+
+          let sentenceVocab = req.body["sentence-vocab"].split("\\,")[i].split("*");
+          sentenceObj.vocab = sentenceVocab;
+
+          word.sentences.push(sentenceObj);
+        }
+      }
+      word.sentences = JSON.stringify(word.sentences);
+
+      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ? WHERE jp = ?",
+      [word.en, word.known_readings, word.kanji_composition, word.sentences, word.jp]);
       res.json(word);
     }
     await db.close();
   } catch (err) {
-    console.log(err);
     res.status(500).send("error time boys");
   }
 });
