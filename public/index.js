@@ -60,15 +60,22 @@
     } else {
       listToMatch = JSON.parse(resp.en);
     }
-    console.log(listToMatch);
 
+    let dopamine = document.createElement("p");
     let matchMsg = "You didn't find a match :(";
+    dopamine.style.color = "Red";
     for (let i = 0; i < listToMatch.length; i++) {
       if (id("submit-study").value.toString().match(listToMatch[i].toLowerCase())) {
         matchMsg = "matched with: " + id("submit-study").value.toString().match(listToMatch[i]);
+        dopamine.style.color = "Green";
       }
     }
-    console.log(matchMsg);
+
+    dopamine.textContent = matchMsg;
+    id("study").appendChild(dopamine);
+    setTimeout(function() {
+      studyRandomWord();
+    }, 2000);
   }
 
   function openPage(id) {

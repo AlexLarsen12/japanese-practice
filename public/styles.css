@@ -67,18 +67,18 @@ input {
 }
 
 .radical {
-  border: solid green 3px;
-  color: green;
+  border: solid darkorchid 3px;
+  color: darkorchid;
 }
 
 .vocabulary {
-  border: solid purple 3px;
-  color: purple;
+  border: solid teal 3px;
+  color: teal;
 }
 
 .kanji {
-  border: solid red 3px;
-  color: red;
+  border: solid lightcoral 3px;
+  color: lightcoral;
 }
 
 .hidden {
