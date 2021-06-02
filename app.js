@@ -111,6 +111,62 @@ app.post("/postWord", async function (req, res) {
   }
 });
 
+app.post('/modifyWord', async function(req, res) {
+  try {
+    let db = await getDBConnection();
+
+    let table = req.body.type.toLowerCase().charAt(0).toUpperCase() + req.body.type.slice(1);
+    let word = (await db.all("SELECT * FROM " + table + " WHERE jp = ?", req.body.jp));
+    if (word.length === 0) {
+      throw new Error("LOL this word doesn't exist"); // FIGURE OUT A BETTER WAY TO THROW ERRORS.
+    }
+    word = word[0];
+
+    if (table === RADICAL) {
+      res.status(400).send("Cannot add meanings to radicals. There should be one primary meaning only");
+    } else if (table === KANJI) {
+      console.log(req.body);
+      word.en = JSON.parse(word.en);
+      let enAddition = req.body.en.split("\\,");
+      if (enAddition[0] !== "") {
+        word.en = word.en.concat(enAddition);
+      }
+      word.en = JSON.stringify(word.en);
+
+      word.known_readings = JSON.parse(word.known_readings);
+      let readingAddition = req.body["known-readings"].split("\\,");
+      if (readingAddition[0] !== "") {
+        word.known_readings = word.known_readings.concat(readingAddition);
+      }
+      word.known_readings = JSON.stringify(word.known_readings);
+
+      word.radical_composition = JSON.parse(word.radical_composition);
+      let radicalAddition = req.body["radical-composition"].split("\\,");
+      if (radicalAddition[0] !== "") {
+        word.radical_composition = word.radical_composition.concat(radicalAddition);
+      }
+      word.radical_composition = JSON.stringify(word.radical_composition);
+
+      word.known_vocabulary = JSON.parse(word.known_vocabulary);
+      let vocabAddition = req.body["known-vocabulary"].split("\\,");
+      if (vocabAddition[0] !== "") {
+        word.known_vocabulary = word.known_vocabulary.concat(vocabAddition);
+      }
+      word.known_vocabulary = JSON.stringify(word.known_vocabulary);
+
+      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, radical_composition = ?, known_vocabulary = ? WHERE jp = ?",
+                   [word.en, word.known_readings, word.radical_composition, word.known_vocabulary, word.jp]);
+      res.json(word);
+    } else if (table === VOCAB) {
+      res.json(word);
+    }
+    await db.close();
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("error time boys");
+  }
+});
+
 app.post('/removeWord', async function(req, res) {
 
   try {
@@ -180,7 +236,7 @@ function formatKanji(kanji) {
 
   word["known-readings"] = JSON.stringify(kanji["known-readings"].split("\\,"));
   word["radical-composition"] = JSON.stringify(kanji["radical-composition"].split("\\,"));
-  word["known-vocabulary"] = JSON.stringify(kanji["known-vocab"].split("\\,"));
+  word["known-vocabulary"] = JSON.stringify(kanji["known-vocabulary"].split("\\,"));
 
   return word;
 }

@@ -107,7 +107,7 @@
 
     let submit = document.createElement("input");
     submit.type = "submit";
-    submit.value = "add word!"
+    submit.value = "Add/Modify word!"
     submit.addEventListener("click", createEntry);
 
     form.appendChild(en);
@@ -143,7 +143,7 @@
   function createKanjiForm(form) {
     let knownReadings = createInputElement("Known Readings", "known-readings", "こう");
     let radicalComposition = createInputElement("Radical Composition", "radical-composition", "口");
-    let knownVocab = createInputElement("Known Vocabulary", "known-vocab", "口\\,人口");
+    let knownVocab = createInputElement("Known Vocabulary", "known-vocabulary", "口\\,人口");
 
     form.appendChild(knownReadings);
     form.appendChild(radicalComposition);
@@ -177,11 +177,17 @@
   }
 
   function createEntry(e) {
+    let url = "/postWord";
+
     e.preventDefault();
     let params = new FormData(id("word-input"));
     id("word-input").reset();
     params.append("type", id("add-word").value);
-    fetch('/postWord', {method : "POST", body : params})
+
+    if (id("action-select").value === "modify") {
+      url = '/modifyWord';
+    }
+    fetch(url, {method : "POST", body : params})
     .then(statusCheck)
     .then(refreshDictionary)
     .catch(console.error);
