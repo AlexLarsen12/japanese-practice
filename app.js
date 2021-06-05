@@ -52,25 +52,28 @@ app.get('/word/:word', async function(req, res) {
 // returns all words in a list!
 app.get("/allWords", async function(req, res) {
   try {
-    let db = await getDBConnection();
-    let radical = await db.all("SELECT * FROM Radical");
-
-    let kanji = await db.all("SELECT * FROM Kanji");
-    for (let i = 0; i < kanji.length; i++) {
-      kanji[i] = formatResponse(kanji[i], KANJI);
-    }
-
-    let vocab = await db.all("SELECT * FROM Vocabulary");
-    for (let i = 0 ; i < vocab.length; i++) {
-      vocab[i] = formatResponse(vocab[i], VOCAB);
-    }
-
-    res.json(radical.concat(kanji).concat(vocab));
+    res.json(await getAllWords());
   } catch(err) {
     res.type("text");
     res.status(500).send(err);
   }
 });
+
+async function getAllWords() {
+  let db = await getDBConnection();
+  let radical = await db.all("SELECT * FROM Radical");
+
+  let kanji = await db.all("SELECT * FROM Kanji");
+  for (let i = 0; i < kanji.length; i++) {
+    kanji[i] = formatResponse(kanji[i], KANJI);
+  }
+
+  let vocab = await db.all("SELECT * FROM Vocabulary");
+  for (let i = 0 ; i < vocab.length; i++) {
+    vocab[i] = formatResponse(vocab[i], VOCAB);
+  }
+  return radical.concat(kanji.concat(vocab));
+}
 
 app.post("/postWord", async function (req, res) {
   res.type("text");
@@ -225,12 +228,9 @@ app.post('/removeWord', async function(req, res) {
 });
 
 app.get("/randomWord", async function(req, res) {
-  let table = WORD_TYPES[Math.floor(Math.random() * WORD_TYPES.length)];
-
   try {
-    let db = await getDBConnection();
-    let results = await db.all("SELECT * FROM " + table);
-    res.json(results[Math.floor(Math.random() * results.length)]);
+    let words = await getAllWords();
+    res.json(words[Math.floor(Math.random() * words.length)]);
   } catch(err) {
     res.status(500).send("There's an error!");
   }
@@ -242,24 +242,26 @@ app.get("/randomWord", async function(req, res) {
 function formatVocabulary(vocab) {
   let word = {};
 
-  word.en = JSON.stringify(vocab.en.split("\\,"));
+  word.en = !vocab.en.split("\\,")[0] ? "[]" : JSON.stringify(vocab.en.split("\\,"));
   word.jp = vocab.jp;
   word.type = vocab.type;
-  word["known-readings"] = JSON.stringify(vocab["known-readings"].split("\\,"));
-  word["kanji-composition"] = JSON.stringify(vocab["kanji-composition"].split("\\,"));
+  word["known-readings"] = !vocab["known-readings"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["known-readings"].split("\\,"));
+  word["kanji-composition"] = !vocab["kanji-composition"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["kanji-composition"].split("\\,"));
   word.sentences = [];
 
-  for (let i = 0; i < vocab["sentence-jp"].split("\\,").length; i++) {
-    let sentenceObj = {};
-    sentenceObj.jp = vocab["sentence-jp"].split("\\,")[i];
-    sentenceObj.en = vocab["sentence-en"].split("\\,")[i];
+  if (vocab["sentence-jp"].split("\\,")[0] !== "") {
+    for (let i = 0; i < vocab["sentence-jp"].split("\\,").length; i++) {
+      let sentenceObj = {};
+      sentenceObj.jp = vocab["sentence-jp"].split("\\,")[i];
+      sentenceObj.en = vocab["sentence-en"].split("\\,")[i];
 
-    let vocabArr = [];
-    for (let j = 0; j < vocab["sentence-vocab"].split("\\,")[i].split("*").length; j++) {
-      vocabArr.push(vocab["sentence-vocab"].split("\\,")[i].split("*")[j]);
+      let vocabArr = [];
+      for (let j = 0; j < vocab["sentence-vocab"].split("\\,")[i].split("*").length; j++) {
+        vocabArr.push(vocab["sentence-vocab"].split("\\,")[i].split("*")[j]);
+      }
+      sentenceObj.vocab = vocabArr;
+      word.sentences.push(sentenceObj);
     }
-    sentenceObj.vocab = vocabArr;
-    word.sentences.push(sentenceObj);
   }
   word.sentences = JSON.stringify(word.sentences);
 
@@ -269,13 +271,13 @@ function formatVocabulary(vocab) {
 function formatKanji(kanji) {
   let word = {};
 
-  word.en = JSON.stringify(kanji.en.split("\\,"));
+  word.en = !kanji.en.split("\\,")[0] ? "[]" : JSON.stringify(kanji.en.split("\\,"));
   word.jp = kanji.jp;
   word.type = kanji.type;
 
-  word["known-readings"] = JSON.stringify(kanji["known-readings"].split("\\,"));
-  word["radical-composition"] = JSON.stringify(kanji["radical-composition"].split("\\,"));
-  word["known-vocabulary"] = JSON.stringify(kanji["known-vocabulary"].split("\\,"));
+  word["known-readings"] = !kanji["known-readings"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["known-readings"].split("\\,"));
+  word["radical-composition"] = !kanji["radical-composition"].split("\\,")[0] ? "" : JSON.stringify(kanji["radical-composition"].split("\\,"));
+  word["known-vocabulary"] = !kanji["known-vocabulary"].split("\\,")[0] ? "" : JSON.stringify(kanji["known-vocabulary"].split("\\,"));
 
   return word;
 }

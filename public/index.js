@@ -58,14 +58,14 @@
     if (resp.type === "radical") {
       listToMatch = [resp.en];
     } else {
-      listToMatch = JSON.parse(resp.en);
+      listToMatch = resp.en;
     }
 
     let dopamine = document.createElement("p");
-    let matchMsg = "You didn't find a match :(";
+    let matchMsg = "You didn't get it! Here are the meanings: " + listToMatch.toString();
     dopamine.style.color = "Red";
     for (let i = 0; i < listToMatch.length; i++) {
-      if (id("submit-study").value.toString().match(listToMatch[i].toLowerCase())) {
+      if (id("submit-study").value.toString().toLowerCase().match(listToMatch[i].toLowerCase())) {
         matchMsg = "matched with: " + id("submit-study").value.toString().match(listToMatch[i]);
         dopamine.style.color = "Green";
       }
@@ -278,59 +278,76 @@
     jp.textContent = word.jp;
     parent.appendChild(jp);
 
-    let en = document.createElement("p");
-    if (word.type === "radical") {
-      en.textContent = word.en;
-    } else {
-      en.textContent = word.en[0];
-      for (let i = 1; i < word.en.length; i++) {
-        en.textContent += ", " + word.en[i];
+    if (word.en) { // checks for radical...
+      let en = document.createElement("p");
+      if (word.type === "radical") {
+        en.textContent = word.en;
+      } else {
+        if (word.en.length !== 0) { // check to see if no english meanings... super sketchy fix this later
+          en.textContent = word.en[0];
+          for (let i = 1; i < word.en.length; i++) {
+            en.textContent += ", " + word.en[i];
+          }
+        }
       }
+      parent.appendChild(en);
     }
-    parent.appendChild(en);
 
     if (word.type === "vocabulary") {
-      let readings = document.createElement("p");
-      readings.textContent = word.known_readings[0];
-      for (let i = 1; i < word.known_readings.length; i++) {
-        readings.textContent += ", " + word.known_readings[i];
+      if (word.known_readings.length !== 0) {
+        let readings = document.createElement("p");
+        readings.textContent = word.known_readings[0];
+        for (let i = 1; i < word.known_readings.length; i++) {
+          readings.textContent += ", " + word.known_readings[i];
+        }
+        parent.appendChild(readings);
       }
-      parent.appendChild(readings);
 
-      let sentences = document.createElement("p");
-      sentences.textContent = word.sentences[0].jp;
-      for (let i = 1; i < word.sentences.length; i++) {
-        sentences.textContent += ", " + word.sentences[i].jp
+      if (word.sentences.length !== 0) {
+        let sentences = document.createElement("p");
+        sentences.textContent = word.sentences[0].jp;
+        for (let i = 1; i < word.sentences.length; i++) {
+          sentences.textContent += ", " + word.sentences[i].jp
+        }
+        parent.appendChild(sentences);
       }
-      parent.appendChild(sentences);
 
-      let kanji = document.createElement("p");
-      kanji.textContent = word.kanji_composition[0];
-      for (let i = 1; i < word.kanji_composition.length; i++) {
-        kanji.textContent += ", " + word.kanji_composition[i];
+      if (word.kanji_composition.length !== 0) {
+        let kanji = document.createElement("p");
+        kanji.textContent = word.kanji_composition[0];
+        for (let i = 1; i < word.kanji_composition.length; i++) {
+          kanji.textContent += ", " + word.kanji_composition[i];
+        }
+        parent.appendChild(kanji);
       }
-      parent.appendChild(kanji);
     } else if (word.type === "kanji") {
-      let readings = document.createElement("p");
-      readings.textContent = word.known_readings[0];
-      for (let i = 1; i < word.known_readings.length; i++) {
-        readings.textContent += ", " + word.known_readings[i];
-      }
-      parent.appendChild(readings);
 
-      let vocab = document.createElement("p");
-      vocab.textContent = word.known_vocabulary[0];
-      for (let i = 1; i < word.known_vocabulary.length; i++) {
-        vocab.textContent += ", " + word.known_vocabulary[i];
+      if (word.known_readings.length !== 0) {
+        let readings = document.createElement("p");
+        readings.textContent = word.known_readings[0];
+        for (let i = 1; i < word.known_readings.length; i++) {
+          readings.textContent += ", " + word.known_readings[i];
+        }
+        parent.appendChild(readings);
       }
-      parent.appendChild(vocab);
 
-      let radical = document.createElement("p");
-      radical.textContent = word.radical_composition[0];
-      for (let i = 1; i < word.radical_composition.length; i++) {
-        radical.textContent += ", " + word.radical_composition[i];
+      if (word.known_vocabulary !== 0) {
+        let vocab = document.createElement("p");
+        vocab.textContent = word.known_vocabulary[0];
+        for (let i = 1; i < word.known_vocabulary.length; i++) {
+          vocab.textContent += ", " + word.known_vocabulary[i];
+        }
+        parent.appendChild(vocab);
       }
-      parent.appendChild(radical);
+
+      if (word.radical_composition !== 0) {
+        let radical = document.createElement("p");
+        radical.textContent = word.radical_composition[0];
+        for (let i = 1; i < word.radical_composition.length; i++) {
+          radical.textContent += ", " + word.radical_composition[i];
+        }
+        parent.appendChild(radical);
+      }
     }
   }
 
