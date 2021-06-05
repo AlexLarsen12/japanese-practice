@@ -66,19 +66,32 @@ input {
   margin: 10px;
 }
 
-.radical {
-  border: solid darkorchid 3px;
+.radical, .radical-text {
   color: darkorchid;
 }
 
-.vocabulary {
-  border: solid teal 3px;
+.vocabulary, .vocabulary-text{
   color: teal;
+}
+
+.kanji, .kanji-text {
+  color: lightcoral;
+}
+
+#known-words{
+  color: darkorange;
 }
 
 .kanji {
   border: solid lightcoral 3px;
-  color: lightcoral;
+}
+
+.radical {
+  border: solid darkorchid 3px;
+}
+
+.vocabulary {
+  border: solid teal 3px;
 }
 
 .hidden {

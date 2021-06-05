@@ -204,6 +204,8 @@
     id("known-words").textContent = words.length;
     id("dictionary").innerHTML = "";
     for (let i = 0; i < words.length; i++) {
+      id(words[i].type + "-count").textContent = parseInt(id(words[i].type + "-count").textContent) + 1;
+
       let container = document.createElement("div");
       container.classList.add("box");
       container.classList.add(words[i].type);
