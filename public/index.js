@@ -51,6 +51,7 @@
 
     parent.appendChild(input);
     id("study").appendChild(parent);
+    id("submit-study").focus(); // can't focus earlier cause it's not on the DOM yet!
   }
 
   function checkAnswer(resp) {
@@ -111,11 +112,21 @@
 
     let en = createInputElement("English", "en", "mouth");
     let jp = createInputElement("Japanese", "jp", "口");
+    jp.id = "jp";
+    jp.addEventListener("input", function() {
+      if (id("jp").children[1].value.trim().length === 0) {
+        id("submit").disabled = true;
+      } else {
+        id("submit").disabled = false;
+      }
+    }); // quick fix. now cannot submit words without japanese. Should fix the error on backend too tbh.
 
     let submit = document.createElement("input");
     submit.type = "submit";
     submit.value = "Add/Modify word!"
     submit.addEventListener("click", createEntry);
+    submit.disabled = true;
+    submit.id = "submit";
 
     form.appendChild(en);
     form.appendChild(jp);
@@ -184,6 +195,7 @@
   }
 
   function createEntry(e) {
+    e.currentTarget.disabled = true;
     let url = "/postWord";
 
     e.preventDefault();
@@ -201,8 +213,12 @@
   }
 
   function processWords(words) {
+    words = words.reverse();
     id("known-words").textContent = words.length;
     id("dictionary").innerHTML = "";
+    id("radical-count").textContent = "0";
+    id("kanji-count").textContent = "0";
+    id("vocabulary-count").textContent = "0";
     for (let i = 0; i < words.length; i++) {
       id(words[i].type + "-count").textContent = parseInt(id(words[i].type + "-count").textContent) + 1;
 
@@ -223,8 +239,10 @@
         english.textContent = words[i].en;
       } else {
         english.textContent = words[i].en[0];
-        for (let j = 1; j < words[i].en.length; j++) {
-          english.textContent += ", " + words[i].en[j];
+        for (let j = 1; j < 3; j++) { // I only want to show top 3 results. If want to switch back -> words[i].en.length
+          if (words[i].en[j]) {
+            english.textContent += ", " + words[i].en[j];
+          }
         }
       }
       container.appendChild(english);
@@ -234,8 +252,10 @@
         let pronounciation = document.createElement("p");
 
         pronounciation.textContent = words[i].known_readings[0];
-        for (let j = 1; j < words[i].known_readings.length; j++) {
-          pronounciation.textContent += ", " + words[i].known_readings[j];
+        for (let j = 1; j < 1; j++) { // Only want to show top 1st reading. Want to switch back -> words[i].known_readings.length
+          if (words[i].known_readings[j]) {
+            pronounciation.textContent += ", " + words[i].known_readings[j];
+          }
         }
 
         container.appendChild(pronounciation);
@@ -262,6 +282,7 @@
     let params = new FormData();
     params.append('type', this.classList[this.classList.length-1]); // this is also sus
     params.append('word', this.children[0].textContent);
+    id("word-info").innerHTML = "";
     fetch('/removeWord', {method: "POST", body: params})
       .then(statusCheck)
       .then(resp => resp.text())
