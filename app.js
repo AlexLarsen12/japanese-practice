@@ -61,14 +61,14 @@ app.get("/allWords", async function(req, res) {
 
 async function getAllWords() {
   let db = await getDBConnection();
-  let radical = await db.all("SELECT * FROM Radical");
+  let radical = await db.all("SELECT * FROM Radical ORDER BY jp");
 
-  let kanji = await db.all("SELECT * FROM Kanji");
+  let kanji = await db.all("SELECT * FROM Kanji ORDER BY jp");
   for (let i = 0; i < kanji.length; i++) {
     kanji[i] = formatResponse(kanji[i], KANJI);
   }
 
-  let vocab = await db.all("SELECT * FROM Vocabulary");
+  let vocab = await db.all("SELECT * FROM Vocabulary ORDER BY jp");
   for (let i = 0 ; i < vocab.length; i++) {
     vocab[i] = formatResponse(vocab[i], VOCAB);
   }
