@@ -25,7 +25,7 @@ app.get('/word/:word', async function(req, res) {
     res.status(400).send("Please input a type!");
   } else {
     let word = req.params.word;
-    // line below makes sure it's in proper format for querying database.
+    // line below makes sure the type in proper format for querying database. (proper table)
     type = type.toLowerCase().charAt(0).toUpperCase() + type.slice(1);
 
     try {
@@ -61,14 +61,14 @@ app.get("/allWords", async function(req, res) {
 
 async function getAllWords() {
   let db = await getDBConnection();
-  let radical = await db.all("SELECT * FROM Radical ORDER BY jp");
+  let radical = await db.all("SELECT * FROM Radical");
 
-  let kanji = await db.all("SELECT * FROM Kanji ORDER BY jp");
+  let kanji = await db.all("SELECT * FROM Kanji");
   for (let i = 0; i < kanji.length; i++) {
     kanji[i] = formatResponse(kanji[i], KANJI);
   }
 
-  let vocab = await db.all("SELECT * FROM Vocabulary ORDER BY jp");
+  let vocab = await db.all("SELECT * FROM Vocabulary");
   for (let i = 0 ; i < vocab.length; i++) {
     vocab[i] = formatResponse(vocab[i], VOCAB);
   }
@@ -92,18 +92,19 @@ app.post("/postWord", async function (req, res) {
         res.type("text").status(400).send("this word already exists!");
       } else {
         if (type === RADICAL) {
-          let qry = "INSERT INTO " + type + "(jp, en, type) VALUES(?, ?, ?)";
-          await db.all(qry, [req.body.jp, req.body.en, req.body.type]);
+          let newWord = formatRadical(req.body);
+          let qry = "INSERT INTO " + type + "(jp, en, type, known_kanji, notes, source) VALUES(?, ?, ?, ?, ?, ?)";
+          await db.all(qry, [newWord.jp, newWord.en, newWord.type, newWord["known-kanji"], newWord.notes, newWord.source]);
         } else if (type === VOCAB) {
           let newWord = formatVocabulary(req.body);
-          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences) VALUES(?, ?, ?, ?, ?, ?)";
+          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences, word_type, notes, source) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
           await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-          newWord.type, newWord["kanji-composition"], newWord.sentences]);
+          newWord.type, newWord["kanji-composition"], newWord.sentences, newWord["word-type"], newWord.notes, newWord.source]);
         } else {
           let newWord = formatKanji(req.body);
-          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary) VALUES (?, ?, ?, ? , ?, ?)";
+          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary, notes, source) VALUES (?, ?, ?, ? , ?, ?, ?, ?)";
           await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-          newWord.type, newWord["radical-composition"], newWord["known-vocabulary"]]);
+          newWord.type, newWord["radical-composition"], newWord["known-vocabulary"], newWord.notes, newWord.source]);
         }
         res.send("successful addition!");
       }
@@ -239,6 +240,20 @@ app.get("/randomWord", async function(req, res) {
 
 /** -- helper functions -- */
 
+function formatRadical(radical) {
+  let word = {};
+
+  word.en = radical.en;
+  word.jp = radical.jp;
+  word.type = radical.type;
+  word["notes"] = !radical["notes"].split("\\,")[0] ? "[]" : JSON.stringify(radical["notes"].split("\\,"));
+  word["source"] = !radical["source"].split("\\,")[0] ? "[]" : JSON.stringify(radical["source"].split("\\,"));
+  word["known-kanji"] = !radical["known-kanji"].split("\\,")[0] ? "[]" : JSON.stringify(radical["known-kanji"].split("\\,"));
+
+  console.log(word);
+  return word;
+}
+
 function formatVocabulary(vocab) {
   let word = {};
 
@@ -247,6 +262,10 @@ function formatVocabulary(vocab) {
   word.type = vocab.type;
   word["known-readings"] = !vocab["known-readings"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["known-readings"].split("\\,"));
   word["kanji-composition"] = !vocab["kanji-composition"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["kanji-composition"].split("\\,"));
+  word["notes"] = !vocab["notes"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["notes"].split("\\,"));
+  word["source"] = !vocab["source"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["source"].split("\\,"));
+  word["word-type"] = !vocab["word-type"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["word-type"].split("\\,"));
+
   word.sentences = [];
 
   if (vocab["sentence-jp"].split("\\,")[0] !== "") {
@@ -254,6 +273,7 @@ function formatVocabulary(vocab) {
       let sentenceObj = {};
       sentenceObj.jp = vocab["sentence-jp"].split("\\,")[i];
       sentenceObj.en = vocab["sentence-en"].split("\\,")[i];
+      sentenceObj["jp-simple"] = vocab["jp-simple"].split("\\,")[i];
 
       let vocabArr = [];
       for (let j = 0; j < vocab["sentence-vocab"].split("\\,")[i].split("*").length; j++) {
@@ -276,8 +296,10 @@ function formatKanji(kanji) {
   word.type = kanji.type;
 
   word["known-readings"] = !kanji["known-readings"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["known-readings"].split("\\,"));
-  word["radical-composition"] = !kanji["radical-composition"].split("\\,")[0] ? "" : JSON.stringify(kanji["radical-composition"].split("\\,"));
-  word["known-vocabulary"] = !kanji["known-vocabulary"].split("\\,")[0] ? "" : JSON.stringify(kanji["known-vocabulary"].split("\\,"));
+  word["radical-composition"] = !kanji["radical-composition"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["radical-composition"].split("\\,"));
+  word["known-vocabulary"] = !kanji["known-vocabulary"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["known-vocabulary"].split("\\,"));
+  word["notes"] = !kanji["notes"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["notes"].split("\\,"));
+  word["source"] = !kanji["source"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["source"].split("\\,"));
 
   return word;
 }
@@ -293,7 +315,12 @@ function formatResponse(response, type) {
     response.known_readings = JSON.parse(response.known_readings);
     response.kanji_composition = JSON.parse(response.kanji_composition);
     response.sentences = JSON.parse(response.sentences);
+    response.word_type = JSON.parse(response.word_type);
+  } else if (type === RADICAL) {
+    response.known_kanji = JSON.parse(response.known_kanji);
   }
+  response.notes = JSON.parse(response.notes);
+  response.source = JSON.parse(response.source);
   return response;
 }
 

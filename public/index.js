@@ -36,7 +36,13 @@
     parent.classList.add(resp.type);
 
     let word = document.createElement("p");
-    word.textContent = resp.jp;
+
+    let studyType = Math.random();
+    if (studyType >= 0.5) {
+      word.textContent = resp.jp;
+    } else {
+      word.textContent = resp.en.toString();
+    }
     parent.appendChild(word);
 
     let input = document.createElement("input");
@@ -56,11 +62,14 @@
 
   function checkAnswer(resp) {
     let listToMatch;
+
     if (resp.type === "radical") {
       listToMatch = [resp.en];
     } else {
       listToMatch = resp.en;
     }
+
+    listToMatch.push(resp.jp);
 
     let dopamine = document.createElement("p");
     let matchMsg = "You didn't get it! Here are the meanings: " + listToMatch.toString();
@@ -112,6 +121,7 @@
 
     let en = createInputElement("English", "en", "mouth");
     let jp = createInputElement("Japanese", "jp", "口");
+    let notes = createInputElement("Additional Notes", "notes", "it kinda looks like a mouth!");
     jp.id = "jp";
     jp.addEventListener("input", function() {
       if (id("jp").children[1].value.trim().length === 0) {
@@ -130,8 +140,14 @@
 
     form.appendChild(en);
     form.appendChild(jp);
+    form.appendChild(notes);
 
-    if (type === "kanji") {
+    let source = createInputElement("Source", "source", "WaniKani level 1");
+    form.appendChild(source);
+    if (type === "radical") {
+      let knownKanji = createInputElement("Found in Kanji", "known-kanji", "口\\,四\\,右");
+      form.appendChild(knownKanji);
+    } else if (type === "kanji") {
       createKanjiForm(form);
     } else if (type === "vocabulary") {
       createVocabularyForm(form);
@@ -142,19 +158,23 @@
   function createVocabularyForm(form) {
     let knownReadings = createInputElement("Known Readings", "known-readings", "こう");
     let kanjiComposition = createInputElement("Kanji Composition", "kanji-composition", "口");
+    let wordType = createInputElement("Word Type", "word-type", "noun");
 
     let spacer = document.createElement("p");
     spacer.textContent = " ---- SENTENCE INFORMATION BELOW ----"
 
     let sentencesEnglish = createInputElement("Sentences - English", "sentence-en", "There is some sauce on your mouth.");
     let sentencesJapanese = createInputElement("Sentences - Japanese", "sentence-jp", "口にソースがついていますよ");
+    let sentencesJapaneseSimple = createInputElement("Sentences - Japanese - No Kanji", "jp-simple", "くちにソースがついていますよ");
     let vocabInSentences = createInputElement("Sentences - Vocab Involved", "sentence-vocab", "口");
 
     form.appendChild(knownReadings);
     form.appendChild(kanjiComposition);
+    form.appendChild(wordType);
     form.appendChild(spacer);
     form.appendChild(sentencesEnglish);
     form.appendChild(sentencesJapanese);
+    form.appendChild(sentencesJapaneseSimple);
     form.appendChild(vocabInSentences);
   }
 
@@ -166,6 +186,7 @@
     form.appendChild(knownReadings);
     form.appendChild(radicalComposition);
     form.appendChild(knownVocab);
+
   }
 
   function createInputElement(text, name, placeholder) {
@@ -239,7 +260,7 @@
         english.textContent = words[i].en;
       } else {
         english.textContent = words[i].en[0];
-        for (let j = 1; j < 3; j++) { // I only want to show top 3 results. If want to switch back -> words[i].en.length
+        for (let j = 1; j < 1; j++) { // I only want to show top 1 results. If want to switch back -> words[i].en.length
           if (words[i].en[j]) {
             english.textContent += ", " + words[i].en[j];
           }
@@ -281,7 +302,7 @@
   function removeWord() {
     let params = new FormData();
     params.append('type', this.classList[this.classList.length-1]); // this is also sus
-    params.append('word', this.children[0].textContent);
+    params.append('word', this.children[0].textContent.split(":")[1].trim());
     id("word-info").innerHTML = "";
     fetch('/removeWord', {method: "POST", body: params})
       .then(statusCheck)
@@ -298,16 +319,17 @@
     parent.addEventListener("dblclick", removeWord);
 
     let jp = document.createElement("p");
-    jp.textContent = word.jp;
+    jp.textContent = "Japanese: " + word.jp;
     parent.appendChild(jp);
 
     if (word.en) { // checks for radical...
       let en = document.createElement("p");
+      en.textContent = "English: ";
       if (word.type === "radical") {
-        en.textContent = word.en;
+        en.textContent += word.en;
       } else {
         if (word.en.length !== 0) { // check to see if no english meanings... super sketchy fix this later
-          en.textContent = word.en[0];
+          en.textContent += word.en[0];
           for (let i = 1; i < word.en.length; i++) {
             en.textContent += ", " + word.en[i];
           }
@@ -319,7 +341,7 @@
     if (word.type === "vocabulary") {
       if (word.known_readings.length !== 0) {
         let readings = document.createElement("p");
-        readings.textContent = word.known_readings[0];
+        readings.textContent = "Known Readings: " + word.known_readings[0];
         for (let i = 1; i < word.known_readings.length; i++) {
           readings.textContent += ", " + word.known_readings[i];
         }
@@ -328,7 +350,7 @@
 
       if (word.sentences.length !== 0) {
         let sentences = document.createElement("p");
-        sentences.textContent = word.sentences[0].jp;
+        sentences.textContent = "Example Sentences: " + word.sentences[0].jp;
         for (let i = 1; i < word.sentences.length; i++) {
           sentences.textContent += ", " + word.sentences[i].jp
         }
@@ -337,7 +359,7 @@
 
       if (word.kanji_composition.length !== 0) {
         let kanji = document.createElement("p");
-        kanji.textContent = word.kanji_composition[0];
+        kanji.textContent = "Kanji Composition: " + word.kanji_composition[0];
         for (let i = 1; i < word.kanji_composition.length; i++) {
           kanji.textContent += ", " + word.kanji_composition[i];
         }
@@ -347,7 +369,7 @@
 
       if (word.known_readings.length !== 0) {
         let readings = document.createElement("p");
-        readings.textContent = word.known_readings[0];
+        readings.textContent = "Known Readings: " + word.known_readings[0];
         for (let i = 1; i < word.known_readings.length; i++) {
           readings.textContent += ", " + word.known_readings[i];
         }
@@ -356,7 +378,7 @@
 
       if (word.known_vocabulary !== 0) {
         let vocab = document.createElement("p");
-        vocab.textContent = word.known_vocabulary[0];
+        vocab.textContent = "Found in Vocab: " + word.known_vocabulary[0];
         for (let i = 1; i < word.known_vocabulary.length; i++) {
           vocab.textContent += ", " + word.known_vocabulary[i];
         }
@@ -365,7 +387,7 @@
 
       if (word.radical_composition !== 0) {
         let radical = document.createElement("p");
-        radical.textContent = word.radical_composition[0];
+        radical.textContent = "Radical Composition: " + word.radical_composition[0];
         for (let i = 1; i < word.radical_composition.length; i++) {
           radical.textContent += ", " + word.radical_composition[i];
         }

@@ -4,19 +4,22 @@
   flex-direction: row;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 500px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 700px;
+  border-radius: 7px;
 
   text-align: center;
+  background-color: white;
 }
 
 body {
   background-color: lavenderblush;
+  font-family: 'Kosugi Maru', sans-serif;
 }
 
 p {
-  font-size: 16pt;
+  font-size: 20pt;
 }
 
 form > div > p {
@@ -28,8 +31,9 @@ body {
 }
 
 h1 {
-  display: inline;
+  display: block;
   color:rgb(23, 77, 148);
+  margin-bottom: 30px;
 }
 
 span {
@@ -44,8 +48,8 @@ span {
 }
 
 #word-info {
-  width: 750px;
-  height: 400px;
+  width: 850px;
+  height: 450px;
   padding-left: 15px;
   padding-right: 15px;
   flex-direction: column;
@@ -87,15 +91,15 @@ input {
 }
 
 .kanji {
-  border: solid lightcoral 3px;
+  border: solid lightcoral 5px;
 }
 
 .radical {
-  border: solid darkorchid 3px;
+  border: solid darkorchid 5px;
 }
 
 .vocabulary {
-  border: solid teal 3px;
+  border: solid teal 5px;
 }
 
 .hidden {
