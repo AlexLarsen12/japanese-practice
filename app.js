@@ -101,11 +101,17 @@ app.post("/postWord", async function (req, res) {
           let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences, word_type, notes, source) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
           await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
           newWord.type, newWord["kanji-composition"], newWord.sentences, newWord["word-type"], newWord.notes, newWord.source]);
+
+          // update any KANJI found!
+          await updateKnownVocabulary(newWord.jp, newWord["kanji-composition"], db);
         } else {
           let newWord = formatKanji(req.body);
           let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary, notes, source) VALUES (?, ?, ?, ? , ?, ?, ?, ?)";
           await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
           newWord.type, newWord["radical-composition"], newWord["known-vocabulary"], newWord.notes, newWord.source]);
+
+          // update any RADICALS!!!
+          await updateKnownKanji(newWord.jp, newWord["radical-composition"], db);
         }
         res.send("successful addition!");
       }
@@ -115,14 +121,6 @@ app.post("/postWord", async function (req, res) {
     }
   }
 });
-
-function addToColumn(currentColumn, additionalContent) {
-  let updatedList = JSON.parse(currentColumn);
-  if (additionalContent) {
-    updatedList = updatedList.concat(additionalContent.split("\\,"));
-  }
-  return JSON.stringify(updatedList);
-}
 
 app.post('/modifyWord', async function(req, res) {
   try {
@@ -213,8 +211,55 @@ app.get("/randomWord", async function(req, res) {
   }
 });
 
-
 /** -- helper functions -- */
+
+// when we add kanji, we should update "known_kanji" in Radical table.
+async function updateKnownKanji(kanji, radicalList, db) {
+  radicalList = JSON.parse(radicalList);
+
+  // want to loop through all the radical that make up this kanji.
+  for (let i = 0; i < radicalList.length; i++) {
+    let knownKanji = (await db.all("SELECT known_kanji FROM Radical WHERE jp = ?", radicalList[i]))[0];
+
+    if (knownKanji) {
+      knownKanji = JSON.parse(knownKanji.known_kanji);
+      if (!knownKanji.includes(kanji)) {
+        knownKanji.push(kanji); // add to the vocab list.
+        await db.run("UPDATE Radical SET known_kanji = ? WHERE jp = ?", [JSON.stringify(knownKanji), radicalList[i]]);
+      }
+    } else { // roundabout - but the kanji does not exist... lets add it (even if it's empty)!
+      await db.run("INSERT INTO Radical (jp, known_kanji) VALUES (?, ?)", [radicalList[i], [JSON.stringify([kanji])]]);
+    }
+  }
+}
+
+// when we add vocabulary, we should update "known_vocabulary" in Kanji table.
+async function updateKnownVocabulary(vocab, kanjiList, db) {
+  kanjiList = JSON.parse(kanjiList);
+
+  // want to loop through all the kanji that make up this vocabulary.
+  for (let i = 0; i < kanjiList.length; i++) {
+    let knownVocabulary = (await db.all("SELECT known_vocabulary FROM Kanji WHERE jp = ?", kanjiList[i]))[0];
+
+    if (knownVocabulary) {
+      knownVocabulary = JSON.parse(knownVocabulary.known_vocabulary);
+      if (!knownVocabulary.includes(vocab)) {
+        knownVocabulary.push(vocab); // add to the vocab list.
+        await db.run("UPDATE Kanji SET known_vocabulary = ? WHERE jp = ?", [JSON.stringify(knownVocabulary), kanjiList[i]]);
+      }
+    } else { // roundabout - but the kanji does not exist... lets add it (even if it's empty)!
+      await db.run("INSERT INTO Kanji (jp, known_vocabulary) VALUES (?, ?)", [kanjiList[i], [JSON.stringify([vocab])]]);
+    }
+  }
+}
+
+function addToColumn(currentColumn, additionalContent) {
+  let updatedList = JSON.parse(currentColumn);
+  if (additionalContent) {
+    updatedList = updatedList.concat(additionalContent.split("\\,"));
+  }
+  return JSON.stringify(updatedList);
+}
 
 function formatRadical(radical) {
   let word = {};

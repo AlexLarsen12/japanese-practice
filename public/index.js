@@ -45,6 +45,11 @@
     } else {
       word.textContent = resp.en.toString();
     }
+
+    if (resp.type === "radical") {
+      word.textContent = resp.jp;
+    }
+
     parent.appendChild(word);
 
     let input = document.createElement("input");
@@ -338,6 +343,9 @@
       let knownVocab = createTextBox(word.known_vocabulary, "Known Vocabulary: ");
       if (knownVocab) parent.appendChild(knownVocab);
 
+      let radicalComposition = createTextBox(word.radical_composition, "Radical Composition: ");
+      if (radicalComposition) parent.appendChild(radicalComposition);
+
     } else if (word.type === "vocabulary") {
       let knownReadings = createTextBox(word.known_readings, "Known Readings: ");
       if (knownReadings) parent.appendChild(knownReadings);
@@ -361,6 +369,10 @@
           let sentenceEng = document.createElement("p");
           sentenceEng.textContent = "English: " + word.sentences[i].en;
           sentenceParent.appendChild(sentenceEng);
+
+          let vocab = document.createElement("p");
+          vocab.textContent = "Vocab involved: " + word.sentences[i].vocab.toString();
+          sentenceParent.appendChild(vocab);
 
           let sentenceJpEz = document.createElement("p");
           sentenceJpEz.textContent = "Japanese - No Kanji: " + word.sentences[i]["jp_simple"];
