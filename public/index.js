@@ -236,7 +236,7 @@
   }
 
   function processWords(words) {
-    // words = words.reverse();
+    words = words.reverse();
     id("known-words").textContent = words.length;
     id("dictionary").innerHTML = "";
     id("radical-count").textContent = "0";
@@ -324,78 +324,65 @@
     jp.textContent = "Japanese: " + word.jp;
     parent.appendChild(jp);
 
-    if (word.en) { // checks for radical...
-      let en = document.createElement("p");
-      en.textContent = "English: ";
-      if (word.type === "radical") {
-        en.textContent += word.en;
-      } else {
-        if (word.en.length !== 0) { // check to see if no english meanings... super sketchy fix this later
-          en.textContent += word.en[0];
-          for (let i = 1; i < word.en.length; i++) {
-            en.textContent += ", " + word.en[i];
-          }
-        }
-      }
-      parent.appendChild(en);
-    }
+    let en = createTextBox(word.en, "English: ");
+    if (en) parent.appendChild(en);
 
-    if (word.type === "vocabulary") {
-      if (word.known_readings.length !== 0) {
-        let readings = document.createElement("p");
-        readings.textContent = "Known Readings: " + word.known_readings[0];
-        for (let i = 1; i < word.known_readings.length; i++) {
-          readings.textContent += ", " + word.known_readings[i];
-        }
-        parent.appendChild(readings);
-      }
+    if (word.type === "radical") {
+      let knownKanji = createTextBox(word.known_kanji, "Known Kanji: ");
+      if (knownKanji) parent.appendChild(knownKanji);
 
-      if (word.sentences.length !== 0) {
-        let sentences = document.createElement("p");
-        sentences.textContent = "Example Sentences: " + word.sentences[0].jp;
-        for (let i = 1; i < word.sentences.length; i++) {
-          sentences.textContent += ", " + word.sentences[i].jp
-        }
-        parent.appendChild(sentences);
-      }
-
-      if (word.kanji_composition.length !== 0) {
-        let kanji = document.createElement("p");
-        kanji.textContent = "Kanji Composition: " + word.kanji_composition[0];
-        for (let i = 1; i < word.kanji_composition.length; i++) {
-          kanji.textContent += ", " + word.kanji_composition[i];
-        }
-        parent.appendChild(kanji);
-      }
     } else if (word.type === "kanji") {
+      let knownReadings = createTextBox(word.known_readings, "Known Readings: ");
+      if (knownReadings) parent.appendChild(knownReadings);
 
-      if (word.known_readings.length !== 0) {
-        let readings = document.createElement("p");
-        readings.textContent = "Known Readings: " + word.known_readings[0];
-        for (let i = 1; i < word.known_readings.length; i++) {
-          readings.textContent += ", " + word.known_readings[i];
+      let knownVocab = createTextBox(word.known_vocabulary, "Known Vocabulary: ");
+      if (knownVocab) parent.appendChild(knownVocab);
+
+    } else if (word.type === "vocabulary") {
+      let knownReadings = createTextBox(word.known_readings, "Known Readings: ");
+      if (knownReadings) parent.appendChild(knownReadings);
+
+      let kanjiComposition = createTextBox(word.kanji_composition, "Kanji Composition: ");
+      if (kanjiComposition) parent.appendChild(kanjiComposition);
+
+      if (word.sentences.length > 0) {
+        let sentenceDiv = document.createElement("div");
+        let paragraph = document.createElement("p");
+        paragraph.textContent = "Sentences:"
+        sentenceDiv.appendChild(paragraph);
+
+        for (let i = 0; i < word.sentences.length; i++) {
+          let sentenceParent = document.createElement("div");
+
+          let sentenceJp = document.createElement("p");
+          sentenceJp.textContent = "Japanese: " + word.sentences[i].jp;
+          sentenceParent.appendChild(sentenceJp);
+
+          let sentenceEng = document.createElement("p");
+          sentenceEng.textContent = "English: " + word.sentences[i].en;
+          sentenceParent.appendChild(sentenceEng);
+
+          let sentenceJpEz = document.createElement("p");
+          sentenceJpEz.textContent = "Japanese - No Kanji: " + word.sentences[i]["jp_simple"];
+          sentenceParent.appendChild(sentenceJpEz);
+
+          sentenceDiv.appendChild(sentenceParent);
+          sentenceDiv.appendChild(document.createElement("br"));
         }
-        parent.appendChild(readings);
+        parent.appendChild(sentenceDiv);
       }
 
-      if (word.known_vocabulary !== 0) {
-        let vocab = document.createElement("p");
-        vocab.textContent = "Found in Vocab: " + word.known_vocabulary[0];
-        for (let i = 1; i < word.known_vocabulary.length; i++) {
-          vocab.textContent += ", " + word.known_vocabulary[i];
-        }
-        parent.appendChild(vocab);
-      }
-
-      if (word.radical_composition !== 0) {
-        let radical = document.createElement("p");
-        radical.textContent = "Radical Composition: " + word.radical_composition[0];
-        for (let i = 1; i < word.radical_composition.length; i++) {
-          radical.textContent += ", " + word.radical_composition[i];
-        }
-        parent.appendChild(radical);
-      }
+      let wordType = createTextBox(word.word_type, "Word Type: ");
+      if (wordType) parent.appendChild(wordType);
     }
+
+    console.log(word);
+    let notes = createTextBox(word.notes, "Notes: ");
+    if (notes) parent.appendChild(notes);
+
+    let source = createTextBox(word.source, "Source: ");
+    if (source) parent.appendChild(source);
+
     let modifyBtn = document.createElement("button");
     modifyBtn.textContent = "Click here to modify!";
     modifyBtn.addEventListener("click", function() {
@@ -407,6 +394,20 @@
       id("submit").disabled = false;
     }); // this is ridiculously scuffed.
     parent.appendChild(modifyBtn);
+  }
+
+  function createTextBox(content, text) {
+    if (content.length > 0) {
+      if (typeof(content) === "string") content = [content]; // making the radical be a string!
+      let p = document.createElement("p");
+      p.textContent = text + content[0];
+      for (let i = 1; i < content.length; i++) {
+        p.textContent += ", " + content[i];
+      }
+      return p;
+    } else {
+      return null;
+    }
   }
 
   async function statusCheck(response) {

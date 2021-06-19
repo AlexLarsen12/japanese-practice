@@ -61,17 +61,18 @@ app.get("/allWords", async function(req, res) {
 
 async function getAllWords() {
   let db = await getDBConnection();
-  let radical = await db.all("SELECT * FROM Radical");
+  let radical = await db.all("SELECT * FROM Radical ORDER BY first_unlocked");
 
-  let kanji = await db.all("SELECT * FROM Kanji");
+  let kanji = await db.all("SELECT * FROM Kanji ORDER BY first_unlocked");
   for (let i = 0; i < kanji.length; i++) {
     kanji[i] = formatResponse(kanji[i], KANJI);
   }
 
-  let vocab = await db.all("SELECT * FROM Vocabulary");
+  let vocab = await db.all("SELECT * FROM Vocabulary ORDER BY first_unlocked");
   for (let i = 0 ; i < vocab.length; i++) {
     vocab[i] = formatResponse(vocab[i], VOCAB);
   }
+
   return radical.concat(kanji.concat(vocab));
 }
 
@@ -247,7 +248,7 @@ function formatVocabulary(vocab) {
       let sentenceObj = {};
       sentenceObj.jp = vocab["sentence-jp"].split("\\,")[i];
       sentenceObj.en = vocab["sentence-en"].split("\\,")[i];
-      sentenceObj["jp-simple"] = vocab["jp-simple"].split("\\,")[i];
+      sentenceObj["jp_simple"] = vocab["jp-simple"].split("\\,")[i];
 
       let vocabArr = [];
       for (let j = 0; j < vocab["sentence-vocab"].split("\\,")[i].split("*").length; j++) {

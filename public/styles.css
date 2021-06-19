@@ -48,8 +48,8 @@ span {
 }
 
 #word-info {
-  width: 850px;
-  height: 450px;
+  width: 70%;
+  height: 100%;
   padding-left: 15px;
   padding-right: 15px;
   flex-direction: column;
