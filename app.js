@@ -115,98 +115,73 @@ app.post("/postWord", async function (req, res) {
   }
 });
 
+function addToColumn(currentColumn, additionalContent) {
+  let updatedList = JSON.parse(currentColumn);
+  if (additionalContent) {
+    updatedList = updatedList.concat(additionalContent.split("\\,"));
+  }
+  return JSON.stringify(updatedList);
+}
+
 app.post('/modifyWord', async function(req, res) {
   try {
     let db = await getDBConnection();
 
     let table = req.body.type.toLowerCase().charAt(0).toUpperCase() + req.body.type.slice(1);
-    let word = (await db.all("SELECT * FROM " + table + " WHERE jp = ?", req.body.jp));
-    if (word.length === 0) {
-      throw new Error("LOL this word doesn't exist"); // FIGURE OUT A BETTER WAY TO THROW ERRORS.
+    let word = (await db.all("SELECT * FROM " + table + " WHERE jp = ?", req.body.jp))[0];
+    if (!word) { // indexing into empty array gives _undefined_
+      throw new Error("LOL this word doesn't exist");
     }
-    word = word[0];
 
     if (table === RADICAL) {
-      res.status(400).send("Cannot add meanings to radicals. There should be one primary meaning only");
+      // can just ignore any english passed in!
+      word.known_kanji = addToColumn(word.known_kanji, req.body["known-kanji"]);
+      word.notes = addToColumn(word.notes, req.body.notes);
+      word.source = addToColumn(word.source, req.body.source);
+
+      await db.run("UPDATE " + table + " SET known_kanji = ?, notes = ?, source = ? WHERE jp = ?",
+                   [word.known_kanji, word.notes, word.source, word.jp]);
     } else if (table === KANJI) {
-      word.en = JSON.parse(word.en);
-      let enAddition = req.body.en.split("\\,");
-      if (enAddition[0] !== "") {
-        word.en = word.en.concat(enAddition);
-      }
-      word.en = JSON.stringify(word.en);
 
-      word.known_readings = JSON.parse(word.known_readings);
-      let readingAddition = req.body["known-readings"].split("\\,");
-      if (readingAddition[0] !== "") {
-        word.known_readings = word.known_readings.concat(readingAddition);
-      }
-      word.known_readings = JSON.stringify(word.known_readings);
+      word.en = addToColumn(word.en, req.body.en);
+      word.known_readings = addToColumn(word.known_readings, req.body["known-readings"]);
+      word.radical_composition = addToColumn(word.radical_composition, req.body["known-readings"]);
+      word.known_vocabulary = addToColumn(word.known_vocabulary, req.body["known-vocabulary"]);
+      word.notes = addToColumn(word.notes, req.body.notes);
+      word.source = addToColumn(word.source, req.body.source);
 
-      word.radical_composition = JSON.parse(word.radical_composition);
-      let radicalAddition = req.body["radical-composition"].split("\\,");
-      if (radicalAddition[0] !== "") {
-        word.radical_composition = word.radical_composition.concat(radicalAddition);
-      }
-      word.radical_composition = JSON.stringify(word.radical_composition);
-
-      word.known_vocabulary = JSON.parse(word.known_vocabulary);
-      let vocabAddition = req.body["known-vocabulary"].split("\\,");
-      if (vocabAddition[0] !== "") {
-        word.known_vocabulary = word.known_vocabulary.concat(vocabAddition);
-      }
-      word.known_vocabulary = JSON.stringify(word.known_vocabulary);
-
-      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, radical_composition = ?, known_vocabulary = ? WHERE jp = ?",
-                   [word.en, word.known_readings, word.radical_composition, word.known_vocabulary, word.jp]);
-      res.json(word);
+      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, radical_composition = ?, known_vocabulary = ?, notes = ?, source = ? WHERE jp = ?",
+                   [word.en, word.known_readings, word.radical_composition, word.known_vocabulary, word.notes, word.source, word.jp]);
     } else if (table === VOCAB) {
 
-      word.en = JSON.parse(word.en);
-      let enAddition = req.body.en.split("\\,");
-      if (enAddition[0] !== "") {
-        word.en = word.en.concat(enAddition);
-      }
-      word.en = JSON.stringify(word.en);
-
-      word.known_readings = JSON.parse(word.known_readings);
-      let readingAddition = req.body["known-readings"].split("\\,");
-      if (readingAddition[0] !== "") {
-        word.known_readings = word.known_readings.concat(readingAddition);
-      }
-      word.known_readings = JSON.stringify(word.known_readings);
-
-      word.kanji_composition = JSON.parse(word.kanji_composition);
-      let kanjiAddition = req.body["kanji-composition"].split("\\,");
-      if (kanjiAddition[0] !== "") {
-        word.kanji_composition = word.kanji_composition.concat(kanjiAddition);
-      }
-      word.kanji_composition = JSON.stringify(word.kanji_composition);
+      word.en = addToColumn(word.en, req.body.en);
+      word.known_readings = addToColumn(word.known_readings, req.body["known-readings"]);
+      word.kanji_composition = addToColumn(word.kanji_composition, req.body["kanji-composition"]);
+      word.notes = addToColumn(word.notes, req.body.notes);
+      word.source = addToColumn(word.source, req.body.source);
+      word.word_type = addToColumn(word.word_type, req.body["word-type"]);
 
       word.sentences= JSON.parse(word.sentences);
       if (req.body["sentence-jp"].split("\\,")[0] !== "") { // if there's a sentence
         for (let i = 0; i < req.body["sentence-jp"].split("\\,").length; i++) { //assume clients aren't idiots
           let sentenceObj = {};
-          let englishSentence = req.body["sentence-en"].split("\\,")[i];
-          sentenceObj.en = englishSentence;
-          let jpSentence = req.body["sentence-jp"].split("\\,")[i];
-          sentenceObj.jp = jpSentence;
-
-          let sentenceVocab = req.body["sentence-vocab"].split("\\,")[i].split("*");
-          sentenceObj.vocab = sentenceVocab;
+          sentenceObj.en = req.body["sentence-en"].split("\\,")[i];
+          sentenceObj.jp = req.body["sentence-jp"].split("\\,")[i];
+          sentenceObj["jp_simple"] = req.body["jp-simple"].split("\\,")[i];
+          sentenceObj.vocab = req.body["sentence-vocab"].split("\\,")[i].split("*");
 
           word.sentences.push(sentenceObj);
         }
       }
       word.sentences = JSON.stringify(word.sentences);
 
-      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ? WHERE jp = ?",
-      [word.en, word.known_readings, word.kanji_composition, word.sentences, word.jp]);
-      res.json(word);
+      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ?, notes = ?, source =?, word_type = ? WHERE jp = ?",
+      [word.en, word.known_readings, word.kanji_composition, word.sentences, word.notes, word.source, word.word_type, word.jp]);
     }
     await db.close();
+    res.json(word);
   } catch (err) {
-    res.status(500).send("error time boys");
+    res.status(500).send(err.message);
   }
 });
 
@@ -250,7 +225,6 @@ function formatRadical(radical) {
   word["source"] = !radical["source"].split("\\,")[0] ? "[]" : JSON.stringify(radical["source"].split("\\,"));
   word["known-kanji"] = !radical["known-kanji"].split("\\,")[0] ? "[]" : JSON.stringify(radical["known-kanji"].split("\\,"));
 
-  console.log(word);
   return word;
 }
 

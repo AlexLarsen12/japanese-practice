@@ -11,6 +11,8 @@
     id("home").addEventListener("click", function() {
       id("word-info").innerHTML = "";
       openPage("dictionary");
+      id("search").value = "";
+      refreshDictionary();
     });
     id("word-addition").addEventListener("click", () => openPage("word-addition-parent"));
     id("study-btn").addEventListener("click", function() {
@@ -234,7 +236,7 @@
   }
 
   function processWords(words) {
-    words = words.reverse();
+    // words = words.reverse();
     id("known-words").textContent = words.length;
     id("dictionary").innerHTML = "";
     id("radical-count").textContent = "0";
@@ -394,6 +396,17 @@
         parent.appendChild(radical);
       }
     }
+    let modifyBtn = document.createElement("button");
+    modifyBtn.textContent = "Click here to modify!";
+    modifyBtn.addEventListener("click", function() {
+      id("action-select").value = "modify";
+      id("add-word").value = word.type;
+      id("word-addition-parent").classList.remove("hidden");
+      populateForm(word.type);
+      id("jp").children[1].value = word.jp;
+      id("submit").disabled = false;
+    }); // this is ridiculously scuffed.
+    parent.appendChild(modifyBtn);
   }
 
   async function statusCheck(response) {
