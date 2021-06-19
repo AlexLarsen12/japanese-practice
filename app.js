@@ -104,6 +104,18 @@ app.post("/postWord", async function (req, res) {
 
           // update any KANJI found!
           await updateKnownVocabulary(newWord.jp, newWord["kanji-composition"], db);
+
+          // also maybe add vocab words if the vocab isn't known??
+          let sentences = JSON.parse(newWord.sentences);
+          for (let i = 0; i < sentences.length; i++) {
+            for (let j = 0; j < sentences[i].vocab.length; j++) {
+              let foundWord = (await db.all("SELECT * FROM Vocabulary WHERE jp = ?", sentences[i].vocab[j]))[0];
+
+              if (!foundWord) {
+                await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", sentences[i].vocab[j]);
+              }
+            }
+          }
         } else {
           let newWord = formatKanji(req.body);
           let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary, notes, source) VALUES (?, ?, ?, ? , ?, ?, ?, ?)";
@@ -117,7 +129,7 @@ app.post("/postWord", async function (req, res) {
       }
       await db.close();
     } catch(err) {
-      res.status(500).send("uh oh you done F'd up");
+      res.status(500).send(err.message);
     }
   }
 });
@@ -140,17 +152,20 @@ app.post('/modifyWord', async function(req, res) {
 
       await db.run("UPDATE " + table + " SET known_kanji = ?, notes = ?, source = ? WHERE jp = ?",
                    [word.known_kanji, word.notes, word.source, word.jp]);
+
     } else if (table === KANJI) {
 
       word.en = addToColumn(word.en, req.body.en);
       word.known_readings = addToColumn(word.known_readings, req.body["known-readings"]);
-      word.radical_composition = addToColumn(word.radical_composition, req.body["known-readings"]);
+      word.radical_composition = addToColumn(word.radical_composition, req.body["radical-composition"]);
       word.known_vocabulary = addToColumn(word.known_vocabulary, req.body["known-vocabulary"]);
       word.notes = addToColumn(word.notes, req.body.notes);
       word.source = addToColumn(word.source, req.body.source);
 
       await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, radical_composition = ?, known_vocabulary = ?, notes = ?, source = ? WHERE jp = ?",
                    [word.en, word.known_readings, word.radical_composition, word.known_vocabulary, word.notes, word.source, word.jp]);
+
+      await updateKnownKanji(req.body.jp, word.radical_composition, db);
     } else if (table === VOCAB) {
 
       word.en = addToColumn(word.en, req.body.en);
@@ -172,10 +187,22 @@ app.post('/modifyWord', async function(req, res) {
           word.sentences.push(sentenceObj);
         }
       }
+
       word.sentences = JSON.stringify(word.sentences);
+      await updateKnownVocabulary(word.jp, word.kanji_composition, db);
 
       await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ?, notes = ?, source =?, word_type = ? WHERE jp = ?",
       [word.en, word.known_readings, word.kanji_composition, word.sentences, word.notes, word.source, word.word_type, word.jp]);
+
+      for (let i = 0; i < word.sentences.length; i++) {
+        for (let j = 0; j < word.sentences[i].vocab.length; j++) {
+          let foundWord = (await db.all("SELECT * FROM Vocabulary WHERE jp = ?", word.sentences[i].vocab[j]))[0];
+
+          if (!foundWord) {
+            await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", word.sentences[i].vocab[j]);
+          }
+        }
+      }
     }
     await db.close();
     res.json(word);
