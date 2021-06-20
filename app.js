@@ -194,12 +194,15 @@ app.post('/modifyWord', async function(req, res) {
       await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ?, notes = ?, source =?, word_type = ? WHERE jp = ?",
       [word.en, word.known_readings, word.kanji_composition, word.sentences, word.notes, word.source, word.word_type, word.jp]);
 
-      for (let i = 0; i < word.sentences.length; i++) {
-        for (let j = 0; j < word.sentences[i].vocab.length; j++) {
-          let foundWord = (await db.all("SELECT * FROM Vocabulary WHERE jp = ?", word.sentences[i].vocab[j]))[0];
+      let sentences = JSON.parse(word.sentences);
+      for (let i = 0; i < sentences.length; i++) {
+        let vocab = sentences[i].vocab;
+
+        for (let j = 0; j < vocab.length; j++) {
+          let foundWord = await db.get("SELECT * FROM Vocabulary WHERE jp = ?", vocab[j]);
 
           if (!foundWord) {
-            await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", word.sentences[i].vocab[j]);
+            await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", vocab[j]);
           }
         }
       }
