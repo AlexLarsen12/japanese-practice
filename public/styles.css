@@ -105,3 +105,17 @@ input {
 .hidden {
   display: none !important;
 }
+
+.furigana {
+  font-size: 12pt;
+}
+
+.inline-vocabulary {
+  display: inline;
+  flex-direction: column;
+  justify-items: center;
+}
+
+#sentence {
+  display: flex;
+}

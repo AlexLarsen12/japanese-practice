@@ -146,12 +146,15 @@ app.post('/modifyWord', async function(req, res) {
 
     if (table === RADICAL) {
       // can just ignore any english passed in!
+      if (!word.en) {
+        word.en = req.body.en;
+      }
       word.known_kanji = addToColumn(word.known_kanji, req.body["known-kanji"]);
       word.notes = addToColumn(word.notes, req.body.notes);
       word.source = addToColumn(word.source, req.body.source);
 
-      await db.run("UPDATE " + table + " SET known_kanji = ?, notes = ?, source = ? WHERE jp = ?",
-                   [word.known_kanji, word.notes, word.source, word.jp]);
+      await db.run("UPDATE " + table + " SET known_kanji = ?, notes = ?, source = ?, en = ? WHERE jp = ?",
+                   [word.known_kanji, word.notes, word.source, word.en, word.jp]);
 
     } else if (table === KANJI) {
 
