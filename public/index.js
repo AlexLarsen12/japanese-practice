@@ -321,9 +321,9 @@
 
   function populateWordInfo(word) {
     let parent = id("word-info");
+    parent.innerHTML = "";
     parent.className = "display-box"; // don't do this lol
     parent.classList.add(word.type);
-    parent.addEventListener("dblclick", removeWord);
 
     let jp = document.createElement("p");
     jp.textContent = "Japanese: " + word.jp;
@@ -334,24 +334,37 @@
 
     if (word.type === "radical") {
       let knownKanji = createTextBox(word.known_kanji, "Known Kanji: ");
-      if (knownKanji) parent.appendChild(knownKanji);
+      if (knownKanji) {
+        parent.appendChild(knownKanji); 
+        createSpans(knownKanji, "kanji-clickable");
+      }
+          
 
     } else if (word.type === "kanji") {
       let knownReadings = createTextBox(word.known_readings, "Known Readings: ");
       if (knownReadings) parent.appendChild(knownReadings);
 
       let knownVocab = createTextBox(word.known_vocabulary, "Known Vocabulary: ");
-      if (knownVocab) parent.appendChild(knownVocab);
+      if (knownVocab) {
+        parent.appendChild(knownVocab);
+        createSpans(knownVocab, "vocabulary-clickable"); 
+      }
 
       let radicalComposition = createTextBox(word.radical_composition, "Radical Composition: ");
-      if (radicalComposition) parent.appendChild(radicalComposition);
+      if (radicalComposition) {
+        parent.appendChild(radicalComposition);
+        createSpans(radicalComposition, "radical-clickable"); 
+      }
 
     } else if (word.type === "vocabulary") {
       let knownReadings = createTextBox(word.known_readings, "Known Readings: ");
       if (knownReadings) parent.appendChild(knownReadings);
 
       let kanjiComposition = createTextBox(word.kanji_composition, "Kanji Composition: ");
-      if (kanjiComposition) parent.appendChild(kanjiComposition);
+      if (kanjiComposition) {
+        parent.appendChild(kanjiComposition);
+        createSpans(kanjiComposition, "kanji-clickable"); 
+      }
 
       if (word.sentences.length > 0) {
         let sentenceDiv = document.createElement("div");
@@ -373,6 +386,7 @@
           let vocab = document.createElement("p");
           vocab.textContent = "Vocab involved: " + word.sentences[i].vocab.toString();
           sentenceParent.appendChild(vocab);
+          createSpans(vocab, "vocabulary-clickable");
 
           let sentenceJpEz = document.createElement("p");
           sentenceJpEz.textContent = "Japanese - No Kanji: " + word.sentences[i]["jp_simple"];
@@ -406,11 +420,53 @@
       id("submit").disabled = false;
     }); // this is ridiculously scuffed.
     parent.appendChild(modifyBtn);
+    
+    let deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "DELETE THIS WORD!";
+    deleteBtn.addEventListener("dblclick", removeWord);
+    parent.appendChild(deleteBtn);
+  }
+
+  function createSpans(p, type) {
+    let prependPart = p.textContent.split(":")[0];
+
+    let list = p.textContent.split(":")[1].split(",");
+    p.textContent = ": ";
+    for (let i = 0; i < list.length; i++) {
+      list[i] = list[i].trim();
+
+      p.innerHTML += "<span class='" + type + "'>" + list[i] + "</span>, "; // this is sketchy as well!
+    }
+    p.innerHTML = prependPart + p.innerHTML.substring(0, p.innerHTML.length - 2); // to avoid fenceposting
+
+    // come back
+    for (let i = 0; i < p.querySelectorAll("span").length; i++) {
+      p.querySelectorAll("span")[i].addEventListener("click", fetchMoreInfoFromSpan);
+    }
+  }
+
+  function fetchMoreInfoFromSpan() {
+    let word = this.textContent;
+    let wordType = this.classList[0].split("-")[0];
+
+    fetch('/word/' + word + "?type=" + wordType)
+      .then(statusCheck)
+      .then(resp => resp.json())
+      .then(populateWordInfo)
+      .catch(wordNotFound);
+  }
+
+  function wordNotFound(err) {
+    id("word-info").innerHTML = "";
+    let p = document.createElement("p");
+    p.textContent = err;
+
+    id("word-info").appendChild(p);
   }
 
   function createTextBox(content, text) {
     if (content.length > 0) {
-      if (typeof(content) === "string") content = [content]; // making the radical be a string!
+      if (typeof(content) === "string") content = [content]; // making the radical be a list!
       let p = document.createElement("p");
       p.textContent = text + content[0];
       for (let i = 1; i < content.length; i++) {
