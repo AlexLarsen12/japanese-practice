@@ -1,5 +1,4 @@
 "use strict";
-
 const express = require("express");
 const app = express();
 
@@ -10,6 +9,15 @@ app.use(multer().none());
 
 const sqlite3 = require("sqlite3");
 const sqlite = require("sqlite");
+
+const fs = require("fs").promises;
+
+const fetch = require("node-fetch");
+const { create } = require("domain");
+const { debuglog } = require("util");
+
+const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
+const WANIKANI = "https://api.wanikani.com/v2/";
 
 const WORD_TYPES = ["Radical", "Kanji", "Vocabulary"];
 const VOCAB = "Vocabulary";
@@ -243,6 +251,323 @@ app.get("/randomWord", async function(req, res) {
     res.status(500).send("There's an error!");
   }
 });
+
+// not set up for multiple fetch calls in the beginning... so, do that now.
+app.get("/syncWaniKani", async function(req, res) {
+  try {
+    let subjectType = req.query.type; // needs to be radical, kanji, vocabulary
+    if (!(subjectType === "radical" || subjectType === "kanji" || subjectType === "vocabulary")) {
+      throw new Error("u made an oopsies");
+    }
+
+    // initial fetches to get all the subject_ids that we need
+    let subjects = await recursiveFetchTime(WANIKANI + "assignments?srs_stages=5,6,7,8,9&subject_types=" + subjectType, []);
+    console.log(subjects.length);
+    console.log("This should take... around " + (((1100 * subjects.length) + 2020) / 60000).toFixed(2) + " minutes");
+
+    let bigSubjectObject = [];
+    // my rates are limited to 60 per minute... RIP
+    let delay = 1100 * ((subjects.length / 500) + 1);
+    for (let i = 0; i < subjects.length; i++) {
+      setTimeout(async function() {
+        let subjectRequest = await fetch(WANIKANI + "subjects/" + subjects[i], {
+          headers: {Authorization: "Bearer " + TSURUKAME}
+        })
+        subjectRequest = await subjectRequest.json();
+
+        let subjectObj;
+        if (subjectType === "radical") {
+          subjectObj = createRadicalResponse(subjectRequest);
+        } else if (subjectType === "kanji") {
+          subjectObj = createKanjiResponse(subjectRequest);
+        } else if (subjectType === "vocabulary") {
+          subjectObj = createVocabularyResponse(subjectRequest);
+        }
+
+        bigSubjectObject.push(subjectObj);
+        console.log("adding " + subjectObj.en + " " + subjectType + ". Number " + (i + 1) + " of " + subjects.length
+                    + ". " + (((i+1) / subjects.length) * 100).toFixed(2) + "% complete");
+      }, delay)
+      delay += 1010
+    }
+
+    setTimeout(async function() {
+      let filename = "radicals.txt";
+      if (subjectType === "kanji") {
+        filename = "kanji.txt";
+      } else if (subjectType === "vocabulary") {
+        filename = "vocabulary.txt";
+      }
+
+      await updateJSONFile(filename, bigSubjectObject)
+      res.send(bigSubjectObject);
+    }, delay + 1100);
+  }
+  catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+
+// this part is quite messy simple due to the very similar setups of the radicals and kanji and vocabulary...
+app.get('/syncTable', async function(req, res) {
+  try {
+    let subjectType = req.query.type; // needs to be radical, kanji, vocabulary
+    if (!(subjectType === "radical" || subjectType === "kanji" || subjectType === "vocabulary")) {
+      console.log(subjectType);
+      throw new Error("u made an oopsies");
+    }
+
+    let db = await getDBConnection();
+
+    let radicals = await fs.readFile("radicals.txt","utf8");
+    radicals = JSON.parse(radicals);
+    let kanjis = await fs.readFile("kanji.txt", "utf8");
+    kanjis = JSON.parse(kanjis);
+    let vocabulary = await fs.readFile("vocabulary.txt", "utf8");
+    vocabulary = JSON.parse(vocabulary);
+
+    let modifyCounter = 0;
+    let addCounter = 0;
+    if (subjectType === "radical") {
+      for (let radical of radicals) {
+
+        // adding in the correct known kanji
+        let actuallyKnownKanji = [];
+        for (let existingKanjiId of radical.kanji_ids) {
+          let knownKanji = findSubject(existingKanjiId, kanjis);
+          if (knownKanji) {
+            actuallyKnownKanji.push(knownKanji.id);
+          }
+        }
+        let kanjiFinal = [];
+        for (let actuallyReallyKnownKanji of actuallyKnownKanji) {
+          kanjiFinal.push(findSubject(actuallyReallyKnownKanji, kanjis).jp);
+        }
+        if (radical.jp !== null) {
+          if (await db.all("SELECT * FROM Radical WHERE jp = ?", radical.jp).length !== 0) {
+            await db.run("UPDATE Radical SET known_kanji = ? WHERE jp = ?", [JSON.stringify(kanjiFinal), radical.jp]);
+            modifyCounter++;
+           } else {
+            await db.run("INSERT INTO Radical (jp, en, source) VALUES(?, ?, ?, ?)", [radical.jp, radical.en.toLowerCase(), radical.level]);
+            addCounter++;
+           }
+        }
+      }
+    } else if (subjectType === "kanji") {
+      for (let kanji of kanjis) {
+        let kanjiEn = kanji.en.map(element => {
+          return element.toLowerCase();
+        });
+
+        // can actually assume we know all the radicals!! (which is true);
+        let radicalsList = [];
+        for (let knownRadical of kanji.radical_ids) {
+          radicalsList.push(findSubject(knownRadical, radicals).jp);
+        }
+        let radicalsListFinal = radicalsList.filter(element => {return element !== null});
+
+        // aaaaaaaaaaaa
+        let actuallyKnownVocab = [];
+        for (let existingVocabId of kanji.vocabulary_ids) { // CAN'T ASSUME i KNOW ALL THE VOCABULARY :(
+          let knownVocab = findSubject(existingVocabId, vocabulary);
+          if (knownVocab) {
+            actuallyKnownVocab.push(knownVocab.id);
+          }
+        }
+        let vocabFinal = [];
+        for (let actuallyReallyKnownVocab of actuallyKnownVocab) {
+          vocabFinal.push(findSubject(actuallyReallyKnownVocab, vocabulary).jp);
+        }
+
+        if ((await db.all("SELECT * FROM Kanji WHERE jp = ?", kanji.jp)).length!== 0) {
+          await db.run("UPDATE Kanji SET en = ?, known_readings = ?, radical_composition = ?, known_vocabulary = ?, source = ? WHERE jp = ?", [
+            JSON.stringify(kanjiEn), JSON.stringify(kanji.known_readings), JSON.stringify(radicalsListFinal),
+            JSON.stringify(vocabFinal), JSON.stringify(["WaniKani level " + kanji.level]), kanji.jp
+          ]);
+          modifyCounter++;
+        } else {
+          await db.run("INSERT INTO Kanji (jp, en, known_readings, radical_composition, known_vocabulary, source) VALUES(?, ?, ?, ?, ?, ?)", [
+            kanji.jp, JSON.stringify(kanjiEn), JSON.stringify(kanji.known_readings),
+            JSON.stringify(radicalsListFinal), JSON.stringify(vocabFinal), JSON.stringify(["WaniKani level " + kanji.level])
+          ]);
+          addCounter++;
+        }
+      }
+    } else if (subjectType === "vocabulary") {
+      for (let vocab of vocabulary) {
+        let vocabEn = vocab.en.map(element => {
+          return element.toLowerCase();
+        });
+
+
+        let kanjiList = [];
+        for (let knownKanji of vocab.kanji_ids) {
+          kanjiList.push(findSubject(knownKanji, kanjis).jp);
+        }
+
+        if ((await db.all("SELECT * FROM Vocabulary WHERE jp = ?", vocab.jp)).length !== 0) {
+          await db.run("UPDATE Vocabulary SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ?, source = ?, word_type = ? WHERE jp = ?", [
+            JSON.stringify(vocabEn), JSON.stringify(vocab.known_readings), JSON.stringify(kanjiList),
+            JSON.stringify(vocab.context_sentences), JSON.stringify(["WaniKani level " + vocab.level]),
+            JSON.stringify(vocab.word_type), vocab.jp
+          ]);
+          modifyCounter++;
+        } else {
+          await db.run("INSERT INTO Vocabulary (jp, en, known_readings, kanji_composition, sentences, source, word_type) VALUES(?, ?, ?, ?, ?, ?, ?)", [
+            vocab.jp, JSON.stringify(vocabEn), JSON.stringify(vocab.known_readings),
+            JSON.stringify(kanjiList), JSON.stringify(vocab.context_sentences),
+            JSON.stringify(["WaniKani level " + vocab.level]),
+            JSON.stringify(vocab.word_type)
+          ]);
+          addCounter++;
+        }
+      }
+    }
+    res.send("modified " + modifyCounter + " and added " + addCounter + " of " + subjectType);
+  } catch(err) {
+    res.send(err.message);
+  }
+});
+
+app.get("/funnyGoofyTest", async function(req, res) {
+  let contents = await fetch(WANIKANI + "subjects?ids=723,1209,1252", {
+    headers: {Authorization: "Bearer " + TSURUKAME}
+  });
+  contents = await contents.json();
+  res.send(contents);
+});
+
+
+// passed in a LIST with everything, will return the object that is necessary.
+function findSubject(subjectIdentifier, subjectList) {
+  for (let i = 0; i < subjectList.length; i++) {
+    if (subjectIdentifier === subjectList[i].id) {
+      return subjectList[i];
+    } else {
+    }
+  }
+}
+
+
+// combines ALL functionality.
+async function actuallySyncThings() {
+  // create big list
+  // List will still contain some numbers instead of content, will need to figure this out...
+  // write final thing to txt file
+  // update tables with content
+}
+
+async function addKanjiToTable(subjects) {
+
+}
+
+async function addVocabularyToTable(subjects) {
+
+}
+
+async function addRadicalsToTable(subjects) {
+  let counter = 0;
+  let db = await getDBConnection();
+  if (subjects[i].japanese !== null && (await db.all("SELECT * FROM Radical WHERE jp = ?", subjects[i].japanese)).length === 0) {
+    let qry = "INSERT INTO Radical (jp, en, type, source) VALUES(?, ?, ?, ?)";
+    await db.all(qry, [subjects[i].japanese, subjects[i].name.toLowerCase(), "radical", JSON.stringify(["Wanikani level " + subjects[i].level])]);
+    counter++;
+  }
+  return counter;
+}
+
+function createRadicalResponse(radical) {
+  return {
+    en: radical.data.meanings[0].meaning,
+    jp: radical.data.characters,
+    level: radical.data.level,
+    id: radical.id,
+    kanji_ids: radical.data.amalgamation_subject_ids
+  }
+}
+
+function createVocabularyResponse(vocab) {
+  let resp = {
+    id: vocab.id,
+    jp: vocab.data.characters,
+    kanji_ids: vocab.data.component_subject_ids,
+    context_sentences: vocab.data.context_sentences,
+    level: vocab.data.level,
+    word_type: vocab.data.parts_of_speech
+  }
+
+  for (let entry of vocab.data.meanings) {
+    if (!resp["en"]) {
+      resp["en"] = [entry.meaning]
+    } else {
+      resp["en"] = resp["en"].concat(entry.meaning);
+    }
+  }
+
+  for (let entry of vocab.data.readings) {
+    if (!resp["known_readings"]) {
+      resp["known_readings"] = [entry.reading]
+    } else {
+      resp["known_readings"] = resp["known_readings"].concat(entry.reading);
+    }
+  }
+  return resp;
+}
+
+function createKanjiResponse(kanji) {
+  let resp = {
+    id: kanji.id,
+    jp: kanji.data.characters,
+    radical_ids: kanji.data.component_subject_ids,
+    vocabulary_ids: kanji.data.amalgamation_subject_ids,
+    level: kanji.data.level
+  }
+
+  for (let entry of kanji.data.meanings) {
+    if (!resp["en"]) {
+      resp["en"] = [entry.meaning]
+    } else {
+      resp["en"] = resp["en"].concat(entry.meaning);
+    }
+  }
+
+  for (let entry of kanji.data.readings) {
+    if (!resp["known_readings"]) {
+      resp["known_readings"] = [entry.reading]
+    } else {
+      resp["known_readings"] = resp["known_readings"].concat(entry.reading);
+    }
+  }
+  return resp;
+}
+
+async function updateJSONFile(filename, listData) {
+  let fileContents = await fs.readFile(filename, "utf8");
+  if (!fileContents) {
+    await fs.writeFile(filename, JSON.stringify(listData, null, 2));
+  } else {
+    let newContents = JSON.parse(fileContents).concat(listData);
+    await fs.writeFile(filename, JSON.stringify(newContents, null, 2));
+  }
+}
+
+async function recursiveFetchTime(url, list) {
+  if (url !== null) {
+    let contents = await fetch(url, {
+      headers: {Authorization: "Bearer " + TSURUKAME}
+    });
+    contents = await contents.json();
+
+    for (let i = 0; i < contents.data.length; i++) {
+      list.push(contents.data[i].data.subject_id)
+    }
+
+    await recursiveFetchTime(contents.pages.next_url, list)
+    return list;
+  }
+}
 
 /** -- helper functions -- */
 

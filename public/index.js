@@ -335,10 +335,9 @@
     if (word.type === "radical") {
       let knownKanji = createTextBox(word.known_kanji, "Known Kanji: ");
       if (knownKanji) {
-        parent.appendChild(knownKanji); 
+        parent.appendChild(knownKanji);
         createSpans(knownKanji, "kanji-clickable");
       }
-          
 
     } else if (word.type === "kanji") {
       let knownReadings = createTextBox(word.known_readings, "Known Readings: ");
@@ -347,13 +346,13 @@
       let knownVocab = createTextBox(word.known_vocabulary, "Known Vocabulary: ");
       if (knownVocab) {
         parent.appendChild(knownVocab);
-        createSpans(knownVocab, "vocabulary-clickable"); 
+        createSpans(knownVocab, "vocabulary-clickable");
       }
 
       let radicalComposition = createTextBox(word.radical_composition, "Radical Composition: ");
       if (radicalComposition) {
         parent.appendChild(radicalComposition);
-        createSpans(radicalComposition, "radical-clickable"); 
+        createSpans(radicalComposition, "radical-clickable");
       }
 
     } else if (word.type === "vocabulary") {
@@ -363,7 +362,7 @@
       let kanjiComposition = createTextBox(word.kanji_composition, "Kanji Composition: ");
       if (kanjiComposition) {
         parent.appendChild(kanjiComposition);
-        createSpans(kanjiComposition, "kanji-clickable"); 
+        createSpans(kanjiComposition, "kanji-clickable");
       }
 
       if (word.sentences.length > 0) {
@@ -383,14 +382,17 @@
           sentenceEng.textContent = "English: " + word.sentences[i].en;
           sentenceParent.appendChild(sentenceEng);
 
-          let vocab = document.createElement("p");
-          vocab.textContent = "Vocab involved: " + word.sentences[i].vocab.toString();
-          sentenceParent.appendChild(vocab);
-          createSpans(vocab, "vocabulary-clickable");
+          // I accidentally updated all entries and they don't have the information below.. I might
+          // be able to add it back but definitely won't be doing so now.
 
-          let sentenceJpEz = document.createElement("p");
-          sentenceJpEz.textContent = "Japanese - No Kanji: " + word.sentences[i]["jp_simple"];
-          sentenceParent.appendChild(sentenceJpEz);
+          // let vocab = document.createElement("p");
+          // vocab.textContent = "Vocab involved: " + word.sentences[i].vocab.toString();
+          // sentenceParent.appendChild(vocab);
+          // createSpans(vocab, "vocabulary-clickable");
+
+          // let sentenceJpEz = document.createElement("p");
+          // sentenceJpEz.textContent = "Japanese - No Kanji: " + word.sentences[i]["jp_simple"];
+          // sentenceParent.appendChild(sentenceJpEz);
 
           sentenceDiv.appendChild(sentenceParent);
           sentenceDiv.appendChild(document.createElement("br"));
@@ -420,11 +422,12 @@
       id("submit").disabled = false;
     }); // this is ridiculously scuffed.
     parent.appendChild(modifyBtn);
-    
-    let deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "DELETE THIS WORD!";
-    deleteBtn.addEventListener("dblclick", removeWord);
-    parent.appendChild(deleteBtn);
+
+    // let deleteBtn = document.createElement("button");
+    // deleteBtn.textContent = "DELETE THIS WORD!";
+    // deleteBtn.addEventListener("dblclick", removeWord);
+    // parent.appendChild(deleteBtn);
+    // do not let anyone delete anything for now because why??
   }
 
   function createSpans(p, type) {
