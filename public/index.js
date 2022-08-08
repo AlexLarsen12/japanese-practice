@@ -12,7 +12,7 @@
       id("word-info").innerHTML = "";
       openPage("dictionary");
       id("search").value = "";
-      refreshDictionary();
+      // refreshDictionary();  just removed this, makes it quicker. Why would I need to refresh each time I click home?
     });
     id("word-addition").addEventListener("click", () => openPage("word-addition-parent"));
     id("study-btn").addEventListener("click", function() {
@@ -76,7 +76,7 @@
       listToMatch = resp.en;
     }
 
-    listToMatch.push(resp.jp);
+    // listToMatch.push(resp.jp); this is cheating.
 
     let dopamine = document.createElement("p");
     let matchMsg = "You didn't get it! Here are the meanings: " + listToMatch.toString();
@@ -375,7 +375,20 @@
           let sentenceParent = document.createElement("div");
 
           let sentenceJp = document.createElement("p");
-          sentenceJp.textContent = "Japanese: " + word.sentences[i].jp;
+          sentenceJp.textContent = "Japanese: ";
+
+          // go through and also make each kanji clickable? this section SCUFFED
+          const regex = /[ぁ-ゔゞァ-・ヽヾ゛゜ー。！？、]/
+          for (let character of word.sentences[i].jp) {
+            if (!character.match(regex)) { // probably a kanji?
+              sentenceJp.innerHTML += "<span class=kanji-clickable>" + character + "</span>";
+            } else {
+              sentenceJp.innerHTML += character;
+            }
+          }
+          for (let i = 0; i < sentenceJp.querySelectorAll("span").length; i++) {
+            sentenceJp.querySelectorAll("span")[i].addEventListener("click", fetchMoreInfoFromSpan);
+          }
           sentenceParent.appendChild(sentenceJp);
 
           let sentenceEng = document.createElement("p");

@@ -15,6 +15,9 @@ const fs = require("fs").promises;
 const fetch = require("node-fetch");
 const { create } = require("domain");
 const { debuglog } = require("util");
+const { stringify } = require("querystring");
+const { Console } = require("console");
+const { get } = require("http");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -141,6 +144,13 @@ app.post("/postWord", async function (req, res) {
     }
   }
 });
+
+app.get("/matchCloseness", async function(req, res) {
+  let word = "calisthenics";
+  let misspelling = "calisthenist"
+
+  res.send
+})
 
 app.post('/modifyWord', async function(req, res) {
   try {
@@ -308,8 +318,6 @@ app.get("/syncWaniKani", async function(req, res) {
   }
 });
 
-
-
 // this part is quite messy simple due to the very similar setups of the radicals and kanji and vocabulary...
 app.get('/syncTable', async function(req, res) {
   try {
@@ -432,11 +440,64 @@ app.get('/syncTable', async function(req, res) {
 });
 
 app.get("/funnyGoofyTest", async function(req, res) {
-  let contents = await fetch(WANIKANI + "subjects?ids=723,1209,1252", {
-    headers: {Authorization: "Bearer " + TSURUKAME}
-  });
-  contents = await contents.json();
-  res.send(contents);
+  // dummy code to send a good response
+  // let contents = await fetch(WANIKANI + "subjects?ids=723,1209,1252", {
+  //   headers: {Authorization: "Bearer " + TSURUKAME}
+  // });
+  // contents = await contents.json();
+  // res.send(contents);
+
+
+  // code to update the sources.
+  // let db = await getDBConnection();
+
+  // let oldSources = (await fs.readFile("oldsources.txt", "utf8")).split(/\r?\n/);
+  // let newSources = await db.all("SELECT * FROM Vocabulary ORDER BY id");
+
+  // for (let i = 0; i < oldSources.length; i++) {
+  //   let old = JSON.parse(oldSources[i]);
+  //   let improved = JSON.parse(newSources[i].source);
+
+  //   for (let entry of old) {
+  //     if (!improved.includes(entry)) {
+  //       improved.push(entry);
+  //     }
+  //   }
+  //   await db.run("UPDATE Vocabulary SET source=? WHERE jp = ?", [JSON.stringify(improved), newSources[i].jp]);
+  // }
+  // res.send("a");
+
+  // LOWERCASES A LIST!
+  // let db = await getDBConnection();
+  // let kanjis = await db.all("SELECT * FROM Kanji");
+  // console.log(kanjis);
+  // for (let kanji of kanjis) {
+  //   let english = JSON.parse(kanji.en);
+  //   english = english.map(element => {
+  //     return element.toLowerCase();
+  //   });
+  //   await db.run("UPDATE Kanji SET en = ? WHERE jp = ?", [JSON.stringify(english), kanji.jp]);
+  // }
+  // res.send("updated " + kanjis.length + " kanjis");
+
+  let db = await getDBConnection();
+  let calisthetics = await db.all("SELECT * FROM Vocabulary");
+
+
+  const regex = /[ぁ-ゔゞァ-・ヽヾ゛゜ー。！？、]/
+  for (let i = 0; i < 100; i++) {
+    let sentences = JSON.parse(calisthetics[i].sentences);
+
+    let sentence = sentences[i];
+    let jp = sentence.jp;
+    for (let character of jp) {
+      if (!character.match(regex)) {
+        console.log(character + " is kanji!");
+      }
+    }
+  }
+
+  res.send(calisthetics);
 });
 
 
