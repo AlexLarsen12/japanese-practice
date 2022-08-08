@@ -381,13 +381,11 @@
           const regex = /[ぁ-ゔゞァ-・ヽヾ゛゜ー。！？、]/
           for (let character of word.sentences[i].jp) {
             if (!character.match(regex)) { // probably a kanji?
-              sentenceJp.innerHTML += "<span class=kanji-clickable>" + character + "</span>";
+              let textNode = createSpan(character, "kanji-clickable");
+              sentenceJp.insertAdjacentElement("beforeend",  textNode);
             } else {
-              sentenceJp.innerHTML += character;
+              sentenceJp.appendChild(document.createTextNode(character));
             }
-          }
-          for (let i = 0; i < sentenceJp.querySelectorAll("span").length; i++) {
-            sentenceJp.querySelectorAll("span")[i].addEventListener("click", fetchMoreInfoFromSpan);
           }
           sentenceParent.appendChild(sentenceJp);
 
@@ -441,6 +439,16 @@
     // deleteBtn.addEventListener("dblclick", removeWord);
     // parent.appendChild(deleteBtn);
     // do not let anyone delete anything for now because why??
+  }
+
+  // takes a phrase/word/etc to be turned into a CLICKABLE span.
+  // you can just += this to whatever element's innerHTML you need to add it to.
+  function createSpan(p, type) {
+    let span = document.createElement("span");
+    span.classList.add(type);
+    span.textContent = p;
+    span.addEventListener("click", fetchMoreInfoFromSpan);
+    return span;
   }
 
   function createSpans(p, type) {
