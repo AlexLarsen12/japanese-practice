@@ -13,11 +13,6 @@ const sqlite = require("sqlite");
 const fs = require("fs").promises;
 
 const fetch = require("node-fetch");
-const { create } = require("domain");
-const { debuglog } = require("util");
-const { stringify } = require("querystring");
-const { Console } = require("console");
-const { get } = require("http");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -70,6 +65,8 @@ app.get("/allWords", async function(req, res) {
   }
 });
 
+
+// helperfunction for the "get all words endpoint";
 async function getAllWords() {
   let db = await getDBConnection();
   let radical = await db.all("SELECT * FROM Radical ORDER BY first_unlocked");
@@ -87,6 +84,7 @@ async function getAllWords() {
   return radical.concat(kanji.concat(vocab));
 }
 
+// should rename, but basically it will ADD a new word based on the forms in the front-end.
 app.post("/postWord", async function (req, res) {
   res.type("text");
 
@@ -145,6 +143,9 @@ app.post("/postWord", async function (req, res) {
   }
 });
 
+
+// new endpoint (should maybe be post) that will try to see if you got the word right
+// https://en.wikipedia.org/wiki/Levenshtein_distance
 app.get("/matchCloseness", async function(req, res) {
   let word = "calisthenics";
   let misspelling = "calisthenist"
@@ -152,6 +153,7 @@ app.get("/matchCloseness", async function(req, res) {
   res.send
 })
 
+// will modify a known word in the database.
 app.post('/modifyWord', async function(req, res) {
   try {
     let db = await getDBConnection();
@@ -235,6 +237,7 @@ app.post('/modifyWord', async function(req, res) {
   }
 });
 
+// will remove a known word from the database.
 app.post('/removeWord', async function(req, res) {
 
   try {
@@ -253,6 +256,8 @@ app.post('/removeWord', async function(req, res) {
   }
 });
 
+
+// grabs a random word (can be vocab kanji or radical). Usually used with testing function.
 app.get("/randomWord", async function(req, res) {
   try {
     let words = await getAllWords();
@@ -262,8 +267,12 @@ app.get("/randomWord", async function(req, res) {
   }
 });
 
-// not set up for multiple fetch calls in the beginning... so, do that now.
-app.get("/syncWaniKani", async function(req, res) {
+
+// used to SYNC completely WaniKani and my program. Doesn't work with large batches,
+// and should never need to be used again. Also it only ADDS on to existing .txt files so you
+// may get a lot of duplicated unless you completely wipe the .txt files. It is meant more as a
+// blank slate sync.
+app.post("/syncWaniKani", async function(req, res) {
   try {
     let subjectType = req.query.type; // needs to be radical, kanji, vocabulary
     if (!(subjectType === "radical" || subjectType === "kanji" || subjectType === "vocabulary")) {
@@ -318,7 +327,8 @@ app.get("/syncWaniKani", async function(req, res) {
   }
 });
 
-// this part is quite messy simple due to the very similar setups of the radicals and kanji and vocabulary...
+// used to actually sync the information from the .txt files into my database.
+// realisitcally should never be used again as long as I maintain the current website.
 app.get('/syncTable', async function(req, res) {
   try {
     let subjectType = req.query.type; // needs to be radical, kanji, vocabulary
@@ -439,6 +449,9 @@ app.get('/syncTable', async function(req, res) {
   }
 });
 
+// the thing I use to test different endpoints. Most of the code does very specific things and I
+// should save all of it in somewhere  for future use. Most of it is to test functionality of
+// wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
   // dummy code to send a good response
   // let contents = await fetch(WANIKANI + "subjects?ids=723,1209,1252", {
@@ -480,25 +493,89 @@ app.get("/funnyGoofyTest", async function(req, res) {
   // }
   // res.send("updated " + kanjis.length + " kanjis");
 
-  let db = await getDBConnection();
-  let calisthetics = await db.all("SELECT * FROM Vocabulary");
+  // let db = await getDBConnection();
+  // let calisthetics = await db.all("SELECT * FROM Vocabulary");
 
 
-  const regex = /[ぁ-ゔゞァ-・ヽヾ゛゜ー。！？、]/
-  for (let i = 0; i < 100; i++) {
-    let sentences = JSON.parse(calisthetics[i].sentences);
+  // for (let i = 0; i < 100; i++) {
+  //   let sentences = JSON.parse(calisthetics[i].sentences);
 
-    let sentence = sentences[i];
-    let jp = sentence.jp;
-    for (let character of jp) {
-      if (!character.match(regex)) {
-        console.log(character + " is kanji!");
-      }
-    }
+  //   let sentence = sentences[i];
+  //   let jp = sentence.jp;
+  //   for (let character of jp) {
+  //     if (!character.match(regex)) {
+  //       console.log(character + " is kanji!");
+  //     }
+  //   }
+  // }
+
+  // get data after last update. want to have the start time be BEFORE I started doing anything...
+  let dataAfterLastRequest = await fetch(WANIKANI + "assignments?updated_after=2022-08-14T13:19:00-07:00", {
+      headers: {Authorization: "Bearer " + TSURUKAME}
+    });
+  dataAfterLastRequest = (await dataAfterLastRequest.json()).data;
+
+  let vocabData = JSON.parse(await fs.readFile("vocabulary.txt", "utf8"));
+  let vocabDictionary = {};
+  for (let vocab of vocabData) {
+    vocabDictionary[vocab.id] = vocab;
   }
 
-  res.send(calisthetics);
+  let radicalData = JSON.parse(await fs.readFile("radicals.txt", "utf8"));
+  let radicalDictionary = {};
+  for (let radical of radicalData) {
+    radicalDictionary[radical.id] = radical;
+  }
+
+  let kanjiData = JSON.parse(await fs.readFile("kanji.txt", "utf8"));
+  let kanjiDictionary = {};
+  for (let kanji of kanjiData) {
+    kanjiDictionary[kanji.id] = kanji;
+  }
+
+
+  // This is the start of a way to loop through the new data after reviews aND i CAN figure out what I need to add or not add.
+  for (let entry of dataAfterLastRequest) {
+    let subjectType = entry.data.subject_type;
+
+    if (subjectType === "vocabulary") {
+      await checkSubjectAndGrabIfDoesntExist(subjectType, vocabDictionary, entry)
+    } else if (subjectType === "kanji") {
+      await checkSubjectAndGrabIfDoesntExist(subjectType, kanjiDictionary, entry);
+    } else if (subjectType === "radical") {
+      await checkSubjectAndGrabIfDoesntExist(subjectType, radicalDictionary, entry);
+    }
+  }
+  res.send(dataAfterLastRequest);
 });
+
+
+app.get("/testing2", function(req, res) {
+
+  res.send(new Date());
+});
+
+async function checkSubjectAndGrabIfDoesntExist(subjectType, subjectDictionary, subject) {
+  if(subjectDictionary[subject.data.subject_id]) {
+    console.log("I already know this " + subjectType + "(" + subjectDictionary[subject.data.subject_id].jp + "). The new SRS level is: " + subject.data.srs_stage);
+  } else {
+    console.log("");
+    console.log("This " + subjectType + " is new! It's SRS is now: " + subject.data.srs_stage);
+    if (subject.data.srs_stage >= 5) {
+      // I should add into the respective .txt file and add to my database here!
+      console.log("Since the " + subjectType + " is higher than 5, it's at least Guru! And I can consider it learned!");
+      let newWord = await fetch(WANIKANI + "subjects/" + subject.data.subject_id, {
+        headers: {Authorization: "Bearer " + TSURUKAME}
+      });
+      newWord = await newWord.json();
+      console.log("The new learned word is: " + newWord.data.characters);
+      console.log("");
+    } else {
+      console.log("This " + subjectType + " does not have a WaniKani SRS level of 5 or higher, so it cannot be considered learned!");
+      console.log("");
+    }
+  }
+}
 
 
 // passed in a LIST with everything, will return the object that is necessary.
@@ -509,34 +586,6 @@ function findSubject(subjectIdentifier, subjectList) {
     } else {
     }
   }
-}
-
-
-// combines ALL functionality.
-async function actuallySyncThings() {
-  // create big list
-  // List will still contain some numbers instead of content, will need to figure this out...
-  // write final thing to txt file
-  // update tables with content
-}
-
-async function addKanjiToTable(subjects) {
-
-}
-
-async function addVocabularyToTable(subjects) {
-
-}
-
-async function addRadicalsToTable(subjects) {
-  let counter = 0;
-  let db = await getDBConnection();
-  if (subjects[i].japanese !== null && (await db.all("SELECT * FROM Radical WHERE jp = ?", subjects[i].japanese)).length === 0) {
-    let qry = "INSERT INTO Radical (jp, en, type, source) VALUES(?, ?, ?, ?)";
-    await db.all(qry, [subjects[i].japanese, subjects[i].name.toLowerCase(), "radical", JSON.stringify(["Wanikani level " + subjects[i].level])]);
-    counter++;
-  }
-  return counter;
 }
 
 function createRadicalResponse(radical) {
