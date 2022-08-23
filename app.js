@@ -613,10 +613,21 @@ async function checkSubjectAndGrabIfDoesntExist(subject) {
         }
 
       } else if (subjectType === "vocabulary") {
+
+        // cringe fix but I think it works
+        let actualContextSentences = [];
+        for (let sentence of finalThing.context_sentences) {
+          actualContextSentences.push[{
+            en: sentence.en,
+            jp: sentence.ja
+          }];
+        };
+
+        // WAIT..... can't insert new stuff without fixing the sentences lol.
         // simple insert into database. We can assume we know all the kanji_ids because that's the only way to unlock them.
         await db.run("INSERT INTO Vocabulary (jp, en, known_readings, kanji_composition, sentences, source, word_type) VALUES(?, ?, ?, ?, ?, ?, ?)", [
           finalThing.jp, JSON.stringify(finalThing.en), JSON.stringify(finalThing.known_readings),
-          JSON.stringify(finalThing.kanji_ids.map(id => WORDS_DICT[id].jp)), JSON.stringify(finalThing.context_sentences),
+          JSON.stringify(finalThing.kanji_ids.map(id => WORDS_DICT[id].jp)), JSON.stringify(actualContextSentences),
           JSON.stringify(["WaniKani level " + finalThing.level]), JSON.stringify(finalThing.word_type)
         ]);
 

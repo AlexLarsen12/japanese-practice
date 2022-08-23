@@ -115001,7 +115001,7 @@
     "context_sentences": [
       {
         "en": "\"So what did you think of the proposal?\" \"Well, I think it was just okay.\"",
-        "ja": "「提案はどうだった？」「うーん。まあまあって感じかな。」"
+        "jp": "「提案はどうだった？」「うーん。まあまあって感じかな。」"
       }
     ],
     "level": 22,
@@ -115028,7 +115028,7 @@
     "context_sentences": [
       {
         "en": "This inn has a reserved hot spring.",
-        "ja": "この宿には、貸し切りの温泉があります。"
+        "jp": "この宿には、貸し切りの温泉があります。"
       }
     ],
     "level": 27,
@@ -115053,7 +115053,7 @@
     "context_sentences": [
       {
         "en": "It may be a little late, but I started carrying around my own pair of chopsticks.",
-        "ja": "今更ですが、マイ箸を持ち歩き始めました。"
+        "jp": "今更ですが、マイ箸を持ち歩き始めました。"
       }
     ],
     "level": 32,
