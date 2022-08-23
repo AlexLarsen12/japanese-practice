@@ -507,6 +507,7 @@ app.get("/updateLastVisited",  async function(req, res) {
   });
 });
 
+// this function name is no longer aptly named. It does a lot of stuff. Need to refactor.
 async function checkSubjectAndGrabIfDoesntExist(subject) {
   let subjectType = subject.data.subject_type;
   let returnWord = {};
@@ -614,19 +615,21 @@ async function checkSubjectAndGrabIfDoesntExist(subject) {
 
       } else if (subjectType === "vocabulary") {
 
-        // cringe fix but I think it works
+        // cringe fix but I think it works. Update: IT DOESN't
         let actualContextSentences = [];
+        console.log(finalThing.context_sentences);
         for (let sentence of finalThing.context_sentences) {
           actualContextSentences.push[{
             en: sentence.en,
             jp: sentence.ja
           }];
         };
+        let lowerCaseReadings = finalThing.en.map(word => word.toLowerCase());
 
         // WAIT..... can't insert new stuff without fixing the sentences lol.
         // simple insert into database. We can assume we know all the kanji_ids because that's the only way to unlock them.
         await db.run("INSERT INTO Vocabulary (jp, en, known_readings, kanji_composition, sentences, source, word_type) VALUES(?, ?, ?, ?, ?, ?, ?)", [
-          finalThing.jp, JSON.stringify(finalThing.en), JSON.stringify(finalThing.known_readings),
+          finalThing.jp, JSON.stringify(lowerCaseReadings), JSON.stringify(finalThing.known_readings),
           JSON.stringify(finalThing.kanji_ids.map(id => WORDS_DICT[id].jp)), JSON.stringify(actualContextSentences),
           JSON.stringify(["WaniKani level " + finalThing.level]), JSON.stringify(finalThing.word_type)
         ]);

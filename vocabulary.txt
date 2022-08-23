@@ -115068,5 +115068,72 @@
     "known_readings": [
       "いまさら"
     ]
+  },
+  {
+    "id": 7573,
+    "jp": "表",
+    "kanji_ids": [
+      720
+    ],
+    "context_sentences": [
+      {
+        "en": "Please paint the front pink.",
+        "jp": "表はピンク色にぬってください。"
+      },
+      {
+        "en": "Koichi's public face is the president of Tofugu, but his private face is the most well-known juggler in the world.",
+        "jp": "コウイチの表のかおはトーフグ社長であるが、うらのかおは世界でも有数のジャグリングせん手である。"
+      },
+      {
+        "en": "Which side of a ten yen coin is the face?",
+        "jp": "十円玉の表はどちらですか？"
+      }
+    ],
+    "level": 9,
+    "word_type": [
+      "independent noun"
+    ],
+    "en": [
+      "Front",
+      "Exterior",
+      "Face",
+      "Outside",
+      "Appearance"
+    ],
+    "known_readings": [
+      "おもて"
+    ]
+  },
+  {
+    "id": 8741,
+    "jp": "部首",
+    "kanji_ids": [
+      721,
+      645
+    ],
+    "context_sentences": [
+      {
+        "en": "What is this kanji’s radical?",
+        "jp": "このかん字の部首は何ですか？"
+      },
+      {
+        "en": "Someone who laughs over radicals will eventually cry over radicals.",
+        "jp": "部首をわらうものは部首になく。"
+      },
+      {
+        "en": "I remember all of the radicals.",
+        "jp": "私は全部の部首を覚えています。"
+      }
+    ],
+    "level": 9,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Radical"
+    ],
+    "known_readings": [
+      "ぶしゅ"
+    ]
   }
 ]

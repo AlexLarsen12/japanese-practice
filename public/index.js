@@ -76,7 +76,7 @@
       listToMatch = resp.en;
     }
 
-    // listToMatch.push(resp.jp); this is cheating.
+    listToMatch.push(resp.jp);
 
     let dopamine = document.createElement("p");
     let matchMsg = "You didn't get it! Here are the meanings: " + listToMatch.toString();
