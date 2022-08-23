@@ -11,8 +11,10 @@ const sqlite3 = require("sqlite3");
 const sqlite = require("sqlite");
 
 const fs = require("fs").promises;
+const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
+const e = require("express");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -21,6 +23,23 @@ const WORD_TYPES = ["Radical", "Kanji", "Vocabulary"];
 const VOCAB = "Vocabulary";
 const KANJI = "Kanji";
 const RADICAL = "Radical";
+
+
+// These are super easy ways to have a global object that stores a subject_id => object with good info.
+// only question is how do we keep it up to date after the server is initialized.
+const WORDS_DICT = createDict(["radicals.txt", "kanji.txt", "vocabulary.txt"]);
+
+// find out if there's a better way to do this.... because await is giving me problems.
+function createDict(files) {
+  let  dict = {}
+  for (let file of files) {
+    let content = JSON.parse(fs_sync.readFileSync(file, "utf8"));
+    for (let word of content) {
+      dict[word.id] = word;
+    }
+  }
+  return dict;
+}
 
 // Returns the word that is specified. Requires also query parameter of "type" to be passed in.
 // "type" can be - "vocabulary", "kanji", or "radical".
@@ -150,7 +169,7 @@ app.get("/matchCloseness", async function(req, res) {
   let word = "calisthenics";
   let misspelling = "calisthenist"
 
-  res.send
+  res.send("lol");
 })
 
 // will modify a known word in the database.
@@ -289,7 +308,7 @@ app.post("/syncWaniKani", async function(req, res) {
     let delay = 1100 * ((subjects.length / 500) + 1);
     for (let i = 0; i < subjects.length; i++) {
       setTimeout(async function() {
-        let subjectRequest = await fetch(WANIKANI + "subjects/" + subjects[i], {
+        let subjectRequest = await fetch(WANIKANI + "subjects/" + subjects[i].subject_id, { // THIS COULD BE BROKEN.. MADE CHANGES TO recursiveFetchTime;
           headers: {Authorization: "Bearer " + TSURUKAME}
         })
         subjectRequest = await subjectRequest.json();
@@ -453,129 +472,195 @@ app.get('/syncTable', async function(req, res) {
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
-  // dummy code to send a good response
-  // let contents = await fetch(WANIKANI + "subjects?ids=723,1209,1252", {
-  //   headers: {Authorization: "Bearer " + TSURUKAME}
-  // });
-  // contents = await contents.json();
-  // res.send(contents);
 
 
-  // code to update the sources.
-  // let db = await getDBConnection();
-
-  // let oldSources = (await fs.readFile("oldsources.txt", "utf8")).split(/\r?\n/);
-  // let newSources = await db.all("SELECT * FROM Vocabulary ORDER BY id");
-
-  // for (let i = 0; i < oldSources.length; i++) {
-  //   let old = JSON.parse(oldSources[i]);
-  //   let improved = JSON.parse(newSources[i].source);
-
-  //   for (let entry of old) {
-  //     if (!improved.includes(entry)) {
-  //       improved.push(entry);
-  //     }
-  //   }
-  //   await db.run("UPDATE Vocabulary SET source=? WHERE jp = ?", [JSON.stringify(improved), newSources[i].jp]);
-  // }
-  // res.send("a");
-
-  // LOWERCASES A LIST!
-  // let db = await getDBConnection();
-  // let kanjis = await db.all("SELECT * FROM Kanji");
-  // console.log(kanjis);
-  // for (let kanji of kanjis) {
-  //   let english = JSON.parse(kanji.en);
-  //   english = english.map(element => {
-  //     return element.toLowerCase();
-  //   });
-  //   await db.run("UPDATE Kanji SET en = ? WHERE jp = ?", [JSON.stringify(english), kanji.jp]);
-  // }
-  // res.send("updated " + kanjis.length + " kanjis");
-
-  // let db = await getDBConnection();
-  // let calisthetics = await db.all("SELECT * FROM Vocabulary");
+});
 
 
-  // for (let i = 0; i < 100; i++) {
-  //   let sentences = JSON.parse(calisthetics[i].sentences);
+// unlessing I'm learning 60+ new words (guru+) with each fetch... this should run fine.
+app.get("/updateLastVisited",  async function(req, res) {
+  let updatedDate = (await fs.readFile("lastUpdated.txt", "utf-8")).split("\n");
+  let lastDate = updatedDate[updatedDate.length - 1]; // should be: updatedDate.length - 1, but for testing it's 0
+  // do stuff from last date onward...
 
-  //   let sentence = sentences[i];
-  //   let jp = sentence.jp;
-  //   for (let character of jp) {
-  //     if (!character.match(regex)) {
-  //       console.log(character + " is kanji!");
-  //     }
-  //   }
-  // }
-
-  // get data after last update. want to have the start time be BEFORE I started doing anything...
-  let dataAfterLastRequest = await fetch(WANIKANI + "assignments?updated_after=2022-08-14T13:19:00-07:00", {
-      headers: {Authorization: "Bearer " + TSURUKAME}
-    });
-  dataAfterLastRequest = (await dataAfterLastRequest.json()).data;
-
-  let vocabData = JSON.parse(await fs.readFile("vocabulary.txt", "utf8"));
-  let vocabDictionary = {};
-  for (let vocab of vocabData) {
-    vocabDictionary[vocab.id] = vocab;
-  }
-
-  let radicalData = JSON.parse(await fs.readFile("radicals.txt", "utf8"));
-  let radicalDictionary = {};
-  for (let radical of radicalData) {
-    radicalDictionary[radical.id] = radical;
-  }
-
-  let kanjiData = JSON.parse(await fs.readFile("kanji.txt", "utf8"));
-  let kanjiDictionary = {};
-  for (let kanji of kanjiData) {
-    kanjiDictionary[kanji.id] = kanji;
-  }
+  let url = WANIKANI + "assignments?updated_after=" + lastDate;
+  let assignments = await recursiveFetchTime(url, []); // hopefully this takes only like... 3 fetches max.
 
 
-  // This is the start of a way to loop through the new data after reviews aND i CAN figure out what I need to add or not add.
-  for (let entry of dataAfterLastRequest) {
-    let subjectType = entry.data.subject_type;
-
-    if (subjectType === "vocabulary") {
-      await checkSubjectAndGrabIfDoesntExist(subjectType, vocabDictionary, entry)
-    } else if (subjectType === "kanji") {
-      await checkSubjectAndGrabIfDoesntExist(subjectType, kanjiDictionary, entry);
-    } else if (subjectType === "radical") {
-      await checkSubjectAndGrabIfDoesntExist(subjectType, radicalDictionary, entry);
+  let addedWords = [];
+  // we have all of our assignments!!
+  for (let entry of assignments) {
+    let addedWord = await checkSubjectAndGrabIfDoesntExist(entry)
+    if (Object.keys(addedWord).length !== 0) {
+      addedWords.push(addedWord);
     }
   }
-  res.send(dataAfterLastRequest);
+
+  // we've updated everything so we can say the last time we updated!
+  let now = (new Date()).toISOString();
+  await fs.appendFile("lastUpdated.txt", "\n" + now);
+
+  res.json({
+    last_updated: now,
+    length: addedWords.length,
+    words: addedWords
+  });
 });
 
-
-app.get("/testing2", function(req, res) {
-
-  res.send(new Date());
-});
-
-async function checkSubjectAndGrabIfDoesntExist(subjectType, subjectDictionary, subject) {
-  if(subjectDictionary[subject.data.subject_id]) {
-    console.log("I already know this " + subjectType + "(" + subjectDictionary[subject.data.subject_id].jp + "). The new SRS level is: " + subject.data.srs_stage);
-  } else {
+async function checkSubjectAndGrabIfDoesntExist(subject) {
+  let subjectType = subject.data.subject_type;
+  let returnWord = {};
+  if(WORDS_DICT[subject.data.subject_id]) { // word exists, can basically ignore.
+    console.log("I already know this " + subjectType + "(" + WORDS_DICT[subject.data.subject_id].jp + "). The new SRS level is: " + subject.data.srs_stage);
+  } else { // new word moment
     console.log("");
     console.log("This " + subjectType + " is new! It's SRS is now: " + subject.data.srs_stage);
     if (subject.data.srs_stage >= 5) {
-      // I should add into the respective .txt file and add to my database here!
       console.log("Since the " + subjectType + " is higher than 5, it's at least Guru! And I can consider it learned!");
       let newWord = await fetch(WANIKANI + "subjects/" + subject.data.subject_id, {
         headers: {Authorization: "Bearer " + TSURUKAME}
       });
       newWord = await newWord.json();
       console.log("The new learned word is: " + newWord.data.characters);
-      console.log("");
+
+      // THE WORD IS UPDATED NOW IN THE THING
+      let finalThing
+      if (subjectType === "radical") {
+        finalThing = createRadicalResponse(newWord);
+        updateJSONFile("radicals.txt", [finalThing]);
+      } else if (subjectType === "kanji") {
+        finalThing = createKanjiResponse(newWord);
+        updateJSONFile("kanji.txt", [finalThing]);
+
+      } else if (subjectType === "vocabulary") {
+        finalThing = createVocabularyResponse(newWord)
+        updateJSONFile("vocabulary.txt", [finalThing]);
+      }
+      WORDS_DICT[newWord.id] = finalThing; // making sure our internal state is the same thing as our words!
+
+
+      let db = await getDBConnection();
+      if (subjectType === "radical") {
+        // can't assume we know all the kanji yet, so we just need the one's that we know!
+        let kanjiList = [];
+        for (let kanji of finalThing.kanji_ids) {
+          if (WORDS_DICT[kanji]) {
+            kanjiList.push(WORDS_DICT[kanji].jp);
+          }
+        }
+
+        // simple insert into database
+        await db.run("INSERT INTO Radical (jp, en, known_kanji, source) VALUES(?, ?, ?, ?)", [
+          finalThing.jp, finalThing.en, JSON.stringify(kanjiList),
+           JSON.stringify(["WaniKani level " + finalThing.level])
+        ]);
+
+        // now update the kanji that have this radical!
+        for (let kanji of kanjiList) {
+          let results = await db.get("SELECT * FROM Kanji WHERE jp = ?", [kanji]);
+          if (results) { // it exists and we need to update
+            let dbRadicalList = JSON.parse(results.radical_composition);
+            if (!dbRadicalList.includes(finalThing.jp)) {
+              dbRadicalList.push(finalThing.jp);
+            }
+            await db.run("UPDATE Kanji SET radical_composition = ? WHERE jp = ?", [JSON.stringify(dbRadicalList), kanji]);
+          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
+            console.log("welp idk this kanji yet!");
+          }
+        }
+
+      } else if (subjectType === "kanji") {
+        // can ignore radical because they have to be guru+ (at one point) if I'm adding a vocab
+        let vocabList = [];
+        for (let vocab of finalThing.vocabulary_ids) {
+          if (WORDS_DICT[vocab]) {
+            vocabList.push(WORDS_DICT[vocab].jp);
+          }
+        } // now have a LIST of all the vocabulary involved with our kanji! we can add to the table.
+
+        // simple insertion into database. can assume we know all radicals because that's the only way to unlock the kanji.
+        await db.run("INSERT INTO Kanji (jp, en, known_readings, radical_composition, known_vocabulary, source VALUES(?, ?, ?, ?, ?, ?)", [
+          finalThing.jp, JSON.stringify(finalThing.en), JSON.stringify(finalThing.known_readings,
+            JSON.stringify(finalThing.radical_ids.map(id => WORDS_DICT[id]).jp),
+            JSON.stringify(vocabList),  JSON.stringify["WaniKani level " + finalThing.level])
+        ]);
+
+        //welp... now we need to update both RADICAL and VOCAB to have this kanji.
+        for (let radical of finalThing.radical_ids) {
+          let results = await db.get("SELECT * FROM Radical WHERE jp = ?", [WORDS_DICT[radical].jp]);
+          if (results) { // it exists and we might need to update
+            let dbKanjiList = JSON.parse(results.known_kanji);
+            if (!dbKanjiList.includes(finalThing.jp)) {
+              dbKanjiList.push(finalThing.jp);
+            }
+            await db.run("UPDATE Radical SET known_kanji = ? WHERE jp = ?", [JSON.stringify(dbKanjiList), WORDS_DICT[radical].jp]);
+          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
+            console.log("welp idk this radical yet!"); // this should be impossible.
+          }
+        }
+
+        for (let vocab of vocabList) {
+          let results = await db.get("SELECT * FROM Kanji WHERE jp = ?", [vocab]);
+          if (results) { // it exists and we might need to update
+            let dbKanjiList = JSON.parse(results.kanji_composition);
+            if (!dbKanjiList.includes(finalThing.jp)) {
+              dbKanjiList.push(finalThing.jp);
+            }
+            await db.run("UPDATE Vocabulary SET kanji_composition = ? WHERE jp = ?", [JSON.stringify(dbKanjiList), vocab]);
+          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
+            console.log("welp idk this vocab yet!");
+          }
+        }
+
+      } else if (subjectType === "vocabulary") {
+        // simple insert into database. We can assume we know all the kanji_ids because that's the only way to unlock them.
+        await db.run("INSERT INTO Vocabulary (jp, en, known_readings, kanji_composition, sentences, source, word_type) VALUES(?, ?, ?, ?, ?, ?, ?)", [
+          finalThing.jp, JSON.stringify(finalThing.en), JSON.stringify(finalThing.known_readings),
+          JSON.stringify(finalThing.kanji_ids.map(id => WORDS_DICT[id].jp)), JSON.stringify(finalThing.context_sentences),
+          JSON.stringify(["WaniKani level " + finalThing.level]), JSON.stringify(finalThing.word_type)
+        ]);
+
+        // now update the kanji that have this vocab!!
+        for (let kanji of finalThing.kanji_ids) {
+          let results = await db.get("SELECT * FROM Kanji WHERE jp = ?", [WORDS_DICT[kanji].jp]);
+          if (results) { // it exists and we need to update
+            let dbVocabList = JSON.parse(results.known_vocabulary);
+            if (!dbVocabList.includes(finalThing.jp)) {
+              dbVocabList.push(finalThing.jp);
+            }
+            await db.run("UPDATE Kanji SET known_vocabulary = ? WHERE jp = ?", [JSON.stringify(dbVocabList), WORDS_DICT[kanji].jp]);
+          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
+            console.log("welp idk this kanji yet!");
+          }
+        }
+      }
+      returnWord.jp = newWord.data.characters;
+      returnWord.subject_type = subjectType;
     } else {
       console.log("This " + subjectType + " does not have a WaniKani SRS level of 5 or higher, so it cannot be considered learned!");
-      console.log("");
     }
+    console.log("");
   }
+  return returnWord;
 }
+/*
+{
+  subject_type (string) -- ALL
+  subject_id (integer/string) -- ALL
+  jp (string) -- ALL
+  en (list/string) - ALL (string only for radical)
+  known_kanji (list) -- only RADICAL
+  source (list) -- ALL
+  known_readings -- KANJI and VOCAB
+  radical_composition -- only KANJI
+  known_vocabulary -- only KANJI
+  kanji_composition -- only VOCAB
+  sentences -- only VOCAB
+  word_type -- only VOCAB
+}
+*/
+
+
 
 
 // passed in a LIST with everything, will return the object that is necessary.
@@ -663,6 +748,8 @@ async function updateJSONFile(filename, listData) {
   }
 }
 
+
+// should make this general so I can use it for any request that queries the API
 async function recursiveFetchTime(url, list) {
   if (url !== null) {
     let contents = await fetch(url, {
@@ -671,7 +758,7 @@ async function recursiveFetchTime(url, list) {
     contents = await contents.json();
 
     for (let i = 0; i < contents.data.length; i++) {
-      list.push(contents.data[i].data.subject_id)
+      list.push(contents.data[i]); //can also do contents.data[i].data if we need less info
     }
 
     await recursiveFetchTime(contents.pages.next_url, list)

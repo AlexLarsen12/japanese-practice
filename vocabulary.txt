@@ -114990,5 +114990,83 @@
     "known_readings": [
       "せいじゅく"
     ]
+  },
+  {
+    "id": 4565,
+    "jp": "提案",
+    "kanji_ids": [
+      1181,
+      1163
+    ],
+    "context_sentences": [
+      {
+        "en": "\"So what did you think of the proposal?\" \"Well, I think it was just okay.\"",
+        "ja": "「提案はどうだった？」「うーん。まあまあって感じかな。」"
+      }
+    ],
+    "level": 22,
+    "word_type": [
+      "noun",
+      "する verb"
+    ],
+    "en": [
+      "Proposition",
+      "Proposal",
+      "Suggestion"
+    ],
+    "known_readings": [
+      "ていあん"
+    ]
+  },
+  {
+    "id": 5083,
+    "jp": "貸し切り",
+    "kanji_ids": [
+      1324,
+      502
+    ],
+    "context_sentences": [
+      {
+        "en": "This inn has a reserved hot spring.",
+        "ja": "この宿には、貸し切りの温泉があります。"
+      }
+    ],
+    "level": 27,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Reserved",
+      "Reservation"
+    ],
+    "known_readings": [
+      "かしきり"
+    ]
+  },
+  {
+    "id": 5607,
+    "jp": "今更",
+    "kanji_ids": [
+      497,
+      1431
+    ],
+    "context_sentences": [
+      {
+        "en": "It may be a little late, but I started carrying around my own pair of chopsticks.",
+        "ja": "今更ですが、マイ箸を持ち歩き始めました。"
+      }
+    ],
+    "level": 32,
+    "word_type": [
+      "adverb",
+      "noun"
+    ],
+    "en": [
+      "Too Late",
+      "Now"
+    ],
+    "known_readings": [
+      "いまさら"
+    ]
   }
 ]
