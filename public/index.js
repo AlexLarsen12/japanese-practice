@@ -12,7 +12,7 @@
       id("word-info").innerHTML = "";
       openPage("dictionary");
       id("search").value = "";
-      // refreshDictionary();  just removed this, makes it quicker. Why would I need to refresh each time I click home?
+      searchWords();
     });
     id("word-addition").addEventListener("click", () => openPage("word-addition-parent"));
     id("study-btn").addEventListener("click", function() {
@@ -109,7 +109,7 @@
     let words = id("dictionary").children;
     for (let i = 0; i < words.length; i++) {
       words[i].classList.add("hidden");
-      let word = this.value.toLowerCase();
+      let word = id("search").value.toLowerCase();
       for (let j = 0; j < words[i].children.length; j++) {
         if (words[i].children[j].textContent.match(word)) {
           words[i].classList.remove("hidden");
