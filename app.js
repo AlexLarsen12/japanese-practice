@@ -17,6 +17,7 @@ const fetch = require("node-fetch");
 const e = require("express");
 const { Console } = require("console");
 const { response } = require("express");
+const { listenerCount } = require("process");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -542,57 +543,101 @@ function allKatakana(phrase) {
   return list.map(char => char.charCodeAt(0)).map(char => (12353 <= char && char <= 12438) ? char + 96 : char).map(char => String.fromCharCode(char)).join("");
 }
 
-app.get("/testingDBRehaul", async function(req, res) {
+async function addToNewDatabase() {
   let db = await getDBConnection();
   let counter = 0;
   for (let key of Object.keys(WORDS_DICT)) {
     let word = WORDS_DICT[key];
     if (typeof(word.en) === "string" && word.jp !== null) { // word is a radical and don't want null!
-      // await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [word.en.toLowerCase(), word.jp, "radical"]);
-      // await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "radical"]);
+      await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [word.en.toLowerCase(), word.jp, "radical"]);
+      await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "radical"]);
 
-      // for (let kanjiId of word.kanji_ids) {
-      //   if (WORDS_DICT[kanjiId]) { // we know the kanji so we can add it to the database
-      //     await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, word.jp]);
-      //   }
-      // }
-      // await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "radical"]);
-      // counter++;
+      for (let kanjiId of word.kanji_ids) {
+        if (WORDS_DICT[kanjiId]) { // we know the kanji so we can add it to the database
+          await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, word.jp]);
+        }
+      }
+      await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "radical"]);
+      counter++;
     } else if (word.vocabulary_ids) { // word is a kanji
       // we can skip kanji-radical interactions because it was already handled in the previous cases.
-      // await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "kanji"]);
-      // for (let en of word.en) {
-      //   en = en.toLowerCase();
-      //   await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, word.jp, "kanji"]);
-      // }
-      // for (let reading of word.known_readings) {
-      //   await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, word.jp, "kanji"]);
-      // }
-      // await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "kanji"]);
+      await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "kanji"]);
+      for (let en of word.en) {
+        en = en.toLowerCase();
+        await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, word.jp, "kanji"]);
+      }
+      for (let reading of word.known_readings) {
+        await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, word.jp, "kanji"]);
+      }
+      await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "kanji"]);
     } else if (word.context_sentences) { // word is a vocabulary
       for (let kanjiId of word.kanji_ids) {
         await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, word.jp]);
       }
-      // await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "vocabulary"]);
-      // for (let en of word.en) {
-      //   en = en.toLowerCase();
-      //   await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, word.jp, "vocabulary"]);
-      // }
-      // for (let reading of word.known_readings) {
-      //   await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, word.jp, "vocabulary"]);
-      // }
-      // for (let sentence of word.context_sentences) {
-      //   await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [word.jp, sentence.en, sentence.jp]);
-      // }
-      // for (let wordType of word.word_type) {
-      //   await db.run("INSERT Into WordType (characters, type) VALUES (?, ?)", [word.jp, wordType]);
-      // }
-      // await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "vocabulary"]);
-      // counter++;
+      await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "vocabulary"]);
+      for (let en of word.en) {
+        en = en.toLowerCase();
+        await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, word.jp, "vocabulary"]);
+      }
+      for (let reading of word.known_readings) {
+        await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, word.jp, "vocabulary"]);
+      }
+      for (let sentence of word.context_sentences) {
+        await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [word.jp, sentence.en, sentence.jp]);
+      }
+      for (let wordType of word.word_type) {
+        await db.run("INSERT Into WordType (characters, type) VALUES (?, ?)", [word.jp, wordType]);
+      }
+      await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "vocabulary"]);
+      counter++;
     }
   }
-  res.json(counter);
+}
 
+app.get("/testingDBRehaul", async function(req, res) {
+  let db = await getDBConnection();
+
+  let radicals = [];
+  let kanji = [];
+  let vocabulary = [];
+  let subjects = await db.all("SELECT * FROM Kanji ORDER BY type");
+
+  for (let subject of subjects) {
+    let thingieMaBob = {
+      jp: subject.characters,
+      type: subject.type,
+      en: (await db.all("SELECT * FROM English WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.english),
+      last_studied: subject.last_studied,
+      correct: subject.correct,
+      wrong: subject.wrong,
+      current_streak: subject.current_streak,
+      longest_streak: subject.longest_streak,
+      first_unlocked: subject.first_unlocked,
+      notes: (await db.all("SELECT * FROM Notes WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.note),
+      source: (await db.all("SELECT * FROM Source WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.source)
+    }
+
+    if (subject.type === "radical") {
+      thingieMaBob.known_kanji = (await db.all("SELECT * FROM Radicals WHERE radical = ?", subject.characters)).map(line => line.characters);
+      radicals.push(thingieMaBob);
+    } else if (subject.type === "kanji") {
+      thingieMaBob.known_readings =  (await db.all("SELECT * FROM Readings WHERE characters = ? AND type ='kanji'", subject.characters)).map(line => line.reading);
+      thingieMaBob.radical_composition = (await db.all("SELECT * FROM Radicals WHERE characters = ?", subject.characters)).map(line => line.radical);
+      thingieMaBob.known_vocabulary =  (await db.all("SELECT * FROM Vocabulary WHERE characters = ? ", subject.characters)).map(line => line.vocab);
+      kanji.push(thingieMaBob);
+    } else if (subject.type === "vocabulary") {
+      thingieMaBob.known_readings = (await db.all("SELECT * FROM Readings WHERE characters = ? AND type ='vocabulary'", subject.characters)).map(line => line.reading);
+      thingieMaBob.kanji_composition = (await db.all("SELECT * FROM Vocabulary WHERE vocab = ?", subject.characters)).map(line => line.characters);
+      thingieMaBob.word_type = (await db.all("SELECT * FROM WordType WHERE characters = ?", subject.characters)).map(line => line.type);
+      thingieMaBob.sentences = (await db.all("SELECT * FROM Sentences WHERE characters = ?", subject.characters)).map((line) => {return {en: line.en, jp: line.jp}});
+      vocabulary.push(thingieMaBob);
+    }
+  }
+  res.json({
+    radicals: radicals,
+    kanji: kanji,
+    vocabulary: vocabulary
+  });
   // QUERY FOR RADICAL W/ EXAMPLE
   /*
     SELECT k.characters, k.type, e.english, r.characters AS "known_kanji", s.source,
@@ -639,26 +684,6 @@ app.get("/testingDBRehaul", async function(req, res) {
     AND k.type != "radical"
     AND k.characters = "手"
   */
-
-
-  // let contents = await db.all(qry, ["kanji", "大", "%大%"]);
-
-  // let wordObj = {
-  //   en: [],
-  //   known_readings: [],
-  //   type: "kanji",
-  //   radical_composition: [],
-  //   known_vocabulary: [],
-  //   sources: []
-  // }
-  // for (let row of contents) {
-  //   if (!wordObj.en.includes(row.english)) wordObj.en.push(row.english);
-  //   if (!wordObj.known_readings.includes(row.reading)) wordObj.known_readings.push(row.reading);
-  //   if (!wordObj.radical_composition.includes(row.radical)) wordObj.radical_composition.push(row.radical);
-  //   if (!wordObj.known_vocabulary.includes(row.vocab)) wordObj.known_vocabulary.push(row.vocab);
-  //   if (!wordObj.sources.includes(row.source)) wordObj.sources.push(row.source);
-  // }
-  // res.json(wordObj);
 });
 
 
@@ -843,25 +868,6 @@ async function checkSubjectAndGrabIfDoesntExist(subject) {
   }
   return returnWord;
 }
-/*
-{
-  subject_type (string) -- ALL
-  subject_id (integer/string) -- ALL
-  jp (string) -- ALL
-  en (list/string) - ALL (string only for radical)
-  known_kanji (list) -- only RADICAL
-  source (list) -- ALL
-  known_readings -- KANJI and VOCAB
-  radical_composition -- only KANJI
-  known_vocabulary -- only KANJI
-  kanji_composition -- only VOCAB
-  sentences -- only VOCAB
-  word_type -- only VOCAB
-}
-*/
-
-app.get("")
-
 
 // passed in a LIST with everything, will return the object that is necessary.
 function findSubject(subjectIdentifier, subjectList) {
