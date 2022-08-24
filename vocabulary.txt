@@ -115135,5 +115135,139 @@
     "known_readings": [
       "ぶしゅ"
     ]
+  },
+  {
+    "id": 8936,
+    "jp": "加わる",
+    "kanji_ids": [
+      1057
+    ],
+    "context_sentences": [
+      {
+        "en": "A new character will be added soon!",
+        "ja": "もうすぐ新しいキャラクターが加わるよ！"
+      },
+      {
+        "en": "A monkey joined in the volleyball match.",
+        "ja": "サルがバレボールの試合に加わった。"
+      },
+      {
+        "en": "The cost of advertising will be added to the ten million yen for the ingredients.",
+        "ja": "材料の一千万円に、さらに広告のコストが加わる。"
+      }
+    ],
+    "level": 23,
+    "word_type": [
+      "intransitive verb",
+      "godan verb"
+    ],
+    "en": [
+      "To Be Added To",
+      "To Join In"
+    ],
+    "known_readings": [
+      "くわわる"
+    ]
+  },
+  {
+    "id": 4652,
+    "jp": "秀でる",
+    "kanji_ids": [
+      1216
+    ],
+    "context_sentences": [
+      {
+        "en": "The only thing I excel at is picking my nose. In fact, I have never made my nose bleed.",
+        "ja": "私は鼻くそをほじくることだけには秀でています。実際、鼻血を出すはめになったこともありません。"
+      }
+    ],
+    "level": 23,
+    "word_type": [
+      "intransitive verb",
+      "ichidan verb"
+    ],
+    "en": [
+      "To Excel",
+      "To Surpass"
+    ],
+    "known_readings": [
+      "ひいでる"
+    ]
+  },
+  {
+    "id": 4864,
+    "jp": "主観的",
+    "kanji_ids": [
+      528,
+      1175,
+      914
+    ],
+    "context_sentences": [
+      {
+        "en": "This may be a very subjective view, but to me, you work too much and should take time off sometime soon.",
+        "ja": "これはとても主観的な見方かもしれないけど、僕にとっては君は働き過ぎだと思うんだよね。近々休みを取った方がいいよ。"
+      }
+    ],
+    "level": 24,
+    "word_type": [
+      "な adjective"
+    ],
+    "en": [
+      "Subjective"
+    ],
+    "known_readings": [
+      "しゅかんてき"
+    ]
+  },
+  {
+    "id": 5413,
+    "jp": "印鑑",
+    "kanji_ids": [
+      1283,
+      1450
+    ],
+    "context_sentences": [
+      {
+        "en": "You need an officially sealed document.",
+        "ja": "公的な印鑑が押された書類が必要になります。"
+      }
+    ],
+    "level": 31,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Seal"
+    ],
+    "known_readings": [
+      "いんかん"
+    ]
+  },
+  {
+    "id": 5518,
+    "jp": "大騒ぎ",
+    "kanji_ids": [
+      453,
+      1439
+    ],
+    "context_sentences": [
+      {
+        "en": "An escaped gorilla caused a major scene in some country, didn't it? ",
+        "ja": "どこかの国で、ゴリラが逃げ出して大騒ぎになっていたことがあったよね。"
+      }
+    ],
+    "level": 32,
+    "word_type": [
+      "noun",
+      "する verb"
+    ],
+    "en": [
+      "Clamor",
+      "Uproar",
+      "Big Noise"
+    ],
+    "known_readings": [
+      "おおさわぎ"
+    ]
   }
 ]

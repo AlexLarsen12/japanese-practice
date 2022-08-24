@@ -15,6 +15,8 @@ const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
 const e = require("express");
+const { Console } = require("console");
+const { response } = require("express");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -472,9 +474,73 @@ app.get('/syncTable', async function(req, res) {
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
+  // useful info: the number corresponds to the last high tone mora. (I thinki)
+  // 0: 平板式: starts low, goes UP. There is no high pitch mora so
+  // 1: 頭高型: starts high, and the first mora is the last high pitch morea so it goes down and stays down.
+  // 2-6: 尾高型 or 仲間型: the last high pitch mora hapens at mora 2-6, then it goes down!.
 
 
+
+  // process the pitchAccents
+  let data = (await fs.readFile("pitchAccents.txt", "utf8")).split("\n");
+
+
+  let counter = 0;
+  let reseponseData = [];
+  let pitchLookup = {};
+  for (let line of data) { // GO THROUGH EACH READING INDIVIDUALLY
+
+    let lineData = line.split("\t");
+    pitchLookup[lineData[0] + "\t" + lineData[1]] = {
+      kanji: lineData[0],
+      hiragana: lineData[1],
+      pitchInfo: lineData[2]
+    } // should have a whole lookup with all the right things!
+  }
+
+
+// big money question: should I add this info now to the database?
+// or just look up and send back each time it's requested?
+
+
+  // time to do a lookup for all the readings of each thing!
+  // so this works mostly well
+  for (let key of Object.keys(WORDS_DICT)) {
+    let vocab = WORDS_DICT[key];
+    if (vocab.context_sentences) { // sketchy way to find out if it's vocabulary!!
+      for (let reading of vocab.known_readings) {
+        let wordPitchInfo = pitchLookup[vocab.jp + "\t" + reading]; // want to try to find the combo! but this won't catch everything
+        if (!wordPitchInfo) wordPitchInfo = pitchLookup[vocab.jp.replace(/する$/, "") + "\t" + reading.replace(/する$/, "")]; // checking する verbs
+        if (!wordPitchInfo) wordPitchInfo = pitchLookup[allHiragana(vocab.jp) + "\t" + allHiragana(reading)];
+        if (!wordPitchInfo) wordPitchInfo = pitchLookup[allKatakana(vocab.jp) + "\t" + allKatakana(reading)];
+        // fun fact: This still doesn't catch everything! cool!
+        if (wordPitchInfo) {
+          reseponseData.push({
+            vocab_kanji: vocab.jp,
+            vocab_reading: reading,
+            pitch_accent: wordPitchInfo.pitchInfo,
+          });
+          counter++;
+        } else {
+          console.log("Sorry this doesn't have pitch accent!: " + vocab.jp + " (" + reading + ")");
+        }
+      }
+    }
+  }
+  console.log(counter);
+  res.json(reseponseData);
 });
+
+// uses a fun little thing
+function allHiragana(phrase) {
+  let list = [...phrase] // basically makes a list out of the phrase.
+  return list.map(char => char.charCodeAt(0)).map(char => (12449 <= char && char <= 12534) ? char - 96 : char).map(char => String.fromCharCode(char)).join("");
+}
+
+function allKatakana(phrase) {
+  let list = [...phrase] // basically makes a list out of the phrase.
+  return list.map(char => char.charCodeAt(0)).map(char => (12353 <= char && char <= 12438) ? char + 96 : char).map(char => String.fromCharCode(char)).join("");
+}
 
 
 // unlessing I'm learning 60+ new words (guru+) with each fetch... this should run fine.
@@ -619,6 +685,7 @@ async function checkSubjectAndGrabIfDoesntExist(subject) {
         let actualContextSentences = [];
         console.log(finalThing.context_sentences);
         for (let sentence of finalThing.context_sentences) {
+          console.log(sentence);
           actualContextSentences.push[{
             en: sentence.en,
             jp: sentence.ja
@@ -674,7 +741,7 @@ async function checkSubjectAndGrabIfDoesntExist(subject) {
 }
 */
 
-
+app.get("")
 
 
 // passed in a LIST with everything, will return the object that is necessary.
