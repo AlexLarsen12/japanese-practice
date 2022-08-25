@@ -241,7 +241,6 @@
   }
 
   function processWords(words) {
-    words = words.reverse();
     id("known-words").textContent = words.length;
     id("dictionary").innerHTML = "";
     id("radical-count").textContent = "0";
@@ -276,7 +275,7 @@
       container.appendChild(english);
 
       // FINALLY IF THERE ARE ANY READINGS (not radicals) PUT THEM HERE
-      if (words[i].known_readings) {
+      if (words[i].known_readings.length !== 0) {
         let pronounciation = document.createElement("p");
 
         pronounciation.textContent = words[i].known_readings[0];
