@@ -58,7 +58,7 @@ app.get('/word/:word', async function(req, res) {
 });
 
 // will return a word with COMPLETE INFORMATIONof any type and any word. Will return nothing if can't find
-async function getWord(type, word, db) {
+async function getWord(type, word, db) {a
   if (!db) db = await getDBConnection();
   let data = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [word, type]);
   if (data) {
@@ -1060,7 +1060,7 @@ function formatKanji(kanji) {
 
 async function getDBConnection() {
   const db = await sqlite.open({
-    filename: "test.db",
+    filename: "japanese-new.db",
     driver: sqlite3.Database
   });
   return db;
