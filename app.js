@@ -58,7 +58,7 @@ app.get('/word/:word', async function(req, res) {
 });
 
 // will return a word with COMPLETE INFORMATIONof any type and any word. Will return nothing if can't find
-async function getWord(type, word, db) {a
+async function getWord(type, word, db) {
   if (!db) db = await getDBConnection();
   let data = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [word, type]);
   if (data) {
@@ -76,7 +76,7 @@ async function getWord(type, word, db) {a
       source: (await db.all("SELECT * FROM Source WHERE characters = ? AND type = ?", data.characters, type)).map(line => line.source)
     }
 
-    if (type === "kanji" || type === "vocabulary") wordObj.known_readings =  (await db.all("SELECT * FROM Readings WHERE characters = ? AND type ='kanji'", data.characters)).map(line => line.reading);
+    if (type === "kanji" || type === "vocabulary") wordObj.known_readings =  (await db.all("SELECT * FROM Readings WHERE characters = ? AND type = ?", [data.characters, type])).map(line => line.reading);
     if (type === "radical") {
       wordObj.known_kanji = (await db.all("SELECT * FROM Radicals WHERE radical = ?", data.characters)).map(line => line.characters);
     } else if (type === "kanji") {
@@ -137,6 +137,94 @@ app.get("/matchCloseness", async function(req, res) {
 
   res.send("lol");
 })
+
+// working on as of 8/24/2022
+// should rename, but basically it will ADD a new word based on the forms in the front-end.
+app.post("/addWord", async function (req, res) {
+  res.type("text");
+  try {
+    if (!WORD_TYPES.includes(req.body.type)) throw new Error("This is an unrecognized word type");
+    if (!req.body.jp || !req.body.type) throw new Error("You must have at least the japanese and the type to add a new word");
+
+    let wordCheck = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [req.body.jp, req.body.type]);
+    if (wordCheck) throw new Error(req.body.jp + " is an already known " + req.body.type);
+
+    let db = await getDBConnection();
+    let jp = req.body.jp;
+    let type = req.body.type;
+
+    // for NOW, lets assume that we get passed everything in as a LIST if it exists otherwise nothing.
+    // need to add all the other possible information, but it also needs to be formatted properly
+    // jp
+    // en
+    // source
+    // notes
+    // known_kanji (radical)
+    // known_readings (kanji + vocbulary)
+    // radical_composition (kanji)
+    // known_vocabulary (kanji)
+    // kanji_composition (vocab)
+    // word_type (vocab)
+    // sentences (vocab)
+    // pitch_data (vocab) can try to also look this up right here...
+    await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
+
+
+  } catch(err) {
+    res.status(500).send(err.message);
+  }
+
+  //   try {
+  //     let db = await getDBConnection();
+
+  //     // really long line below just checks to see if the word exists!
+  //     if ((await db.all("SELECT * FROM " + type + " WHERE jp = ?", req.body.jp)).length !== 0) {
+  //       res.type("text").status(400).send("this word already exists!");
+  //     } else {
+  //       if (type === RADICAL) {
+  //         let newWord = formatRadical(req.body);
+  //         let qry = "INSERT INTO " + type + "(jp, en, type, known_kanji, notes, source) VALUES(?, ?, ?, ?, ?, ?)";
+  //         await db.all(qry, [newWord.jp, newWord.en, newWord.type, newWord["known-kanji"], newWord.notes, newWord.source]);
+  //       } else if (type === VOCAB) {
+  //         let newWord = formatVocabulary(req.body);
+  //         let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences, word_type, notes, source) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  //         await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
+  //         newWord.type, newWord["kanji-composition"], newWord.sentences, newWord["word-type"], newWord.notes, newWord.source]);
+
+  //         // update any KANJI found!
+  //         await updateKnownVocabulary(newWord.jp, newWord["kanji-composition"], db);
+
+  //         // also maybe add vocab words if the vocab isn't known??
+  //         let sentences = JSON.parse(newWord.sentences);
+  //         for (let i = 0; i < sentences.length; i++) {
+  //           for (let j = 0; j < sentences[i].vocab.length; j++) {
+  //             let foundWord = (await db.all("SELECT * FROM Vocabulary WHERE jp = ?", sentences[i].vocab[j]))[0];
+
+  //             if (!foundWord) {
+  //               await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", sentences[i].vocab[j]);
+  //             }
+  //           }
+  //         }
+  //       } else {
+  //         let newWord = formatKanji(req.body);
+  //         let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary, notes, source) VALUES (?, ?, ?, ? , ?, ?, ?, ?)";
+  //         await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
+  //         newWord.type, newWord["radical-composition"], newWord["known-vocabulary"], newWord.notes, newWord.source]);
+
+  //         // update any RADICALS!!!
+  //         await updateKnownKanji(newWord.jp, newWord["radical-composition"], db);
+  //       }
+  //       res.send("successful addition!");
+  //     }
+  //     await db.close();
+  //   } catch(err) {
+  //     res.status(500).send(err.message);
+  //   }
+  // }
+});
+
+
+
 
 // ---------------------- OKAY I PULL UP ----------------------------------
 // used to SYNC completely WaniKani and my program. Doesn't work with large batches,
@@ -384,66 +472,6 @@ app.get("/funnyGoofyTest", async function(req, res) {
 // ------------------- OKAY I LEAVE -------------------
 
 // OUTDATED AS OF 8/24/2022
-// should rename, but basically it will ADD a new word based on the forms in the front-end.
-app.post("/postWord", async function (req, res) {
-  res.type("text");
-
-  // this line is to uppercase everything to be in the Table format.
-  let type = req.body.type.toLowerCase().charAt(0).toUpperCase() + req.body.type.slice(1);
-
-  if (!WORD_TYPES.includes(type)) {
-    res.status(400).send("Unrecognized word type");
-  } else {
-    try {
-      let db = await getDBConnection();
-
-      // really long line below just checks to see if the word exists!
-      if ((await db.all("SELECT * FROM " + type + " WHERE jp = ?", req.body.jp)).length !== 0) {
-        res.type("text").status(400).send("this word already exists!");
-      } else {
-        if (type === RADICAL) {
-          let newWord = formatRadical(req.body);
-          let qry = "INSERT INTO " + type + "(jp, en, type, known_kanji, notes, source) VALUES(?, ?, ?, ?, ?, ?)";
-          await db.all(qry, [newWord.jp, newWord.en, newWord.type, newWord["known-kanji"], newWord.notes, newWord.source]);
-        } else if (type === VOCAB) {
-          let newWord = formatVocabulary(req.body);
-          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences, word_type, notes, source) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-          await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-          newWord.type, newWord["kanji-composition"], newWord.sentences, newWord["word-type"], newWord.notes, newWord.source]);
-
-          // update any KANJI found!
-          await updateKnownVocabulary(newWord.jp, newWord["kanji-composition"], db);
-
-          // also maybe add vocab words if the vocab isn't known??
-          let sentences = JSON.parse(newWord.sentences);
-          for (let i = 0; i < sentences.length; i++) {
-            for (let j = 0; j < sentences[i].vocab.length; j++) {
-              let foundWord = (await db.all("SELECT * FROM Vocabulary WHERE jp = ?", sentences[i].vocab[j]))[0];
-
-              if (!foundWord) {
-                await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", sentences[i].vocab[j]);
-              }
-            }
-          }
-        } else {
-          let newWord = formatKanji(req.body);
-          let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary, notes, source) VALUES (?, ?, ?, ? , ?, ?, ?, ?)";
-          await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-          newWord.type, newWord["radical-composition"], newWord["known-vocabulary"], newWord.notes, newWord.source]);
-
-          // update any RADICALS!!!
-          await updateKnownKanji(newWord.jp, newWord["radical-composition"], db);
-        }
-        res.send("successful addition!");
-      }
-      await db.close();
-    } catch(err) {
-      res.status(500).send(err.message);
-    }
-  }
-});
-
-// OUTDATED AS OF 8/24/2022
 // will modify a known word in the database.
 app.post('/modifyWord', async function(req, res) {
   try {
@@ -547,7 +575,6 @@ app.post('/removeWord', async function(req, res) {
     res.status(500).send("whoa bro stop messing up");
   }
 });
-
 
 // uses a fun little thing
 function allHiragana(phrase) {
