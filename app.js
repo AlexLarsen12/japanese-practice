@@ -138,7 +138,8 @@ app.get("/matchCloseness", async function(req, res) {
   res.send("lol");
 })
 
-// working on as of 8/24/2022
+// updated 8/27/2022. Blanket add that doesn't care about the type of the word. Should maybe make it more generic
+// so I can use this to "MODIFY" but idk...
 // should rename, but basically it will ADD a new word based on the forms in the front-end.
 app.post("/addWord", async function (req, res) {
   res.type("text");
@@ -153,77 +154,27 @@ app.post("/addWord", async function (req, res) {
     let jp = req.body.jp;
     let type = req.body.type;
 
-    // for NOW, lets assume that we get passed everything in as a LIST if it exists otherwise nothing.
-    // need to add all the other possible information, but it also needs to be formatted properly
-    // jp
-    // en
-    // source
-    // notes
-    // known_kanji (radical)
-    // known_readings (kanji + vocbulary)
-    // radical_composition (kanji)
-    // known_vocabulary (kanji)
-    // kanji_composition (vocab)
-    // word_type (vocab)
-    // sentences (vocab)
-    // pitch_data (vocab) can try to also look this up right here...
+
     await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
+    if(req.body.en) await req.body.en.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, jp, type]));
+    if (req.body.sources) await req.body.sources.forEach(async source => await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [jp, source, type]));
+    if (req.body.notes) await req.body.notes.forEach(async note => await db.run("INSERT INTO Notes (characters, type, note) VALUES (?, ?, ?)", [jp, type, note]));
+    if (req.body["known-kanji"]) await req.body["known-kanji"].forEach(async kanji => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [kanji, jp]));
+    if (req.body["known-readings"]) await req.body["known-readings"].forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, jp, type]));
+    if (req.body["radical-composition"]) await req.body["radical-composition"].forEach(async radical => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [jp, radical]))
+    if (req.body["known-vocabulary"]) await req.body["known-vocabulary"].forEach(async vocab => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [jp, vocab]))
+    if (req.body["kanji-composition"]) await req.body["kanji-composition"].forEach(async kanji => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [kanji, jp]));
+    if (req.body["word-type"]) await req.body["word-type"].forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [jp, wordType]));
+    if (req.body.sentences) await req.body.sentences.forEach(async sen => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [jp. sen.en, sen.jp]));
+    if (req.body["pitch-data"]) await req.body["pitch-data"].forEach(async info => await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, info.reading, info.pitch]));
+    // note for pitchInfo, if it doesn't exist I can try to look it up because I have the dictionary right here... Could be worth a try perhaps.
 
-
+    await db.close();
+    res.send("New " + type + " added: " + jp);
   } catch(err) {
     res.status(500).send(err.message);
   }
-
-  //   try {
-  //     let db = await getDBConnection();
-
-  //     // really long line below just checks to see if the word exists!
-  //     if ((await db.all("SELECT * FROM " + type + " WHERE jp = ?", req.body.jp)).length !== 0) {
-  //       res.type("text").status(400).send("this word already exists!");
-  //     } else {
-  //       if (type === RADICAL) {
-  //         let newWord = formatRadical(req.body);
-  //         let qry = "INSERT INTO " + type + "(jp, en, type, known_kanji, notes, source) VALUES(?, ?, ?, ?, ?, ?)";
-  //         await db.all(qry, [newWord.jp, newWord.en, newWord.type, newWord["known-kanji"], newWord.notes, newWord.source]);
-  //       } else if (type === VOCAB) {
-  //         let newWord = formatVocabulary(req.body);
-  //         let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, kanji_composition, sentences, word_type, notes, source) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  //         await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-  //         newWord.type, newWord["kanji-composition"], newWord.sentences, newWord["word-type"], newWord.notes, newWord.source]);
-
-  //         // update any KANJI found!
-  //         await updateKnownVocabulary(newWord.jp, newWord["kanji-composition"], db);
-
-  //         // also maybe add vocab words if the vocab isn't known??
-  //         let sentences = JSON.parse(newWord.sentences);
-  //         for (let i = 0; i < sentences.length; i++) {
-  //           for (let j = 0; j < sentences[i].vocab.length; j++) {
-  //             let foundWord = (await db.all("SELECT * FROM Vocabulary WHERE jp = ?", sentences[i].vocab[j]))[0];
-
-  //             if (!foundWord) {
-  //               await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", sentences[i].vocab[j]);
-  //             }
-  //           }
-  //         }
-  //       } else {
-  //         let newWord = formatKanji(req.body);
-  //         let qry = "INSERT INTO " + type + "(jp, en, known_readings, type, radical_composition, known_vocabulary, notes, source) VALUES (?, ?, ?, ? , ?, ?, ?, ?)";
-  //         await db.all(qry, [newWord.jp, newWord.en, newWord["known-readings"],
-  //         newWord.type, newWord["radical-composition"], newWord["known-vocabulary"], newWord.notes, newWord.source]);
-
-  //         // update any RADICALS!!!
-  //         await updateKnownKanji(newWord.jp, newWord["radical-composition"], db);
-  //       }
-  //       res.send("successful addition!");
-  //     }
-  //     await db.close();
-  //   } catch(err) {
-  //     res.status(500).send(err.message);
-  //   }
-  // }
 });
-
-
 
 
 // ---------------------- OKAY I PULL UP ----------------------------------
