@@ -28,7 +28,6 @@ const RADICAL = "Radical";
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
 // only question is how do we keep it up to date after the server is initialized.
 const WORDS_DICT = createDict(["radicals.txt", "kanji.txt", "vocabulary.txt"]);
-// find out if there's a better way to do this.... because await is giving me problems.
 function createDict(files) {
   let  dict = {}
   for (let file of files) {
@@ -40,9 +39,9 @@ function createDict(files) {
   return dict;
 }
 
-const PITCH_INFO = createPitchInfo()
-
-function createPitchInfo() {
+const PITCH_INFO = createPitchInfoDict()
+function createPitchInfoDict() {
+  if (!fs_sync.existsSync("infoFiles/pitchLookup.json")) {
     // process the pitchAccents
     let data = (fs_sync.readFileSync("pitchAccents.txt", "utf8")).split("\n");
 
@@ -55,7 +54,12 @@ function createPitchInfo() {
         pitchInfo: lineData[2]
       } // should have a whole lookup with all the right things!
     }
-  return pitchLookup;
+
+    fs_sync.writeFileSync("infoFiles/pitchLookup.json", JSON.stringify(pitchLookup), "utf8");
+    return pitchLookup;
+  } else {
+    return JSON.parse(fs_sync.readFileSync("infoFiles/pitchLookup.json", "utf8"));
+  }
 }
 
 function findPitchInfo(kanji, reading) {
