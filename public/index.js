@@ -70,11 +70,7 @@
   function checkAnswer(resp) {
     let listToMatch;
 
-    if (resp.type === "radical") {
-      listToMatch = [resp.en];
-    } else {
-      listToMatch = resp.en;
-    }
+    listToMatch = resp.en;
 
     listToMatch.push(resp.jp);
 
@@ -241,6 +237,7 @@
   }
 
   function processWords(words) {
+
     id("known-words").textContent = words.length;
     id("dictionary").innerHTML = "";
     id("radical-count").textContent = "0";

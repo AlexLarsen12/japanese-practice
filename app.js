@@ -14,6 +14,7 @@ const fs = require("fs").promises;
 const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
+const { deepStrictEqual } = require("assert");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -124,25 +125,33 @@ async function getWord(type, word, db) {
 }
 
 // returns all words in a list!
-// Updated 8/24/2022 to work with new database. Rather slow. Should maybe build obj on load?
+// updated 9/19/2022... This is way faster if an obj doesn't exist. I don't quite like that there are
+// a bajillion objects that need to be updated independently now, so will maybe look for a fix for that
+// in the future.
 // Only sends back the japanese, the english, and the readings.
 app.get("/allWords", async function(req, res) {
   try {
-    let db = await getDBConnection();
-    let allWords = []
-
-    let subjects = await db.all("SELECT * FROM Kanji ORDER BY type DESC, first_unlocked DESC");
-    for (let subject of subjects) {
-      allWords.push({
-        jp: subject.characters,
-        type: subject.type,
-        en: (await db.all("SELECT * FROM English WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.english),
-        known_readings: (await db.all("SELECT * FROM Readings WHERE characters = ? AND type =?", subject.characters, subject.type)).map(line => line.reading)
-      })
-    }
-    res.json(allWords);
+    await fs.access("infoFiles/allWords.json");
+    res.json(JSON.parse(await fs.readFile("infoFiles/allWords.json")));
   } catch(err) {
-    res.type("text").status(500).send(err.message);
+    if (err.code === "ENOENT") {
+      let db = await getDBConnection();
+      let allWords = []
+
+      let subjects = await db.all("SELECT * FROM Kanji ORDER BY type DESC, first_unlocked DESC");
+      for (let subject of subjects) {
+        allWords.push({
+          jp: subject.characters,
+          type: subject.type,
+          en: (await db.all("SELECT * FROM English WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.english),
+          known_readings: (await db.all("SELECT * FROM Readings WHERE characters = ? AND type =?", subject.characters, subject.type)).map(line => line.reading)
+        })
+      }
+      await fs.writeFile("infoFiles/allWords.json", JSON.stringify(allWords, null, 2));
+      res.json(allWords);
+    } else {
+      res.type("text").status(500).send(err.message);
+    }
   }
 });
 
@@ -151,7 +160,7 @@ app.get("/allWords", async function(req, res) {
 app.get("/randomWord", async function(req, res) {
   try {
     let db = await getDBConnection(); // maybe
-    let words = await db.all("SELECT * FROM Kanji");
+    let words = await db.all("SELECT * FROM Kanji WHERE type ='radical'");
     let target = words[Math.floor(Math.random() * words.length)];
     res.json(await getWord(target.type, target.characters, db)); // returns a lot of information, could be useless?
   } catch(err) {
