@@ -14,6 +14,7 @@ const fs = require("fs").promises;
 const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
+const { type } = require("express/lib/response");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -39,7 +40,34 @@ function createDict(files) {
   return dict;
 }
 
-// Returns the word that is specified. Requires also query parameter of "type" to be passed in.
+const PITCH_INFO = createPitchInfo()
+
+function createPitchInfo() {
+    // process the pitchAccents
+    let data = (fs_sync.readFileSync("pitchAccents.txt", "utf8")).split("\n");
+
+    let pitchLookup = {};
+    for (let line of data) { // GO THROUGH EACH READING INDIVIDUALLY
+      let lineData = line.split("\t");
+      pitchLookup[lineData[0] + "\t" + lineData[1]] = {
+        kanji: lineData[0],
+        hiragana: lineData[1],
+        pitchInfo: lineData[2]
+      } // should have a whole lookup with all the right things!
+    }
+  return pitchLookup;
+}
+
+function findPitchInfo(kanji, reading) {
+  let wordPitchInfo = PITCH_INFO[kanji + "\t" + reading] // try to find the combo in here, but it won't work for everything
+  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[kanji.replace(/する$/, "") + "\t" + reading.replace(/する$/, "")]; // checking する verbs
+  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[allHiragana(kanji) + "\t" + allHiragana(reading)];
+  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[allKatakana(kanji) + "\t" + allKatakana(reading)];
+  // fun fact, this doesn't get everything :(
+  return wordPitchInfo;
+}
+
+// Returns the word that is specified. Requires also query parameter of "type" t  o be passed in.
 // "type" can be - "vocabulary", "kanji", or "radical".
 // UPDATED TO WORK WITH JAPANESE NEW.db 8/24/2022
 app.get('/word/:word', async function(req, res) {
@@ -359,6 +387,8 @@ app.get('/syncTable', async function(req, res) {
   }
 });
 
+
+
 // the thing I use to test different endpoints. Most of the code does very specific things and I
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
@@ -638,24 +668,26 @@ app.get("/testingDBRehaul", async function(req, res) {
 });
 
 
+// CURRENTLY WORKING ON AS OF 9/7/2022. Need to make it work with new DB schema.
 // unlessing I'm learning 60+ new words (guru+) with each fetch... this should run fine.
 app.get("/updateLastVisited",  async function(req, res) {
   let updatedDate = (await fs.readFile("lastUpdated.txt", "utf-8")).split("\n");
-  let lastDate = updatedDate[updatedDate.length - 1]; // should be: updatedDate.length - 1, but for testing it's 0
-  // do stuff from last date onward...
+  let lastDate = updatedDate[updatedDate.length - 1];
 
   let url = WANIKANI + "assignments?updated_after=" + lastDate;
   let assignments = await recursiveFetchTime(url, []); // hopefully this takes only like... 3 fetches max.
 
-
   let addedWords = [];
   // we have all of our assignments!!
   for (let entry of assignments) {
-    let addedWord = await checkSubjectAndGrabIfDoesntExist(entry)
-    if (Object.keys(addedWord).length !== 0) {
-      addedWords.push(addedWord);
+    let addedWord = await findIfSubject(entry);
+    if (addedWord) {
+      WORDS_DICT[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
+      await addWordToDBFromWaniKani(addedWord, subject.data.subject_type);
+      addedWords.push({jp: addedWord.jp, type: addedWord.type});
     }
   }
+  // as of the most recent update, (9/19/2022) the changes here to simplify functions is UNTESTED.
 
   // we've updated everything so we can say the last time we updated!
   let now = (new Date()).toISOString();
@@ -668,156 +700,72 @@ app.get("/updateLastVisited",  async function(req, res) {
   });
 });
 
-// this function name is no longer aptly named. It does a lot of stuff. Need to refactor.
-async function checkSubjectAndGrabIfDoesntExist(subject) {
+async function addWordToDBFromWaniKani(finalThing, subjectType) {
+   let db = await getDBConnection();
+   await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [finalThing.jp, subjectType]);
+   await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [finalThing.jp, "WaniKani level: " + finalThing.level, subjectType]);
+
+   if (subjectType === "radical") finalThing.en = [finalThing.en]; //maybe should stay consistent with this being a list or not.
+   let lowerCaseReadings = finalThing.en.map(word => word.toLowerCase());
+   await lowerCaseReadings.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, finalThing.jp, subjectType]));
+
+   if (subjectType === "radical") {
+     await finalThing.kanji_ids.forEach(async kanjiId => { if (WORDS_DICT[kanjiId]) await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, finalThing.jp])});
+
+   } else if (subjectType === "kanji") {
+     await finalThing.radical_ids.forEach(async radicalId => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [finalThing.jp, WORDS_DICT[radicalId].jp]));
+     await finalThing.vocabulary_ids.forEach(async vocabId => { if (WORDS_DICT[vocabId]) await db.run("INSERT INTO Radicals (characters, vocab) VALUES (?, ?)", [finalThing.jp, WORDS_DICT[vocabId].jp])});
+     await finalThing.known_readings.forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, finalThing.jp, subjectType]));
+
+   } else if (subjectType === "vocabulary") {
+     await finalThing.known_readings.forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, finalThing.jp, subjectType]));
+     await finalThing.word_type.forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [finalThing.jp, wordType]));
+     await finalThing.kanji_ids.forEach(async kanjiId => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, finalThing.jp]));
+
+     for (let reading of finalThing.known_readings) {
+       let pitchInfo = findPitchInfo(finalThing.jp, reading);
+       if (pitchInfo) await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", finalThing.jp, reading, pitchInfo.pitchInfo);
+     }
+     await finalThing.context_sentences.forEach(async sentence => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [finalThing.jp, sentence.en, sentence.ja]));
+     // NOTE FOR ABOVE. THIS USES THE KEY "ja" FOR SENTENCES. THIS WILL NOT WORK ON THE PREVIOUSLY KNWON WORDS BUT THIS ISN'T FOR THAT SO IT SHOULD BE FINE.
+   }
+}
+
+async function findIfSubject(subject) {
   let subjectType = subject.data.subject_type;
-  let returnWord = {};
-  if(WORDS_DICT[subject.data.subject_id]) { // word exists, can basically ignore.
-    console.log("I already know this " + subjectType + "(" + WORDS_DICT[subject.data.subject_id].jp + "). The new SRS level is: " + subject.data.srs_stage);
-  } else { // new word moment
-    console.log("");
-    console.log("This " + subjectType + " is new! It's SRS is now: " + subject.data.srs_stage);
-    if (subject.data.srs_stage >= 5) {
+
+  if (WORDS_DICT[subject.data.subject_id]) { // I know this word
+    console.log("I already know this " + subjectType + "(" + WORDS_DICT[subject.data.subject_id].jp +
+    "). It doesn't need to be added to the database, but the new SRS level is " + subject.data.srs_stage);
+    if (subject.data.srs_stage < 5) console.log("The SRS is below WaniKani's 'proficent' range, you might want to focus on this word!");
+  } else { // new word moment;
+    if (subject.data.srs_stage >= 5) { // the majority of work was done here.
+      console.log("This " + subjectType + " is new! It's SRS is now: " + subject.data.srs_stage);
       console.log("Since the " + subjectType + " is higher than 5, it's at least Guru! And I can consider it learned!");
       let newWord = await fetch(WANIKANI + "subjects/" + subject.data.subject_id, {
         headers: {Authorization: "Bearer " + TSURUKAME}
       });
       newWord = await newWord.json();
       console.log("The new learned word is: " + newWord.data.characters);
+      console.log("");
 
-      // THE WORD IS UPDATED NOW IN THE THING
       let finalThing
       if (subjectType === "radical") {
         finalThing = createRadicalResponse(newWord);
-        updateJSONFile("radicals.txt", [finalThing]);
+        updateJSONFile("radicals.txt", [finalThing]); // while testing don't want to add to the json file yet.
       } else if (subjectType === "kanji") {
         finalThing = createKanjiResponse(newWord);
         updateJSONFile("kanji.txt", [finalThing]);
-
       } else if (subjectType === "vocabulary") {
         finalThing = createVocabularyResponse(newWord)
         updateJSONFile("vocabulary.txt", [finalThing]);
       }
-      WORDS_DICT[newWord.id] = finalThing; // making sure our internal state is the same thing as our words!
-
-
-      let db = await getDBConnection();
-      if (subjectType === "radical") {
-        // can't assume we know all the kanji yet, so we just need the one's that we know!
-        let kanjiList = [];
-        for (let kanji of finalThing.kanji_ids) {
-          if (WORDS_DICT[kanji]) {
-            kanjiList.push(WORDS_DICT[kanji].jp);
-          }
-        }
-
-        // simple insert into database
-        await db.run("INSERT INTO Radical (jp, en, known_kanji, source) VALUES(?, ?, ?, ?)", [
-          finalThing.jp, finalThing.en, JSON.stringify(kanjiList),
-           JSON.stringify(["WaniKani level " + finalThing.level])
-        ]);
-
-        // now update the kanji that have this radical!
-        for (let kanji of kanjiList) {
-          let results = await db.get("SELECT * FROM Kanji WHERE jp = ?", [kanji]);
-          if (results) { // it exists and we need to update
-            let dbRadicalList = JSON.parse(results.radical_composition);
-            if (!dbRadicalList.includes(finalThing.jp)) {
-              dbRadicalList.push(finalThing.jp);
-            }
-            await db.run("UPDATE Kanji SET radical_composition = ? WHERE jp = ?", [JSON.stringify(dbRadicalList), kanji]);
-          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
-            console.log("welp idk this kanji yet!");
-          }
-        }
-
-      } else if (subjectType === "kanji") {
-        // can ignore radical because they have to be guru+ (at one point) if I'm adding a vocab
-        let vocabList = [];
-        for (let vocab of finalThing.vocabulary_ids) {
-          if (WORDS_DICT[vocab]) {
-            vocabList.push(WORDS_DICT[vocab].jp);
-          }
-        } // now have a LIST of all the vocabulary involved with our kanji! we can add to the table.
-
-        // simple insertion into database. can assume we know all radicals because that's the only way to unlock the kanji.
-        await db.run("INSERT INTO Kanji (jp, en, known_readings, radical_composition, known_vocabulary, source VALUES(?, ?, ?, ?, ?, ?)", [
-          finalThing.jp, JSON.stringify(finalThing.en), JSON.stringify(finalThing.known_readings,
-            JSON.stringify(finalThing.radical_ids.map(id => WORDS_DICT[id]).jp),
-            JSON.stringify(vocabList),  JSON.stringify["WaniKani level " + finalThing.level])
-        ]);
-
-        //welp... now we need to update both RADICAL and VOCAB to have this kanji.
-        for (let radical of finalThing.radical_ids) {
-          let results = await db.get("SELECT * FROM Radical WHERE jp = ?", [WORDS_DICT[radical].jp]);
-          if (results) { // it exists and we might need to update
-            let dbKanjiList = JSON.parse(results.known_kanji);
-            if (!dbKanjiList.includes(finalThing.jp)) {
-              dbKanjiList.push(finalThing.jp);
-            }
-            await db.run("UPDATE Radical SET known_kanji = ? WHERE jp = ?", [JSON.stringify(dbKanjiList), WORDS_DICT[radical].jp]);
-          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
-            console.log("welp idk this radical yet!"); // this should be impossible.
-          }
-        }
-
-        for (let vocab of vocabList) {
-          let results = await db.get("SELECT * FROM Kanji WHERE jp = ?", [vocab]);
-          if (results) { // it exists and we might need to update
-            let dbKanjiList = JSON.parse(results.kanji_composition);
-            if (!dbKanjiList.includes(finalThing.jp)) {
-              dbKanjiList.push(finalThing.jp);
-            }
-            await db.run("UPDATE Vocabulary SET kanji_composition = ? WHERE jp = ?", [JSON.stringify(dbKanjiList), vocab]);
-          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
-            console.log("welp idk this vocab yet!");
-          }
-        }
-
-      } else if (subjectType === "vocabulary") {
-
-        // cringe fix but I think it works. Update: IT DOESN't
-        let actualContextSentences = [];
-        console.log(finalThing.context_sentences);
-        for (let sentence of finalThing.context_sentences) {
-          console.log(sentence);
-          actualContextSentences.push[{
-            en: sentence.en,
-            jp: sentence.ja
-          }];
-        };
-        let lowerCaseReadings = finalThing.en.map(word => word.toLowerCase());
-
-        // WAIT..... can't insert new stuff without fixing the sentences lol.
-        // simple insert into database. We can assume we know all the kanji_ids because that's the only way to unlock them.
-        await db.run("INSERT INTO Vocabulary (jp, en, known_readings, kanji_composition, sentences, source, word_type) VALUES(?, ?, ?, ?, ?, ?, ?)", [
-          finalThing.jp, JSON.stringify(lowerCaseReadings), JSON.stringify(finalThing.known_readings),
-          JSON.stringify(finalThing.kanji_ids.map(id => WORDS_DICT[id].jp)), JSON.stringify(actualContextSentences),
-          JSON.stringify(["WaniKani level " + finalThing.level]), JSON.stringify(finalThing.word_type)
-        ]);
-
-        // now update the kanji that have this vocab!!
-        for (let kanji of finalThing.kanji_ids) {
-          let results = await db.get("SELECT * FROM Kanji WHERE jp = ?", [WORDS_DICT[kanji].jp]);
-          if (results) { // it exists and we need to update
-            let dbVocabList = JSON.parse(results.known_vocabulary);
-            if (!dbVocabList.includes(finalThing.jp)) {
-              dbVocabList.push(finalThing.jp);
-            }
-            await db.run("UPDATE Kanji SET known_vocabulary = ? WHERE jp = ?", [JSON.stringify(dbVocabList), WORDS_DICT[kanji].jp]);
-          } else { // it doesn't exist and we need to INSERT a new kanji just for it to be there.
-            console.log("welp idk this kanji yet!");
-          }
-        }
-      }
-      returnWord.jp = newWord.data.characters;
-      returnWord.subject_type = subjectType;
+      return finalThing;
     } else {
-      console.log("This " + subjectType + " does not have a WaniKani SRS level of 5 or higher, so it cannot be considered learned!");
-    }
-    console.log("");
+      console.log("This " + subjectType + " does not have a WaniKani SRS level of 5 or higher, so it cannot be considered learned!")
+    };
   }
-  return returnWord;
+  console.log("");
 }
 
 // passed in a LIST with everything, will return the object that is necessary.
@@ -845,7 +793,7 @@ function createVocabularyResponse(vocab) {
     id: vocab.id,
     jp: vocab.data.characters,
     kanji_ids: vocab.data.component_subject_ids,
-    context_sentences: vocab.data.context_sentences,
+    context_sentences: vocab.data.context_sentences, // this makes it so it writes in "ja" instead of "jp" for sentences
     level: vocab.data.level,
     word_type: vocab.data.parts_of_speech
   }

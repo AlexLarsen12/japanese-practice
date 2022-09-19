@@ -115269,5 +115269,544 @@
     "known_readings": [
       "おおさわぎ"
     ]
+  },
+  {
+    "id": 8807,
+    "jp": "品物",
+    "kanji_ids": [
+      967,
+      718
+    ],
+    "context_sentences": [
+      {
+        "en": "Please write the name of the goods you'd like and reply to this tweet.",
+        "ja": "こちらのツイートへ、ほしい品物の名前を書いて返信してください。"
+      },
+      {
+        "en": "There are almost no goods in the grocery store around this time.",
+        "ja": "この時間のスーパーには、品物がほとんど無い。"
+      },
+      {
+        "en": "As soon as the item arrives, I'll contact you.",
+        "ja": "品物が到着次第、ご連絡差し上げます。"
+      }
+    ],
+    "level": 18,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Goods",
+      "Article",
+      "Item",
+      "Thing"
+    ],
+    "known_readings": [
+      "しなもの"
+    ]
+  },
+  {
+    "id": 4072,
+    "jp": "取り分け",
+    "kanji_ids": [
+      966,
+      501
+    ],
+    "context_sentences": [
+      {
+        "en": "Viet was chuckling softly to himself, especially when Koichi was yelling.",
+        "ja": "取り分けコウイチがどなっている時に、ビエトは一人静かに笑っていました。"
+      },
+      {
+        "en": "I finally passed JLPT N1 and I'm especially appreciative of Tofugu for that.",
+        "ja": "ついにJLPT1に合格したんですが、トーフグには取り分け感謝しています。"
+      },
+      {
+        "en": "It’s not especially cold today.",
+        "ja": "今日は取り分け寒いという訳ではない。"
+      }
+    ],
+    "level": 18,
+    "word_type": [
+      "adverb"
+    ],
+    "en": [
+      "Especially"
+    ],
+    "known_readings": [
+      "とりわけ"
+    ]
+  },
+  {
+    "id": 4456,
+    "jp": "省く",
+    "kanji_ids": [
+      1147
+    ],
+    "context_sentences": [
+      {
+        "en": "This robot was supposed to eliminate many human worker’s hands, but the situation remains unchanged.",
+        "ja": "このロボットが多くの人手を省くはずだったが、状況は変化しないままである。"
+      }
+    ],
+    "level": 21,
+    "word_type": [
+      "transitive verb",
+      "godan verb"
+    ],
+    "en": [
+      "To Omit",
+      "To Eliminate",
+      "To Skip",
+      "To Leave Out"
+    ],
+    "known_readings": [
+      "はぶく"
+    ]
+  },
+  {
+    "id": 4704,
+    "jp": "典型的",
+    "kanji_ids": [
+      975,
+      1232,
+      914
+    ],
+    "context_sentences": [
+      {
+        "en": "Why do you call him a typical Japanese person?",
+        "ja": "どうして彼のことを典型的な日本人だっていうの？"
+      }
+    ],
+    "level": 24,
+    "word_type": [
+      "な adjective"
+    ],
+    "en": [
+      "Typical"
+    ],
+    "known_readings": [
+      "てんけいてき"
+    ]
+  },
+  {
+    "id": 4772,
+    "jp": "賞与金",
+    "kanji_ids": [
+      884,
+      1249,
+      602
+    ],
+    "context_sentences": [
+      {
+        "en": "Our paydays are the fifth and the twentieth of every month and a bonus may be paid at the end of the year depending on how well the company has done.",
+        "ja": "給料日は毎月5日と20日で、会社の業績次第で賞与金が年末に支払われます。"
+      }
+    ],
+    "level": 25,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Bonus"
+    ],
+    "known_readings": [
+      "しょうよきん"
+    ]
+  },
+  {
+    "id": 5138,
+    "jp": "博覧会",
+    "kanji_ids": [
+      1355,
+      1428,
+      566
+    ],
+    "context_sentences": [
+      {
+        "en": "You can enter this exhibition free of charge.",
+        "ja": "この博覧会は無料で入場できます。"
+      }
+    ],
+    "level": 30,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Exposition",
+      "Exhibition",
+      "Fair"
+    ],
+    "known_readings": [
+      "はくらんかい"
+    ]
+  },
+  {
+    "id": 5448,
+    "jp": "驚嘆",
+    "kanji_ids": [
+      1458,
+      1459
+    ],
+    "context_sentences": [
+      {
+        "en": "I was amazed at the size of the solar power plant.",
+        "ja": "その太陽光発電所の規模に驚嘆しました。"
+      }
+    ],
+    "level": 31,
+    "word_type": [
+      "noun",
+      "する verb"
+    ],
+    "en": [
+      "Admiration",
+      "Wonder"
+    ],
+    "known_readings": [
+      "きょうたん"
+    ]
+  },
+  {
+    "id": 5521,
+    "jp": "志",
+    "kanji_ids": [
+      1482
+    ],
+    "context_sentences": [
+      {
+        "en": "I hope you will grow up with big ambitions.",
+        "ja": "志の大きい子に育ってくれよ。"
+      },
+      {
+        "en": "I have decided to live a life of rich ambitions.",
+        "ja": "志豊かに行きていこうと決心しました。"
+      },
+      {
+        "en": "Viet has high aspirations and is steadily making his dreams come true.",
+        "ja": "ビエトは高い志を持っており、どんどん夢を実現していってる。"
+      }
+    ],
+    "level": 32,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Ambition",
+      "Intention"
+    ],
+    "known_readings": [
+      "こころざし"
+    ]
+  },
+  {
+    "id": 5639,
+    "jp": "忠告",
+    "kanji_ids": [
+      1523,
+      1031
+    ],
+    "context_sentences": [
+      {
+        "en": "Don’t make light of his advice, or else you might lose your life.",
+        "ja": "彼の忠告を侮るでないぞ、さもなくば命を落としかねんぞ。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "noun",
+      "する verb",
+      "の adjective"
+    ],
+    "en": [
+      "Advice",
+      "Admonishment"
+    ],
+    "known_readings": [
+      "ちゅうこく"
+    ]
+  },
+  {
+    "id": 5636,
+    "jp": "尊い",
+    "kanji_ids": [
+      1522
+    ],
+    "context_sentences": [
+      {
+        "en": "My son asked me something like, \"How precious is life?\" I had difficulty answering him.",
+        "ja": "息子に、「命ってどれくらい尊いの？」なんて聞かれちゃってさ。言葉に窮しちゃったよ。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "い adjective"
+    ],
+    "en": [
+      "Revered",
+      "Noble",
+      "Precious"
+    ],
+    "known_readings": [
+      "とうとい",
+      "たっとい"
+    ]
+  },
+  {
+    "id": 5698,
+    "jp": "賃貸",
+    "kanji_ids": [
+      1544,
+      1324
+    ],
+    "context_sentences": [
+      {
+        "en": "My friend is looking for an apartment to rent, don’t you know any good places?",
+        "ja": "友人が賃貸のアパートを探してるんですが、どこかいい物件を知りませんかね。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "noun",
+      "する verb",
+      "の adjective"
+    ],
+    "en": [
+      "Rental"
+    ],
+    "known_readings": [
+      "ちんたい"
+    ]
+  },
+  {
+    "id": 5678,
+    "jp": "著しい",
+    "kanji_ids": [
+      1538
+    ],
+    "context_sentences": [
+      {
+        "en": "I know I am a doting parent, but I think there has been remarkable improvement in my daughter’s English skills.",
+        "ja": "親馬鹿かもしれませんが、娘の英語力の上達が著しい気がするんですよね。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "い adjective"
+    ],
+    "en": [
+      "Remarkable",
+      "Marked"
+    ],
+    "known_readings": [
+      "いちじるしい"
+    ]
+  },
+  {
+    "id": 5680,
+    "jp": "著作",
+    "kanji_ids": [
+      1538,
+      584
+    ],
+    "context_sentences": [
+      {
+        "en": "She has no less than 50 books published.",
+        "ja": "彼女は少なくとも五十は著作があります。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "noun",
+      "する verb"
+    ],
+    "en": [
+      "Writing",
+      "Authorship"
+    ],
+    "known_readings": [
+      "ちょさく"
+    ]
+  },
+  {
+    "id": 5681,
+    "jp": "蒸れる",
+    "kanji_ids": [
+      1539
+    ],
+    "context_sentences": [
+      {
+        "en": "These shoes look cute, but they make my feet sweaty and stinky.",
+        "ja": "この靴、可愛いんだけど、足が蒸れて臭うんだよね。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "intransitive verb",
+      "ichidan verb"
+    ],
+    "en": [
+      "To Be Humid"
+    ],
+    "known_readings": [
+      "むれる"
+    ]
+  },
+  {
+    "id": 5672,
+    "jp": "納める",
+    "kanji_ids": [
+      1536
+    ],
+    "context_sentences": [
+      {
+        "en": "We've delivered the goods in one piece, now let's go get a drink!",
+        "ja": "無事に商品を納めることができたし、今から飲みに行こうよ！"
+      },
+      {
+        "en": "Which company supplied notebooks with such strange blowfish patterns?!",
+        "ja": "こんな変なフグ模様のノートを納めたのはどこの業者だ？！"
+      },
+      {
+        "en": "I don’t mind paying the tax to the government as long as they spend it on reasonable things.",
+        "ja": "血税の使い道が理にかなってさえいれば、政府に税金を納めるのは私は一向に構いませんよ。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "transitive verb",
+      "ichidan verb"
+    ],
+    "en": [
+      "To Supply",
+      "To Deliver",
+      "To Pay"
+    ],
+    "known_readings": [
+      "おさめる"
+    ]
+  },
+  {
+    "id": 5673,
+    "jp": "収納",
+    "kanji_ids": [
+      1186,
+      1536
+    ],
+    "context_sentences": [
+      {
+        "en": "There isn’t much space to store things in my room, so it requires a little ingenuity.",
+        "ja": "私の部屋にはあまり収納スペースがないので、ちょっとした工夫が必要です。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "noun",
+      "する verb"
+    ],
+    "en": [
+      "Storage"
+    ],
+    "known_readings": [
+      "しゅうのう"
+    ]
+  },
+  {
+    "id": 5653,
+    "jp": "熟れる",
+    "kanji_ids": [
+      1529
+    ],
+    "context_sentences": [
+      {
+        "en": "It’s about the time of year for peaches to ripen.",
+        "ja": "そろそろ桃が熟れる頃だ。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "intransitive verb",
+      "ichidan verb"
+    ],
+    "en": [
+      "To Ripen"
+    ],
+    "known_readings": [
+      "うれる"
+    ]
+  },
+  {
+    "id": 5683,
+    "jp": "蔵",
+    "kanji_ids": [
+      1540
+    ],
+    "context_sentences": [
+      {
+        "en": "We are cleaning our storehouse now.",
+        "ja": "今、蔵の掃除をしているんです。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Storehouse"
+    ],
+    "known_readings": [
+      "くら"
+    ]
+  },
+  {
+    "id": 5684,
+    "jp": "冷蔵庫",
+    "kanji_ids": [
+      1350,
+      1540,
+      1348
+    ],
+    "context_sentences": [
+      {
+        "en": "Why did you get a tattoo that says refrigerator?",
+        "ja": "なんでタトゥーで冷蔵庫なんて彫ったの？"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Refrigerator",
+      "Fridge"
+    ],
+    "known_readings": [
+      "れいぞうこ"
+    ]
+  },
+  {
+    "id": 5685,
+    "jp": "地蔵",
+    "kanji_ids": [
+      608,
+      1540
+    ],
+    "context_sentences": [
+      {
+        "en": "The head of Jizou is dented.",
+        "ja": "お地蔵さんの頭がへこんでるよ。"
+      }
+    ],
+    "level": 33,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Jizo",
+      "Jizou"
+    ],
+    "known_readings": [
+      "じぞう"
+    ]
   }
 ]

@@ -29932,5 +29932,160 @@
     "known_readings": [
       "きょう"
     ]
+  },
+  {
+    "id": 1547,
+    "jp": "貴",
+    "radical_ids": [
+      49,
+      1,
+      94
+    ],
+    "vocabulary_ids": [
+      5747,
+      5748,
+      5749,
+      5750,
+      7662,
+      7777,
+      8237
+    ],
+    "level": 34,
+    "en": [
+      "Valuable"
+    ],
+    "known_readings": [
+      "き",
+      "とうと"
+    ]
+  },
+  {
+    "id": 1546,
+    "jp": "臓",
+    "radical_ids": [
+      43,
+      347
+    ],
+    "vocabulary_ids": [
+      5718,
+      5719,
+      5720,
+      6638
+    ],
+    "level": 34,
+    "en": [
+      "Internal Organs"
+    ],
+    "known_readings": [
+      "ぞう"
+    ]
+  },
+  {
+    "id": 1549,
+    "jp": "丼",
+    "radical_ids": [
+      246,
+      3
+    ],
+    "vocabulary_ids": [
+      5754,
+      5755,
+      5756,
+      5938
+    ],
+    "level": 34,
+    "en": [
+      "Rice Bowl"
+    ],
+    "known_readings": [
+      "どん",
+      "どんぶり"
+    ]
+  },
+  {
+    "id": 1552,
+    "jp": "隷",
+    "radical_ids": [
+      97,
+      207,
+      220,
+      45
+    ],
+    "vocabulary_ids": [
+      5759
+    ],
+    "level": 34,
+    "en": [
+      "Slave"
+    ],
+    "known_readings": [
+      "れい"
+    ]
+  },
+  {
+    "id": 1553,
+    "jp": "芋",
+    "radical_ids": [
+      90,
+      61
+    ],
+    "vocabulary_ids": [
+      5760,
+      5761,
+      5762,
+      9043
+    ],
+    "level": 34,
+    "en": [
+      "Potato"
+    ],
+    "known_readings": [
+      "いも"
+    ]
+  },
+  {
+    "id": 1551,
+    "jp": "奴",
+    "radical_ids": [
+      19,
+      30
+    ],
+    "vocabulary_ids": [
+      5758,
+      5759,
+      5941
+    ],
+    "level": 34,
+    "en": [
+      "Dude"
+    ],
+    "known_readings": [
+      "ど",
+      "やつ"
+    ]
+  },
+  {
+    "id": 1545,
+    "jp": "誤",
+    "radical_ids": [
+      117,
+      348
+    ],
+    "vocabulary_ids": [
+      5743,
+      5744,
+      5745,
+      5746,
+      7723,
+      8331
+    ],
+    "level": 34,
+    "en": [
+      "Mistake"
+    ],
+    "known_readings": [
+      "ご",
+      "あやま"
+    ]
   }
 ]
