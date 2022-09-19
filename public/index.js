@@ -377,7 +377,7 @@
           sentenceJp.textContent = "Japanese: ";
 
           // go through and also make each kanji clickable? this section SCUFFED
-          const regex = /[ぁ-ゔゞァ-・ヽヾ゛゜ー。！？、]/
+          const regex = /[ぁ-ゔゞァ-・ヽヾ゛゜ー。！？、「」]/
           for (let character of word.sentences[i].jp) {
             if (!character.match(regex)) { // probably a kanji?
               let textNode = createSpan(character, "kanji-clickable");
