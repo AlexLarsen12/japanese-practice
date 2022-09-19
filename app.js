@@ -14,7 +14,6 @@ const fs = require("fs").promises;
 const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
-const { type } = require("express/lib/response");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -27,7 +26,7 @@ const RADICAL = "Radical";
 
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
 // only question is how do we keep it up to date after the server is initialized.
-const WORDS_DICT = createDict(["radicals.txt", "kanji.txt", "vocabulary.txt"]);
+const WORDS_DICT = createDict(["infoFiles/radicals.txt", "infoFiles/kanji.txt", "infoFiles/vocabulary.txt"]);
 function createDict(files) {
   let  dict = {}
   for (let file of files) {
@@ -43,7 +42,7 @@ const PITCH_INFO = createPitchInfoDict()
 function createPitchInfoDict() {
   if (!fs_sync.existsSync("infoFiles/pitchLookup.json")) {
     // process the pitchAccents
-    let data = (fs_sync.readFileSync("pitchAccents.txt", "utf8")).split("\n");
+    let data = (fs_sync.readFileSync("infoFiles/pitchAccents.txt", "utf8")).split("\n");
 
     let pitchLookup = {};
     for (let line of data) { // GO THROUGH EACH READING INDIVIDUALLY
@@ -253,11 +252,11 @@ app.post("/syncWaniKani", async function(req, res) {
     }
 
     setTimeout(async function() {
-      let filename = "radicals.txt";
+      let filename = "infoFiles/radicals.txt";
       if (subjectType === "kanji") {
-        filename = "kanji.txt";
+        filename = "infoFiles/kanji.txt";
       } else if (subjectType === "vocabulary") {
-        filename = "vocabulary.txt";
+        filename = "infoFiles/vocabulary.txt";
       }
 
       await updateJSONFile(filename, bigSubjectObject)
@@ -281,11 +280,11 @@ app.get('/syncTable', async function(req, res) {
 
     let db = await getDBConnection();
 
-    let radicals = await fs.readFile("radicals.txt","utf8");
+    let radicals = await fs.readFile("infoFiles/radicals.txt","utf8");
     radicals = JSON.parse(radicals);
-    let kanjis = await fs.readFile("kanji.txt", "utf8");
+    let kanjis = await fs.readFile("infoFiles/kanji.txt", "utf8");
     kanjis = JSON.parse(kanjis);
-    let vocabulary = await fs.readFile("vocabulary.txt", "utf8");
+    let vocabulary = await fs.readFile("infoFiles/vocabulary.txt", "utf8");
     vocabulary = JSON.parse(vocabulary);
 
     let modifyCounter = 0;
@@ -405,7 +404,7 @@ app.get("/funnyGoofyTest", async function(req, res) {
 
 
   // process the pitchAccents
-  let data = (await fs.readFile("pitchAccents.txt", "utf8")).split("\n");
+  let data = (await fs.readFile("infoFiles/pitchAccents.txt", "utf8")).split("\n");
 
 
   let counter = 0;
@@ -675,7 +674,7 @@ app.get("/testingDBRehaul", async function(req, res) {
 // CURRENTLY WORKING ON AS OF 9/7/2022. Need to make it work with new DB schema.
 // unlessing I'm learning 60+ new words (guru+) with each fetch... this should run fine.
 app.get("/updateLastVisited",  async function(req, res) {
-  let updatedDate = (await fs.readFile("lastUpdated.txt", "utf-8")).split("\n");
+  let updatedDate = (await fs.readFile("infoFiles/lastUpdated.txt.txt", "utf-8")).split("\n");
   let lastDate = updatedDate[updatedDate.length - 1];
 
   let url = WANIKANI + "assignments?updated_after=" + lastDate;
@@ -695,7 +694,7 @@ app.get("/updateLastVisited",  async function(req, res) {
 
   // we've updated everything so we can say the last time we updated!
   let now = (new Date()).toISOString();
-  await fs.appendFile("lastUpdated.txt", "\n" + now);
+  await fs.appendFile("infoFiles/lastUpdated.txt.txt", "\n" + now);
 
   res.json({
     last_updated: now,
@@ -756,13 +755,13 @@ async function findIfSubject(subject) {
       let finalThing
       if (subjectType === "radical") {
         finalThing = createRadicalResponse(newWord);
-        updateJSONFile("radicals.txt", [finalThing]); // while testing don't want to add to the json file yet.
+        updateJSONFile("infoFiles/radicals.txt", [finalThing]); // while testing don't want to add to the json file yet.
       } else if (subjectType === "kanji") {
         finalThing = createKanjiResponse(newWord);
-        updateJSONFile("kanji.txt", [finalThing]);
+        updateJSONFile("infoFiles/kanji.txt", [finalThing]);
       } else if (subjectType === "vocabulary") {
         finalThing = createVocabularyResponse(newWord)
-        updateJSONFile("vocabulary.txt", [finalThing]);
+        updateJSONFile("infoFiles/vocabulary.txt", [finalThing]);
       }
       return finalThing;
     } else {
