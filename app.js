@@ -258,9 +258,28 @@ app.get("/funnyGoofyTest", async function(req, res) {
 app.post('/modifyWord', async function(req, res) {
 });
 
-// OUTDATED AS OF 8/24/2022
+// OUTDATED ( AND DELETED) AS OF 9/20/2022
 // will remove a known word from the database.
 app.post('/removeWord', async function(req, res) {
+  try {
+    if (!req.body.jp) throw new Error("Please add a subject to remove.");
+    if (!req.body.type) throw new Error("You must also include the type of subject you wish to remove.");
+
+    let db = await getDBConnection();
+    let subjectTypeCombo = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [req.body.jp, req.body.type])
+    if (!subjectTypeCombo) throw new Error("This subject/type combination is not currently known");
+    // now my error checking is done.
+
+    res.json(subjectTypeCombo);
+
+    // run through every table in the DB and just try to delete any record of its existence.
+    // need to be careful on the tables that have no reference to a "type" cuz it could screw it up.
+    await db.run("DELETE FROM Kanji WHERE characters = ? AND type =?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
+
+
+  } catch(err) {
+    res.status(500).type("text").send(err.message);
+  }
 });
 
 // CURRENTLY WORKING ON AS OF 9/20/2022. Need to make it work with new DB schema.
@@ -431,16 +450,6 @@ async function findIfSubject(subject) {
     };
   }
   console.log("");
-}
-
-// passed in a LIST with everything, will return the object that is necessary.
-function findSubject(subjectIdentifier, subjectList) {
-  for (let i = 0; i < subjectList.length; i++) {
-    if (subjectIdentifier === subjectList[i].id) {
-      return subjectList[i];
-    } else {
-    }
-  }
 }
 
 function createRadicalResponse(radical) {
