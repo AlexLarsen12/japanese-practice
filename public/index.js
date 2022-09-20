@@ -1,10 +1,13 @@
 "use strict";
 
 (function() {
+  const FONT_STYLES = ["noto-serif-jp", "kosugi-maru", "rampart-one", "zen-maru-gothic",
+                       "reggae-one", "rocknroll-one", "yuki-boku"];
 
   window.addEventListener("load", init);
 
   function init() {
+    document.querySelector("body").classList.add(FONT_STYLES[Math.floor(Math.random() * FONT_STYLES.length)]);
     refreshDictionary();
     id("add-word").addEventListener("change", changeWordType);
     id("search").addEventListener("input", searchWords);

@@ -1,3 +1,44 @@
+/* fun fonts time!
+
+font-family: 'Noto Serif JP', serif;
+font-family: 'Kosugi Maru', sans-serif;
+font-family: 'Rampart One', cursive;
+font-family: 'Zen Maru Gothic', sans-serif;
+font-family: 'Reggae One', cursive;
+font-family: 'RocknRoll One', sans-serif;
+font-family: 'Yuji Boku', serif;
+*/
+
+.noto-serif-jp {
+  font-family: 'Noto Serif JP', serif;
+}
+
+.kosugi-maru {
+  font-family: 'Kosugi Maru', sans-serif;
+}
+
+.rampart-one {
+  font-family: 'Rampart One', cursive;
+}
+
+.zen-maru-gothic {
+  font-family: 'Zen Maru Gothic', sans-serif;
+}
+
+.reggae-one {
+  font-family: 'Reggae One', cursive;
+}
+
+.rocknroll-one {
+  font-family: 'RocknRoll One', sans-serif;
+}
+
+.yuki-boku {
+  font-family: 'Yuji Boku', serif;
+}
+
+
+
 .box, .display-box, #word-info {
   display: flex;
   justify-content: space-around;
@@ -25,11 +66,10 @@
 
 body {
   background-color: lavenderblush;
-  font-family: 'Kosugi Maru', sans-serif;
 }
 
 p {
-  font-size: 26pt;
+  font-size: 28pt;
 }
 
 form > div > p {
