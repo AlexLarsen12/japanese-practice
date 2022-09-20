@@ -14,15 +14,11 @@ const fs = require("fs").promises;
 const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
-const { deepStrictEqual } = require("assert");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
 
 const WORD_TYPES = ["radical", "kanji", "vocabulary"];
-const VOCAB = "Vocabulary";
-const KANJI = "Kanji";
-const RADICAL = "Radical";
 
 
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
@@ -39,7 +35,7 @@ function createDict(files) {
   return dict;
 }
 
-const PITCH_INFO = createPitchInfoDict()
+const PITCH_INFO = createPitchInfoDict();
 function createPitchInfoDict() {
   if (!fs_sync.existsSync("infoFiles/pitchLookup.json")) {
     // process the pitchAccents
@@ -62,15 +58,6 @@ function createPitchInfoDict() {
   }
 }
 
-function findPitchInfo(kanji, reading) {
-  let wordPitchInfo = PITCH_INFO[kanji + "\t" + reading] // try to find the combo in here, but it won't work for everything
-  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[kanji.replace(/する$/, "") + "\t" + reading.replace(/する$/, "")]; // checking する verbs
-  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[allHiragana(kanji) + "\t" + allHiragana(reading)];
-  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[allKatakana(kanji) + "\t" + allKatakana(reading)];
-  // fun fact, this doesn't get everything :(
-  return wordPitchInfo;
-}
-
 // Returns the word that is specified. Requires also query parameter of "type" t  o be passed in.
 // "type" can be - "vocabulary", "kanji", or "radical".
 // UPDATED TO WORK WITH JAPANESE NEW.db 8/24/2022
@@ -88,41 +75,6 @@ app.get('/word/:word', async function(req, res) {
     res.type("text").status(500).send(err.message);
   }
 });
-
-// will return a word with COMPLETE INFORMATIONof any type and any word. Will return nothing if can't find
-async function getWord(type, word, db) {
-  if (!db) db = await getDBConnection();
-  let data = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [word, type]);
-  if (data) {
-    let wordObj = {
-      jp: data.characters,
-      type: type,
-      en: (await db.all("SELECT * FROM English WHERE characters = ? AND type = ?", data.characters, type)).map(line => line.english),
-      last_studied: data.last_studied,
-      correct: data.correct,
-      wrong: data.wrong,
-      current_streak: data.current_streak,
-      longest_streak: data.longest_streak,
-      first_unlocked: data.first_unlocked,
-      notes: (await db.all("SELECT * FROM Notes WHERE characters = ? AND type = ?", data.characters, type)).map(line => line.note),
-      source: (await db.all("SELECT * FROM Source WHERE characters = ? AND type = ?", data.characters, type)).map(line => line.source)
-    }
-
-    if (type === "kanji" || type === "vocabulary") wordObj.known_readings =  (await db.all("SELECT * FROM Readings WHERE characters = ? AND type = ?", [data.characters, type])).map(line => line.reading);
-    if (type === "radical") {
-      wordObj.known_kanji = (await db.all("SELECT * FROM Radicals WHERE radical = ?", data.characters)).map(line => line.characters);
-    } else if (type === "kanji") {
-      wordObj.radical_composition = (await db.all("SELECT * FROM Radicals WHERE characters = ?", data.characters)).map(line => line.radical);
-      wordObj.known_vocabulary =  (await db.all("SELECT * FROM Vocabulary WHERE characters = ? ", data.characters)).map(line => line.vocab);
-    } else if (type === "vocabulary") {
-      wordObj.kanji_composition = (await db.all("SELECT * FROM Vocabulary WHERE vocab = ?", data.characters)).map(line => line.characters);
-      wordObj.word_type = (await db.all("SELECT * FROM WordType WHERE characters = ?", data.characters)).map(line => line.type);
-      wordObj.sentences = (await db.all("SELECT * FROM Sentences WHERE characters = ?", data.characters)).map(line => {return {en: line.en, jp: line.jp}});
-      wordObj.pitch_data = (await db.all("SELECT * FROM PitchInfo WHERE characters = ?", data.characters)).map(line => {return {reading: line.reading, pitch: line.pitch}});
-    }
-    return wordObj;
-  }
-}
 
 // returns all words in a list!
 // updated 9/19/2022... This is way faster if an obj doesn't exist. I don't quite like that there are
@@ -167,6 +119,7 @@ app.get("/randomWord", async function(req, res) {
     res.status(500).send(err.message);
   }
 });
+// should maybe make this grab from the object if it exists??
 
 // new endpoint (should maybe be post) that will try to see if you got the word right
 // https://en.wikipedia.org/wiki/Levenshtein_distance
@@ -206,8 +159,16 @@ app.post("/addWord", async function (req, res) {
     if (req.body["kanji-composition"]) await req.body["kanji-composition"].forEach(async kanji => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [kanji, jp]));
     if (req.body["word-type"]) await req.body["word-type"].forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [jp, wordType]));
     if (req.body.sentences) await req.body.sentences.forEach(async sen => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [jp. sen.en, sen.jp]));
-    if (req.body["pitch-data"]) await req.body["pitch-data"].forEach(async info => await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, info.reading, info.pitch]));
-    // note for pitchInfo, if it doesn't exist I can try to look it up because I have the dictionary right here... Could be worth a try perhaps.
+
+    // THIS HAS A SPECIFIC WAY YOU NEED TO ENTER THE PITCHINFO. IF IT DOESN'T EXIST. I WILL LOOKIT UP MYSELF.
+    if (req.body["pitch-data"]) {
+      await req.body["pitch-data"].forEach(async info => await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, info.reading, info.pitch]));
+    } else if (type === "vocabulary") {
+      for (reading of req.body["known-readings"]) {
+        let pitchInfo = pitchLookup(jp, reading);
+        if (pitchInfo) await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, reading, pitchInfo.pitchInfo]);
+      }
+    }
 
     await db.close();
     res.send("New " + type + " added: " + jp);
@@ -216,8 +177,6 @@ app.post("/addWord", async function (req, res) {
   }
 });
 
-
-// ---------------------- OKAY I PULL UP ----------------------------------
 // used to SYNC completely WaniKani and my program. Doesn't work with large batches,
 // and should never need to be used again. Also it only ADDS on to existing .txt files so you
 // may get a lot of duplicated unless you completely wipe the .txt files. It is meant more as a
@@ -280,126 +239,9 @@ app.post("/syncWaniKani", async function(req, res) {
 // used to actually sync the information from the .txt files into my database.
 // realisitcally should never be used again as long as I maintain the current website.
 app.get('/syncTable', async function(req, res) {
-  try {
-    let subjectType = req.query.type; // needs to be radical, kanji, vocabulary
-    if (!(subjectType === "radical" || subjectType === "kanji" || subjectType === "vocabulary")) {
-      console.log(subjectType);
-      throw new Error("u made an oopsies");
-    }
-
-    let db = await getDBConnection();
-
-    let radicals = await fs.readFile("infoFiles/radicals.json","utf8");
-    radicals = JSON.parse(radicals);
-    let kanjis = await fs.readFile("infoFiles/kanji.json", "utf8");
-    kanjis = JSON.parse(kanjis);
-    let vocabulary = await fs.readFile("infoFiles/vocabulary.json", "utf8");
-    vocabulary = JSON.parse(vocabulary);
-
-    let modifyCounter = 0;
-    let addCounter = 0;
-    if (subjectType === "radical") {
-      for (let radical of radicals) {
-
-        // adding in the correct known kanji
-        let actuallyKnownKanji = [];
-        for (let existingKanjiId of radical.kanji_ids) {
-          let knownKanji = findSubject(existingKanjiId, kanjis);
-          if (knownKanji) {
-            actuallyKnownKanji.push(knownKanji.id);
-          }
-        }
-        let kanjiFinal = [];
-        for (let actuallyReallyKnownKanji of actuallyKnownKanji) {
-          kanjiFinal.push(findSubject(actuallyReallyKnownKanji, kanjis).jp);
-        }
-        if (radical.jp !== null) {
-          if (await db.all("SELECT * FROM Radical WHERE jp = ?", radical.jp).length !== 0) {
-            await db.run("UPDATE Radical SET known_kanji = ? WHERE jp = ?", [JSON.stringify(kanjiFinal), radical.jp]);
-            modifyCounter++;
-           } else {
-            await db.run("INSERT INTO Radical (jp, en, source) VALUES(?, ?, ?, ?)", [radical.jp, radical.en.toLowerCase(), radical.level]);
-            addCounter++;
-           }
-        }
-      }
-    } else if (subjectType === "kanji") {
-      for (let kanji of kanjis) {
-        let kanjiEn = kanji.en.map(element => {
-          return element.toLowerCase();
-        });
-
-        // can actually assume we know all the radicals!! (which is true);
-        let radicalsList = [];
-        for (let knownRadical of kanji.radical_ids) {
-          radicalsList.push(findSubject(knownRadical, radicals).jp);
-        }
-        let radicalsListFinal = radicalsList.filter(element => {return element !== null});
-
-        // aaaaaaaaaaaa
-        let actuallyKnownVocab = [];
-        for (let existingVocabId of kanji.vocabulary_ids) { // CAN'T ASSUME i KNOW ALL THE VOCABULARY :(
-          let knownVocab = findSubject(existingVocabId, vocabulary);
-          if (knownVocab) {
-            actuallyKnownVocab.push(knownVocab.id);
-          }
-        }
-        let vocabFinal = [];
-        for (let actuallyReallyKnownVocab of actuallyKnownVocab) {
-          vocabFinal.push(findSubject(actuallyReallyKnownVocab, vocabulary).jp);
-        }
-
-        if ((await db.all("SELECT * FROM Kanji WHERE jp = ?", kanji.jp)).length!== 0) {
-          await db.run("UPDATE Kanji SET en = ?, known_readings = ?, radical_composition = ?, known_vocabulary = ?, source = ? WHERE jp = ?", [
-            JSON.stringify(kanjiEn), JSON.stringify(kanji.known_readings), JSON.stringify(radicalsListFinal),
-            JSON.stringify(vocabFinal), JSON.stringify(["WaniKani level " + kanji.level]), kanji.jp
-          ]);
-          modifyCounter++;
-        } else {
-          await db.run("INSERT INTO Kanji (jp, en, known_readings, radical_composition, known_vocabulary, source) VALUES(?, ?, ?, ?, ?, ?)", [
-            kanji.jp, JSON.stringify(kanjiEn), JSON.stringify(kanji.known_readings),
-            JSON.stringify(radicalsListFinal), JSON.stringify(vocabFinal), JSON.stringify(["WaniKani level " + kanji.level])
-          ]);
-          addCounter++;
-        }
-      }
-    } else if (subjectType === "vocabulary") {
-      for (let vocab of vocabulary) {
-        let vocabEn = vocab.en.map(element => {
-          return element.toLowerCase();
-        });
-
-
-        let kanjiList = [];
-        for (let knownKanji of vocab.kanji_ids) {
-          kanjiList.push(findSubject(knownKanji, kanjis).jp);
-        }
-
-        if ((await db.all("SELECT * FROM Vocabulary WHERE jp = ?", vocab.jp)).length !== 0) {
-          await db.run("UPDATE Vocabulary SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ?, source = ?, word_type = ? WHERE jp = ?", [
-            JSON.stringify(vocabEn), JSON.stringify(vocab.known_readings), JSON.stringify(kanjiList),
-            JSON.stringify(vocab.context_sentences), JSON.stringify(["WaniKani level " + vocab.level]),
-            JSON.stringify(vocab.word_type), vocab.jp
-          ]);
-          modifyCounter++;
-        } else {
-          await db.run("INSERT INTO Vocabulary (jp, en, known_readings, kanji_composition, sentences, source, word_type) VALUES(?, ?, ?, ?, ?, ?, ?)", [
-            vocab.jp, JSON.stringify(vocabEn), JSON.stringify(vocab.known_readings),
-            JSON.stringify(kanjiList), JSON.stringify(vocab.context_sentences),
-            JSON.stringify(["WaniKani level " + vocab.level]),
-            JSON.stringify(vocab.word_type)
-          ]);
-          addCounter++;
-        }
-      }
-    }
-    res.send("modified " + modifyCounter + " and added " + addCounter + " of " + subjectType);
-  } catch(err) {
-    res.send(err.message);
-  }
+  // REMOVED FUNCTIONALITY BECAUSE IT WAS WORKING WITH _OLD_ database. Therefore no longer necessary.
+  // If wanted, can update this to work with the _NEW_ database.
 });
-
-
 
 // the thing I use to test different endpoints. Most of the code does very specific things and I
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
@@ -409,278 +251,19 @@ app.get("/funnyGoofyTest", async function(req, res) {
   // 0: 平板式: starts low, goes UP. There is no high pitch mora so
   // 1: 頭高型: starts high, and the first mora is the last high pitch morea so it goes down and stays down.
   // 2-6: 尾高型 or 仲間型: the last high pitch mora hapens at mora 2-6, then it goes down!.
-
-
-
-  // process the pitchAccents
-  let data = (await fs.readFile("infoFiles/pitchAccents.txt", "utf8")).split("\n");
-
-
-  let counter = 0;
-  let reseponseData = [];
-  let pitchLookup = {};
-  for (let line of data) { // GO THROUGH EACH READING INDIVIDUALLY
-
-    let lineData = line.split("\t");
-    pitchLookup[lineData[0] + "\t" + lineData[1]] = {
-      kanji: lineData[0],
-      hiragana: lineData[1],
-      pitchInfo: lineData[2]
-    } // should have a whole lookup with all the right things!
-  }
-
-
-// big money question: should I add this info now to the database?
-// or just look up and send back each time it's requested?
-
-
-  // time to do a lookup for all the readings of each thing!
-  // so this works mostly well
-  let db = await getDBConnection();
-  for (let key of Object.keys(WORDS_DICT)) {
-    let vocab = WORDS_DICT[key];
-    if (vocab.context_sentences) { // sketchy way to find out if it's vocabulary!!
-      for (let reading of vocab.known_readings) {
-        let wordPitchInfo = pitchLookup[vocab.jp + "\t" + reading]; // want to try to find the combo! but this won't catch everything
-        if (!wordPitchInfo) wordPitchInfo = pitchLookup[vocab.jp.replace(/する$/, "") + "\t" + reading.replace(/する$/, "")]; // checking する verbs
-        if (!wordPitchInfo) wordPitchInfo = pitchLookup[allHiragana(vocab.jp) + "\t" + allHiragana(reading)];
-        if (!wordPitchInfo) wordPitchInfo = pitchLookup[allKatakana(vocab.jp) + "\t" + allKatakana(reading)];
-        // fun fact: This still doesn't catch everything! cool!
-        if (wordPitchInfo) {
-          reseponseData.push({
-            vocab_kanji: vocab.jp,
-            vocab_reading: reading,
-            pitch_accent: wordPitchInfo.pitchInfo,
-          });
-          counter++;
-        } else {
-          console.log("Sorry this doesn't have pitch accent!: " + vocab.jp + " (" + reading + ")");
-        }
-      }
-    }
-  }
-  console.log(counter);
-  res.json(reseponseData);
 });
-// ------------------- OKAY I LEAVE -------------------
 
-// OUTDATED AS OF 8/24/2022
+// OUTDATED (and deleted) AS OF 9/20/2022
 // will modify a known word in the database.
 app.post('/modifyWord', async function(req, res) {
-  try {
-    let db = await getDBConnection();
-
-    let table = req.body.type.toLowerCase().charAt(0).toUpperCase() + req.body.type.slice(1);
-    let word = (await db.all("SELECT * FROM " + table + " WHERE jp = ?", req.body.jp))[0];
-    if (!word) { // indexing into empty array gives _undefined_
-      throw new Error("LOL this word doesn't exist");
-    }
-
-    if (table === RADICAL) {
-      // can just ignore any english passed in!
-      if (!word.en) {
-        word.en = req.body.en;
-      }
-      word.known_kanji = addToColumn(word.known_kanji, req.body["known-kanji"]);
-      word.notes = addToColumn(word.notes, req.body.notes);
-      word.source = addToColumn(word.source, req.body.source);
-
-      await db.run("UPDATE " + table + " SET known_kanji = ?, notes = ?, source = ?, en = ? WHERE jp = ?",
-                   [word.known_kanji, word.notes, word.source, word.en, word.jp]);
-
-    } else if (table === KANJI) {
-
-      word.en = addToColumn(word.en, req.body.en);
-      word.known_readings = addToColumn(word.known_readings, req.body["known-readings"]);
-      word.radical_composition = addToColumn(word.radical_composition, req.body["radical-composition"]);
-      word.known_vocabulary = addToColumn(word.known_vocabulary, req.body["known-vocabulary"]);
-      word.notes = addToColumn(word.notes, req.body.notes);
-      word.source = addToColumn(word.source, req.body.source);
-
-      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, radical_composition = ?, known_vocabulary = ?, notes = ?, source = ? WHERE jp = ?",
-                   [word.en, word.known_readings, word.radical_composition, word.known_vocabulary, word.notes, word.source, word.jp]);
-
-      await updateKnownKanji(req.body.jp, word.radical_composition, db);
-    } else if (table === VOCAB) {
-
-      word.en = addToColumn(word.en, req.body.en);
-      word.known_readings = addToColumn(word.known_readings, req.body["known-readings"]);
-      word.kanji_composition = addToColumn(word.kanji_composition, req.body["kanji-composition"]);
-      word.notes = addToColumn(word.notes, req.body.notes);
-      word.source = addToColumn(word.source, req.body.source);
-      word.word_type = addToColumn(word.word_type, req.body["word-type"]);
-
-      word.sentences= JSON.parse(word.sentences);
-      if (req.body["sentence-jp"].split("\\,")[0] !== "") { // if there's a sentence
-        for (let i = 0; i < req.body["sentence-jp"].split("\\,").length; i++) { //assume clients aren't idiots
-          let sentenceObj = {};
-          sentenceObj.en = req.body["sentence-en"].split("\\,")[i];
-          sentenceObj.jp = req.body["sentence-jp"].split("\\,")[i];
-          sentenceObj["jp_simple"] = req.body["jp-simple"].split("\\,")[i];
-          sentenceObj.vocab = req.body["sentence-vocab"].split("\\,")[i].split("*");
-
-          word.sentences.push(sentenceObj);
-        }
-      }
-
-      word.sentences = JSON.stringify(word.sentences);
-      await updateKnownVocabulary(word.jp, word.kanji_composition, db);
-
-      await db.run("UPDATE " + table + " SET en = ?, known_readings = ?, kanji_composition = ?, sentences = ?, notes = ?, source =?, word_type = ? WHERE jp = ?",
-      [word.en, word.known_readings, word.kanji_composition, word.sentences, word.notes, word.source, word.word_type, word.jp]);
-
-      let sentences = JSON.parse(word.sentences);
-      for (let i = 0; i < sentences.length; i++) {
-        let vocab = sentences[i].vocab;
-
-        for (let j = 0; j < vocab.length; j++) {
-          let foundWord = await db.get("SELECT * FROM Vocabulary WHERE jp = ?", vocab[j]);
-
-          if (!foundWord) {
-            await db.run("INSERT INTO Vocabulary (jp) VALUES (?)", vocab[j]);
-          }
-        }
-      }
-    }
-    await db.close();
-    res.json(word);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
 });
 
 // OUTDATED AS OF 8/24/2022
 // will remove a known word from the database.
 app.post('/removeWord', async function(req, res) {
-
-  try {
-    let db = await getDBConnection();
-    let type = req.body.type;
-    type = type.toLowerCase().charAt(0).toUpperCase() + type.slice(1);
-    if (!WORD_TYPES.includes(type)) {
-      res.status(400).send("WORD TYPE NOT RECOGNIZED");
-    } else {
-      await db.run("DELETE FROM " + type + " WHERE jp = ?", req.body.word);
-      res.send("nice work brother");
-    }
-    await db.close();
-  } catch(err) {
-    res.status(500).send("whoa bro stop messing up");
-  }
 });
 
-// uses a fun little thing
-function allHiragana(phrase) {
-  let list = [...phrase] // basically makes a list out of the phrase.
-  return list.map(char => char.charCodeAt(0)).map(char => (12449 <= char && char <= 12534) ? char - 96 : char).map(char => String.fromCharCode(char)).join("");
-}
-
-function allKatakana(phrase) {
-  let list = [...phrase] // basically makes a list out of the phrase.
-  return list.map(char => char.charCodeAt(0)).map(char => (12353 <= char && char <= 12438) ? char + 96 : char).map(char => String.fromCharCode(char)).join("");
-}
-
-async function addToNewDatabase() {
-  let db = await getDBConnection();
-  let counter = 0;
-  for (let key of Object.keys(WORDS_DICT)) {
-    let word = WORDS_DICT[key];
-    if (typeof(word.en) === "string" && word.jp !== null) { // word is a radical and don't want null!
-      await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [word.en.toLowerCase(), word.jp, "radical"]);
-      await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "radical"]);
-
-      for (let kanjiId of word.kanji_ids) {
-        if (WORDS_DICT[kanjiId]) { // we know the kanji so we can add it to the database
-          await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, word.jp]);
-        }
-      }
-      await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "radical"]);
-      counter++;
-    } else if (word.vocabulary_ids) { // word is a kanji
-      // we can skip kanji-radical interactions because it was already handled in the previous cases.
-      await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "kanji"]);
-      for (let en of word.en) {
-        en = en.toLowerCase();
-        await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, word.jp, "kanji"]);
-      }
-      for (let reading of word.known_readings) {
-        await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, word.jp, "kanji"]);
-      }
-      await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "kanji"]);
-    } else if (word.context_sentences) { // word is a vocabulary
-      for (let kanjiId of word.kanji_ids) {
-        await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, word.jp]);
-      }
-      await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [word.jp, "vocabulary"]);
-      for (let en of word.en) {
-        en = en.toLowerCase();
-        await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, word.jp, "vocabulary"]);
-      }
-      for (let reading of word.known_readings) {
-        await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, word.jp, "vocabulary"]);
-      }
-      for (let sentence of word.context_sentences) {
-        await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [word.jp, sentence.en, sentence.jp]);
-      }
-      for (let wordType of word.word_type) {
-        await db.run("INSERT Into WordType (characters, type) VALUES (?, ?)", [word.jp, wordType]);
-      }
-      await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [word.jp, "WaniKani level " + word.level, "vocabulary"]);
-      counter++;
-    }
-  }
-}
-
-app.get("/testingDBRehaul", async function(req, res) {
-  let db = await getDBConnection();
-
-  let radicals = [];
-  let kanji = [];
-  let vocabulary = [];
-  let subjects = await db.all("SELECT * FROM Kanji ORDER BY type DESC");
-
-  for (let subject of subjects) {
-    let thingieMaBob = {
-      jp: subject.characters,
-      type: subject.type,
-      en: (await db.all("SELECT * FROM English WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.english),
-      last_studied: subject.last_studied,
-      correct: subject.correct,
-      wrong: subject.wrong,
-      current_streak: subject.current_streak,
-      longest_streak: subject.longest_streak,
-      first_unlocked: subject.first_unlocked,
-      notes: (await db.all("SELECT * FROM Notes WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.note),
-      source: (await db.all("SELECT * FROM Source WHERE characters = ? AND type = ?", subject.characters, subject.type)).map(line => line.source)
-    }
-
-    if (subject.type === "radical") {
-      // thingieMaBob.known_kanji = (await db.all("SELECT * FROM Radicals WHERE radical = ?", subject.characters)).map(line => line.characters);
-      radicals.push(thingieMaBob);
-    } else if (subject.type === "kanji") {
-      thingieMaBob.known_readings =  (await db.all("SELECT * FROM Readings WHERE characters = ? AND type ='kanji'", subject.characters)).map(line => line.reading);
-      // thingieMaBob.radical_composition = (await db.all("SELECT * FROM Radicals WHERE characters = ?", subject.characters)).map(line => line.radical);
-      // thingieMaBob.known_vocabulary =  (await db.all("SELECT * FROM Vocabulary WHERE characters = ? ", subject.characters)).map(line => line.vocab);
-      kanji.push(thingieMaBob);
-    } else if (subject.type === "vocabulary") {
-      thingieMaBob.known_readings = (await db.all("SELECT * FROM Readings WHERE characters = ? AND type ='vocabulary'", subject.characters)).map(line => line.reading);
-      // thingieMaBob.kanji_composition = (await db.all("SELECT * FROM Vocabulary WHERE vocab = ?", subject.characters)).map(line => line.characters);
-      // thingieMaBob.word_type = (await db.all("SELECT * FROM WordType WHERE characters = ?", subject.characters)).map(line => line.type);
-      // thingieMaBob.sentences = (await db.all("SELECT * FROM Sentences WHERE characters = ?", subject.characters)).map(line => {return {en: line.en, jp: line.jp}});
-      // thingieMaBob.pitch_data = (await db.all("SELECT * FROM PitchInfo WHERE characters = ?", subject.characters)).map(line => {return {reading: line.reading, pitch: line.pitch}});
-      vocabulary.push(thingieMaBob);
-    }
-  }
-  // res.json({
-  //   radicals: radicals,
-  //   kanji: kanji,
-  //   vocabulary: vocabulary
-  // }
-  res.json(radicals.concat(kanji, vocabulary));
-});
-
-
-// CURRENTLY WORKING ON AS OF 9/7/2022. Need to make it work with new DB schema.
+// CURRENTLY WORKING ON AS OF 9/20/2022. Need to make it work with new DB schema.
 // unlessing I'm learning 60+ new words (guru+) with each fetch... this should run fine.
 app.get("/updateLastVisited",  async function(req, res) {
   let updatedDate = (await fs.readFile("infoFiles/lastUpdated.txt", "utf-8")).split("\n");
@@ -706,11 +289,70 @@ app.get("/updateLastVisited",  async function(req, res) {
   await fs.appendFile("infoFiles/lastUpdated.txt", "\n" + now);
 
   res.json({
+    assignments_checked: assignments.length,
     last_updated: now,
     length: addedWords.length,
     words: addedWords
   });
 });
+
+/** -- helper functions -- */
+
+// for a SPECIFIC reading.
+function findPitchInfo(kanji, reading) {
+  let wordPitchInfo = PITCH_INFO[kanji + "\t" + reading] // try to find the combo in here, but it won't work for everything
+  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[kanji.replace(/する$/, "") + "\t" + reading.replace(/する$/, "")]; // checking する verbs
+  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[allHiragana(kanji) + "\t" + allHiragana(reading)];
+  if (!wordPitchInfo) wordPitchInfo = PITCH_INFO[allKatakana(kanji) + "\t" + allKatakana(reading)];
+  // fun fact, this doesn't get everything :(
+  return wordPitchInfo;
+}
+
+// will return a word with COMPLETE INFORMATIONof any type and any word. Will return nothing if can't find
+async function getWord(type, word, db) {
+  if (!db) db = await getDBConnection();
+  let data = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [word, type]);
+  if (data) {
+    let wordObj = {
+      jp: data.characters,
+      type: type,
+      en: (await db.all("SELECT * FROM English WHERE characters = ? AND type = ?", data.characters, type)).map(line => line.english),
+      last_studied: data.last_studied,
+      correct: data.correct,
+      wrong: data.wrong,
+      current_streak: data.current_streak,
+      longest_streak: data.longest_streak,
+      first_unlocked: data.first_unlocked,
+      notes: (await db.all("SELECT * FROM Notes WHERE characters = ? AND type = ?", data.characters, type)).map(line => line.note),
+      source: (await db.all("SELECT * FROM Source WHERE characters = ? AND type = ?", data.characters, type)).map(line => line.source)
+    }
+
+    if (type === "kanji" || type === "vocabulary") wordObj.known_readings =  (await db.all("SELECT * FROM Readings WHERE characters = ? AND type = ?", [data.characters, type])).map(line => line.reading);
+    if (type === "radical") {
+      wordObj.known_kanji = (await db.all("SELECT * FROM Radicals WHERE radical = ?", data.characters)).map(line => line.characters);
+    } else if (type === "kanji") {
+      wordObj.radical_composition = (await db.all("SELECT * FROM Radicals WHERE characters = ?", data.characters)).map(line => line.radical);
+      wordObj.known_vocabulary =  (await db.all("SELECT * FROM Vocabulary WHERE characters = ? ", data.characters)).map(line => line.vocab);
+    } else if (type === "vocabulary") {
+      wordObj.kanji_composition = (await db.all("SELECT * FROM Vocabulary WHERE vocab = ?", data.characters)).map(line => line.characters);
+      wordObj.word_type = (await db.all("SELECT * FROM WordType WHERE characters = ?", data.characters)).map(line => line.type);
+      wordObj.sentences = (await db.all("SELECT * FROM Sentences WHERE characters = ?", data.characters)).map(line => {return {en: line.en, jp: line.jp}});
+      wordObj.pitch_data = (await db.all("SELECT * FROM PitchInfo WHERE characters = ?", data.characters)).map(line => {return {reading: line.reading, pitch: line.pitch}});
+    }
+    return wordObj;
+  }
+}
+
+// uses a fun little thing
+function allHiragana(phrase) {
+  let list = [...phrase] // basically makes a list out of the phrase.
+  return list.map(char => char.charCodeAt(0)).map(char => (12449 <= char && char <= 12534) ? char - 96 : char).map(char => String.fromCharCode(char)).join("");
+}
+
+function allKatakana(phrase) {
+  let list = [...phrase] // basically makes a list out of the phrase.
+  return list.map(char => char.charCodeAt(0)).map(char => (12353 <= char && char <= 12438) ? char + 96 : char).map(char => String.fromCharCode(char)).join("");
+}
 
 async function addWordToDBFromWaniKani(finalThing, subjectType) {
    let db = await getDBConnection();
@@ -720,6 +362,17 @@ async function addWordToDBFromWaniKani(finalThing, subjectType) {
    if (subjectType === "radical") finalThing.en = [finalThing.en]; //maybe should stay consistent with this being a list or not.
    let lowerCaseReadings = finalThing.en.map(word => word.toLowerCase());
    await lowerCaseReadings.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, finalThing.jp, subjectType]));
+
+  let allWords = JSON.parse(await fs.readFile("infoFiles/allWords.json"));
+  allWords.push({
+    jp: finalThing.jp,
+    type: subjectType,
+    en: finalThing.en,
+    known_readings: lowerCaseReadings
+  });
+  await fs.writeFile("infoFiles/allWords.json", JSON.stringify(allWords, null, 2));
+  // this is a VERY scuffed way to update this for every word added. I don't really like it, but it should
+  // keep things up to date for now.
 
    if (subjectType === "radical") {
      await finalThing.kanji_ids.forEach(async kanjiId => { if (WORDS_DICT[kanjiId]) await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, finalThing.jp])});
@@ -865,7 +518,6 @@ async function updateJSONFile(filename, listData) {
   }
 }
 
-
 // should make this general so I can use it for any request that queries the API
 async function recursiveFetchTime(url, list) {
   if (url !== null) {
@@ -881,119 +533,6 @@ async function recursiveFetchTime(url, list) {
     await recursiveFetchTime(contents.pages.next_url, list)
     return list;
   }
-}
-
-/** -- helper functions -- */
-
-// when we add kanji, we should update "known_kanji" in Radical table.
-async function updateKnownKanji(kanji, radicalList, db) {
-  radicalList = JSON.parse(radicalList);
-
-  // want to loop through all the radical that make up this kanji.
-  for (let i = 0; i < radicalList.length; i++) {
-    let knownKanji = (await db.all("SELECT known_kanji FROM Radical WHERE jp = ?", radicalList[i]))[0];
-
-    if (knownKanji) {
-      knownKanji = JSON.parse(knownKanji.known_kanji);
-      if (!knownKanji.includes(kanji)) {
-        knownKanji.push(kanji); // add to the vocab list.
-        await db.run("UPDATE Radical SET known_kanji = ? WHERE jp = ?", [JSON.stringify(knownKanji), radicalList[i]]);
-      }
-    } else { // roundabout - but the kanji does not exist... lets add it (even if it's empty)!
-      await db.run("INSERT INTO Radical (jp, known_kanji) VALUES (?, ?)", [radicalList[i], [JSON.stringify([kanji])]]);
-    }
-  }
-}
-
-// when we add vocabulary, we should update "known_vocabulary" in Kanji table.
-async function updateKnownVocabulary(vocab, kanjiList, db) {
-  kanjiList = JSON.parse(kanjiList);
-
-  // want to loop through all the kanji that make up this vocabulary.
-  for (let i = 0; i < kanjiList.length; i++) {
-    let knownVocabulary = (await db.all("SELECT known_vocabulary FROM Kanji WHERE jp = ?", kanjiList[i]))[0];
-
-    if (knownVocabulary) {
-      knownVocabulary = JSON.parse(knownVocabulary.known_vocabulary);
-      if (!knownVocabulary.includes(vocab)) {
-        knownVocabulary.push(vocab); // add to the vocab list.
-        await db.run("UPDATE Kanji SET known_vocabulary = ? WHERE jp = ?", [JSON.stringify(knownVocabulary), kanjiList[i]]);
-      }
-    } else { // roundabout - but the kanji does not exist... lets add it (even if it's empty)!
-      await db.run("INSERT INTO Kanji (jp, known_vocabulary) VALUES (?, ?)", [kanjiList[i], [JSON.stringify([vocab])]]);
-    }
-  }
-}
-
-function addToColumn(currentColumn, additionalContent) {
-  let updatedList = JSON.parse(currentColumn);
-  if (additionalContent) {
-    updatedList = updatedList.concat(additionalContent.split("\\,"));
-  }
-  return JSON.stringify(updatedList);
-}
-
-function formatRadical(radical) {
-  let word = {};
-
-  word.en = radical.en;
-  word.jp = radical.jp;
-  word.type = radical.type;
-  word["notes"] = !radical["notes"].split("\\,")[0] ? "[]" : JSON.stringify(radical["notes"].split("\\,"));
-  word["source"] = !radical["source"].split("\\,")[0] ? "[]" : JSON.stringify(radical["source"].split("\\,"));
-  word["known-kanji"] = !radical["known-kanji"].split("\\,")[0] ? "[]" : JSON.stringify(radical["known-kanji"].split("\\,"));
-
-  return word;
-}
-
-function formatVocabulary(vocab) {
-  let word = {};
-
-  word.en = !vocab.en.split("\\,")[0] ? "[]" : JSON.stringify(vocab.en.split("\\,"));
-  word.jp = vocab.jp;
-  word.type = vocab.type;
-  word["known-readings"] = !vocab["known-readings"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["known-readings"].split("\\,"));
-  word["kanji-composition"] = !vocab["kanji-composition"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["kanji-composition"].split("\\,"));
-  word["notes"] = !vocab["notes"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["notes"].split("\\,"));
-  word["source"] = !vocab["source"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["source"].split("\\,"));
-  word["word-type"] = !vocab["word-type"].split("\\,")[0] ? "[]" : JSON.stringify(vocab["word-type"].split("\\,"));
-
-  word.sentences = [];
-
-  if (vocab["sentence-jp"].split("\\,")[0] !== "") {
-    for (let i = 0; i < vocab["sentence-jp"].split("\\,").length; i++) {
-      let sentenceObj = {};
-      sentenceObj.jp = vocab["sentence-jp"].split("\\,")[i];
-      sentenceObj.en = vocab["sentence-en"].split("\\,")[i];
-      sentenceObj["jp_simple"] = vocab["jp-simple"].split("\\,")[i];
-
-      let vocabArr = [];
-      for (let j = 0; j < vocab["sentence-vocab"].split("\\,")[i].split("*").length; j++) {
-        vocabArr.push(vocab["sentence-vocab"].split("\\,")[i].split("*")[j]);
-      }
-      sentenceObj.vocab = vocabArr;
-      word.sentences.push(sentenceObj);
-    }
-  }
-  word.sentences = JSON.stringify(word.sentences);
-
-  return word;
-}
-
-function formatKanji(kanji) {
-  let word = {};
-
-  word.en = !kanji.en.split("\\,")[0] ? "[]" : JSON.stringify(kanji.en.split("\\,"));
-  word.jp = kanji.jp;
-  word.type = kanji.type;
-
-  word["known-readings"] = !kanji["known-readings"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["known-readings"].split("\\,"));
-  word["radical-composition"] = !kanji["radical-composition"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["radical-composition"].split("\\,"));
-  word["known-vocabulary"] = !kanji["known-vocabulary"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["known-vocabulary"].split("\\,"));
-  word["notes"] = !kanji["notes"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["notes"].split("\\,"));
-  word["source"] = !kanji["source"].split("\\,")[0] ? "[]" : JSON.stringify(kanji["source"].split("\\,"));
-
-  return word;
 }
 
 async function getDBConnection() {
