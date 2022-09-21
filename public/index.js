@@ -364,12 +364,12 @@
         createSpans(kanjiComposition, "kanji-clickable");
       }
 
-      // try to add some semblance of a pitchAccent thing here.
-      if (word.pitch_data) {
-        for (let pitchInfo of word.pitch_data) {
-          createPitchGraph(countMora(pitchInfo.reading), pitchInfo.pitch, parent);
-        }
-      }
+      // // try to add some semblance of a pitchAccent thing here.
+      // if (word.pitch_data) {
+      //   for (let pitchInfo of word.pitch_data) {
+      //     createPitchGraph(countMora(pitchInfo.reading), pitchInfo.pitch, parent);
+      //   }
+      // }
 
       if (word.sentences.length > 0) {
         let sentenceDiv = document.createElement("div");
