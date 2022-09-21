@@ -58265,5 +58265,40 @@
       "ひと",
       "と"
     ]
+  },
+  {
+    "jp": "降",
+    "type": "kanji",
+    "en": [
+      "descend"
+    ],
+    "known_readings": [
+      "こう",
+      "お",
+      "ふ"
+    ]
+  },
+  {
+    "jp": "縮",
+    "type": "kanji",
+    "en": [
+      "shrink"
+    ],
+    "known_readings": [
+      "しゅく",
+      "ちぢ",
+      "ちじ"
+    ]
+  },
+  {
+    "jp": "咳",
+    "type": "kanji",
+    "en": [
+      "cough"
+    ],
+    "known_readings": [
+      "せき",
+      "がい"
+    ]
   }
 ]

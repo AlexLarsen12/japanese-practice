@@ -312,8 +312,8 @@ app.get("/updateLastVisited",  async function(req, res) {
     let addedWord = await findIfSubject(entry);
     if (addedWord) {
       WORDS_DICT[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
-      await addWordToDBFromWaniKani(addedWord, subject.data.subject_type);
-      addedWords.push({jp: addedWord.jp, type: addedWord.type});
+      await addWordToDBFromWaniKani(addedWord, entry.data.subject_type);
+      addedWords.push({jp: addedWord.jp, type: entry.data.subject_type});
     }
   }
   // as of the most recent update, (9/19/2022) the changes here to simplify functions is UNTESTED.
@@ -331,6 +331,16 @@ app.get("/updateLastVisited",  async function(req, res) {
 });
 
 /** -- helper functions -- */
+
+// so this is the crude method I've come up with for finding the mora of a reading. I think it works... but I'm not sure.
+function countMora(reading) {
+    let mora = 0;
+    reading = allHiragana(reading);
+    for (let characters of reading) {
+      if (!characters.match(/[ぁぃぅぇぉょゃゅゎ]/)) mora++;
+    }
+    return mora;
+}
 
 // for a SPECIFIC reading.
 function findPitchInfo(kanji, reading) {
@@ -398,12 +408,13 @@ async function addWordToDBFromWaniKani(finalThing, subjectType) {
    await lowerCaseReadings.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, finalThing.jp, subjectType]));
 
   let allWords = JSON.parse(await fs.readFile("infoFiles/allWords.json"));
-  allWords.push({
+  let word = {
     jp: finalThing.jp,
     type: subjectType,
-    en: finalThing.en,
-    known_readings: lowerCaseReadings
-  });
+    en: lowerCaseReadings
+  };
+  finalThing.known_readings ? (word.known_readings = finalThing.known_readings) : word.known_readings = [];
+  allWords.push(word);
   await fs.writeFile("infoFiles/allWords.json", JSON.stringify(allWords, null, 2));
   // this is a VERY scuffed way to update this for every word added. I don't really like it, but it should
   // keep things up to date for now.
