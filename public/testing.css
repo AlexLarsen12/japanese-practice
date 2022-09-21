@@ -6,7 +6,7 @@
   align-items: center;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 150px;
+  margin-bottom: 50px;
 }
 
 body {
@@ -14,7 +14,6 @@ body {
 }
 
 .column {
-  width: 120px;
   height: 180px;
   display: flex;
   flex-direction: column;
@@ -22,11 +21,12 @@ body {
   align-items: center;
   padding-top: 10px;
   padding-bottom: 10px;
+  width: 60px;
 }
 
 .mora {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   position: relative;
 }
@@ -50,8 +50,9 @@ body {
 }
 
 .end {
-  background-color: white;
-  width: 60px;
-  height: 60px;
+  background-color: pink;
+  width: 30px;
+  height: 30px;
   border: 10px violet solid;
+
 }
