@@ -175,3 +175,58 @@ input {
   filter: brightness(75%);
   font-weight: bold;
 }
+
+/* new stuff?? */
+.main-box {
+  display: flex;
+  width: 50%;
+  height: 200px;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.column {
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 65px;
+}
+
+.mora {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.on {
+  background-color: teal;
+}
+
+.mySVG{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 500%;
+}
+
+.line {
+  stroke-width: 10px;
+  stroke: teal;
+  z-index: -1;
+}
+
+.end {
+  background-color: white;
+  width: 30px;
+  height: 30px;
+  border: 10px teal solid;
+
+}

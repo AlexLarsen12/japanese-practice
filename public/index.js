@@ -364,6 +364,13 @@
         createSpans(kanjiComposition, "kanji-clickable");
       }
 
+      // try to add some semblance of a pitchAccent thing here.
+      if (word.pitch_data) {
+        for (let pitchInfo of word.pitch_data) {
+          createPitchGraph(countMora(pitchInfo.reading), pitchInfo.pitch, parent);
+        }
+      }
+
       if (word.sentences.length > 0) {
         let sentenceDiv = document.createElement("div");
         let paragraph = document.createElement("p");
@@ -438,6 +445,95 @@
     // deleteBtn.addEventListener("dblclick", removeWord);
     // parent.appendChild(deleteBtn);
     // do not let anyone delete anything for now because why??
+  }
+
+  // uses a fun little thing
+function allHiragana(phrase) {
+  let list = [...phrase] // basically makes a list out of the phrase.
+  return list.map(char => char.charCodeAt(0)).map(char => (12449 <= char && char <= 12534) ? char - 96 : char).map(char => String.fromCharCode(char)).join("");
+}
+
+  // so this is the crude method I've come up with for finding the mora of a reading. I think it works... but I'm not sure.
+function countMora(reading) {
+  let mora = 0;
+  reading = allHiragana(reading);
+  for (let characters of reading) {
+    if (!characters.match(/[ぁぃぅぇぉょゃゅゎ]/)) mora++;
+  }
+  return mora;
+}
+
+  function createPitchGraph(moraCount, pitchDownStep, itemToAddTo) {
+    let mainBox = document.createElement("div");
+    mainBox.classList.add("main-box");
+
+    let passedDownstep = false;
+    for (let i = 1; i <= moraCount; i++) {
+      let column = document.createElement("div");
+      column.classList.add("column");
+
+      let mora1 = document.createElement("div");
+      mora1.classList.add("mora");
+      let mora2 = document.createElement("div");
+      mora2.classList.add("mora");
+
+      column.appendChild(mora1);
+      column.appendChild(mora2);
+      mainBox.appendChild(column);
+
+      if (i === 1 && pitchDownStep !== 1) {
+        mora1.classList.add("off");
+        mora2.classList.add("on");
+      } else if (i === 1) {
+        mora1.classList.add("on");
+        mora2.classList.add("off");
+        passedDownstep = true;
+      }
+
+      if (i > 1 && !passedDownstep) {
+        mora1.classList.add("on");
+        mora2.classList.add("off");
+        if (i === pitchDownStep) passedDownstep = true;
+      } else if (i !== 1 && passedDownstep) {
+        mora1.classList.add("off");
+        mora2.classList.add("on");
+      }
+    }
+    let particleColumn = document.createElement("div");
+    particleColumn.classList.add("column");
+    let mora1 = document.createElement("div");
+    mora1.classList.add("mora");
+    let mora2 = document.createElement("div")
+    mora2.classList.add("mora");
+
+    if (pitchDownStep === 0) {
+      mora1.classList.add("end");
+      mora2.classList.add("off");
+    } else {
+      mora1.classList.add("off");
+      mora2.classList.add("end");
+    }
+    particleColumn.appendChild(mora1);
+    particleColumn.appendChild(mora2);
+    mainBox.appendChild(particleColumn);
+    itemToAddTo.appendChild(mainBox);
+
+    let moras = mainBox.querySelectorAll(".mora.on,.mora.end");
+    let moraCenters = []
+    for (let mora of moras) moraCenters.push([mora.getBoundingClientRect().left + (mora.getBoundingClientRect().width / 2), mora.getBoundingClientRect().top + (mora.getBoundingClientRect().height / 2)]);
+    console.log(moraCenters);
+    for (let i = 0; i < moraCenters.length -1; i++) {
+      let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      svg.classList.add("mySVG");
+      line.setAttribute("x1", moraCenters[i][0]);
+      line.setAttribute("x2", moraCenters[i+1][0]);
+      line.setAttribute("y1", moraCenters[i][1]);
+      line.setAttribute("y2", moraCenters[i+1][1]);
+      line.classList.add("line");
+      svg.appendChild(line);
+      mainBox.querySelectorAll(".column")[i].prepend(svg);
+    }
   }
 
   // takes a phrase/word/etc to be turned into a CLICKABLE span.

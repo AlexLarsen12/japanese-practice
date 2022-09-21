@@ -9,10 +9,6 @@
   margin-bottom: 50px;
 }
 
-body {
-  background-color: pink;
-}
-
 .column {
   height: 180px;
   display: flex;
