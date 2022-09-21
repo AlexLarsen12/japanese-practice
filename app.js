@@ -14,6 +14,7 @@ const fs = require("fs").promises;
 const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
+const { rawListeners } = require("process");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -270,13 +271,27 @@ app.post('/removeWord', async function(req, res) {
     if (!subjectTypeCombo) throw new Error("This subject/type combination is not currently known");
     // now my error checking is done.
 
-    res.json(subjectTypeCombo);
-
     // run through every table in the DB and just try to delete any record of its existence.
     // need to be careful on the tables that have no reference to a "type" cuz it could screw it up.
-    await db.run("DELETE FROM Kanji WHERE characters = ? AND type =?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
+    await db.run("DELETE FROM Kanji WHERE characters = ? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
+    await db.run("DELETE FROM English WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
+    await db.run("DELETE FROM Notes WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
+    await db.run("DELETE FROM Readings WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
+    await db.run("DELETE FROM Source WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
+    if (req.body.type === "radical") {
+      await db.run("DELETE FROM Radicals WHERE radical = ?", [subjectTypeCombo.characters]);
+    } else if (req.body.type === "kanji") {
+      await db.run("DELETE FROM Radicals WHERE characters = ?", [subjectTypeCombo.characters]);
+      await db.run("DELETE FROM Vocabulary WHERE characters = ?", [subjectTypeCombo.characters]);
+    } else if (req.body.type === "vocabulary") {
+      await db.run("DELETE FROM PitchInfo WHERE characters = ?", [subjectTypeCombo.characters]);
+      await db.run("DELETE FROM Sentences WHERE characters = ?", [subjectTypeCombo.characters]);
+      await db.run("DELETE FROM Vocabulary WHERE vocab = ?", [subjectTypeCombo.characters]);
+      await db.run("DELETE FROM WordType WHERE characters = ?", [subjectTypeCombo.characters]);
+    }
+    res.type("text").send("Successfully deleted the " + subjectTypeCombo.type + ": " + subjectTypeCombo.characters + " from the database.");
 
-
+    // this is nice and all... but it's ONLY updating the DB. there are other objects (allWords and WORD_DICT) that probably stores this info somewhere.
   } catch(err) {
     res.status(500).type("text").send(err.message);
   }
