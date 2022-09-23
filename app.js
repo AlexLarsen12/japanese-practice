@@ -310,7 +310,7 @@ app.get("/updateLastVisited",  async function(req, res) {
   // we have all of our assignments!!
   for (let entry of assignments) {
     let addedWord = await findIfSubject(entry);
-    if (addedWord) {
+    if (addedWord ) {
       WORDS_DICT[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
       await addWordToDBFromWaniKani(addedWord, entry.data.subject_type);
       addedWords.push({jp: addedWord.jp, type: entry.data.subject_type});
@@ -423,7 +423,12 @@ async function addWordToDBFromWaniKani(finalThing, subjectType) {
      await finalThing.kanji_ids.forEach(async kanjiId => { if (WORDS_DICT[kanjiId]) await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, finalThing.jp])});
 
    } else if (subjectType === "kanji") {
-     await finalThing.radical_ids.forEach(async radicalId => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [finalThing.jp, WORDS_DICT[radicalId].jp]));
+     await finalThing.radical_ids.forEach(async radicalId => {
+      if (WORDS_DICT[radicalId].jp !== null) {
+        await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [finalThing.jp, WORDS_DICT[radicalId].jp])
+      }
+    }); //don't want to add the radicals that don't exist.
+
      await finalThing.vocabulary_ids.forEach(async vocabId => { if (WORDS_DICT[vocabId]) await db.run("INSERT INTO Radicals (characters, vocab) VALUES (?, ?)", [finalThing.jp, WORDS_DICT[vocabId].jp])});
      await finalThing.known_readings.forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, finalThing.jp, subjectType]));
 

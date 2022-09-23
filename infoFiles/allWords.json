@@ -58300,5 +58300,87 @@
       "せき",
       "がい"
     ]
+  },
+  {
+    "jp": "紅",
+    "type": "kanji",
+    "en": [
+      "deep red",
+      "crimson"
+    ],
+    "known_readings": [
+      "こう",
+      "べに",
+      "くれない"
+    ]
+  },
+  {
+    "jp": "吐",
+    "type": "kanji",
+    "en": [
+      "throw up",
+      "spit",
+      "vomit"
+    ],
+    "known_readings": [
+      "と",
+      "は",
+      "つ"
+    ]
+  },
+  {
+    "jp": "拝",
+    "type": "kanji",
+    "en": [
+      "worship"
+    ],
+    "known_readings": [
+      "はい",
+      "おが"
+    ]
+  },
+  {
+    "jp": "薦",
+    "type": "kanji",
+    "en": [
+      "recommend"
+    ],
+    "known_readings": [
+      "せん",
+      "すす"
+    ]
+  },
+  {
+    "jp": "射",
+    "type": "kanji",
+    "en": [
+      "shoot"
+    ],
+    "known_readings": [
+      "しゃ",
+      "い",
+      "さ",
+      "う"
+    ]
+  },
+  {
+    "jp": "磁",
+    "type": "kanji",
+    "en": [
+      "magnet"
+    ],
+    "known_readings": [
+      "じ"
+    ]
+  },
+  {
+    "jp": "純",
+    "type": "kanji",
+    "en": [
+      "pure"
+    ],
+    "known_readings": [
+      "じゅん"
+    ]
   }
 ]

@@ -30157,5 +30157,168 @@
       "せき",
       "がい"
     ]
+  },
+  {
+    "id": 1560,
+    "jp": "紅",
+    "radical_ids": [
+      25,
+      86
+    ],
+    "vocabulary_ids": [
+      5780,
+      5781,
+      5942
+    ],
+    "level": 34,
+    "en": [
+      "Deep Red",
+      "Crimson"
+    ],
+    "known_readings": [
+      "こう",
+      "べに",
+      "くれない"
+    ]
+  },
+  {
+    "id": 1550,
+    "jp": "吐",
+    "radical_ids": [
+      16,
+      17
+    ],
+    "vocabulary_ids": [
+      5757,
+      5939,
+      5940,
+      8846
+    ],
+    "level": 34,
+    "en": [
+      "Throw Up",
+      "Spit",
+      "Vomit"
+    ],
+    "known_readings": [
+      "と",
+      "は",
+      "つ"
+    ]
+  },
+  {
+    "id": 1563,
+    "jp": "拝",
+    "radical_ids": [
+      63,
+      61
+    ],
+    "vocabulary_ids": [
+      5789,
+      5790,
+      8533
+    ],
+    "level": 34,
+    "en": [
+      "Worship"
+    ],
+    "known_readings": [
+      "はい",
+      "おが"
+    ]
+  },
+  {
+    "id": 1564,
+    "jp": "薦",
+    "radical_ids": [
+      90,
+      62,
+      424,
+      151
+    ],
+    "vocabulary_ids": [
+      5793,
+      5794,
+      5795,
+      5943
+    ],
+    "level": 34,
+    "en": [
+      "Recommend"
+    ],
+    "known_readings": [
+      "せん",
+      "すす"
+    ]
+  },
+  {
+    "id": 1561,
+    "jp": "射",
+    "radical_ids": [
+      234,
+      74
+    ],
+    "vocabulary_ids": [
+      5782,
+      5783,
+      5784,
+      5785,
+      5946,
+      7870
+    ],
+    "level": 34,
+    "en": [
+      "Shoot"
+    ],
+    "known_readings": [
+      "しゃ",
+      "い",
+      "さ",
+      "う"
+    ]
+  },
+  {
+    "id": 1559,
+    "jp": "磁",
+    "radical_ids": [
+      54,
+      8767,
+      1,
+      87
+    ],
+    "vocabulary_ids": [
+      5777,
+      5778,
+      5779,
+      5945
+    ],
+    "level": 34,
+    "en": [
+      "Magnet"
+    ],
+    "known_readings": [
+      "じ"
+    ]
+  },
+  {
+    "id": 1555,
+    "jp": "純",
+    "radical_ids": [
+      86,
+      315
+    ],
+    "vocabulary_ids": [
+      5765,
+      5766,
+      5767,
+      5771
+    ],
+    "level": 34,
+    "en": [
+      "Pure"
+    ],
+    "known_readings": [
+      "じゅん"
+    ]
   }
 ]
