@@ -58480,5 +58480,204 @@
     "known_readings": [
       "さといも"
     ]
+  },
+  {
+    "jp": "聖",
+    "type": "kanji",
+    "en": [
+      "holy"
+    ],
+    "known_readings": [
+      "せい"
+    ]
+  },
+  {
+    "jp": "股",
+    "type": "vocabulary",
+    "en": [
+      "crotch",
+      "groin",
+      "fork"
+    ],
+    "known_readings": [
+      "また",
+      "もも"
+    ]
+  },
+  {
+    "jp": "枝",
+    "type": "kanji",
+    "en": [
+      "branch"
+    ],
+    "known_readings": [
+      "し",
+      "えだ"
+    ]
+  },
+  {
+    "jp": "縦",
+    "type": "kanji",
+    "en": [
+      "vertical"
+    ],
+    "known_readings": [
+      "じゅう",
+      "たて"
+    ]
+  },
+  {
+    "jp": "歓",
+    "type": "kanji",
+    "en": [
+      "delight"
+    ],
+    "known_readings": [
+      "かん"
+    ]
+  },
+  {
+    "jp": "承",
+    "type": "kanji",
+    "en": [
+      "consent"
+    ],
+    "known_readings": [
+      "しょう",
+      "うけたまわ"
+    ]
+  },
+  {
+    "jp": "追い越す",
+    "type": "vocabulary",
+    "en": [
+      "to overtake",
+      "to surpass",
+      "to pass",
+      "to pull ahead"
+    ],
+    "known_readings": [
+      "おいこす"
+    ]
+  },
+  {
+    "jp": "祖父母",
+    "type": "vocabulary",
+    "en": [
+      "grandparents"
+    ],
+    "known_readings": [
+      "そふぼ"
+    ]
+  },
+  {
+    "jp": "飼い主",
+    "type": "vocabulary",
+    "en": [
+      "pet owner"
+    ],
+    "known_readings": [
+      "かいぬし"
+    ]
+  },
+  {
+    "jp": "引っ越す",
+    "type": "vocabulary",
+    "en": [
+      "to move",
+      "to move homes"
+    ],
+    "known_readings": [
+      "ひっこす"
+    ]
+  },
+  {
+    "jp": "傷つける",
+    "type": "vocabulary",
+    "en": [
+      "to hurt someone",
+      "to scratch",
+      "to damage"
+    ],
+    "known_readings": [
+      "きずつける"
+    ]
+  },
+  {
+    "jp": "痩",
+    "type": "kanji",
+    "en": [
+      "thin"
+    ],
+    "known_readings": [
+      "そう",
+      "や"
+    ]
+  },
+  {
+    "jp": "勤",
+    "type": "kanji",
+    "en": [
+      "work"
+    ],
+    "known_readings": [
+      "きん",
+      "つと"
+    ]
+  },
+  {
+    "jp": "損",
+    "type": "kanji",
+    "en": [
+      "loss",
+      "hurt"
+    ],
+    "known_readings": [
+      "そん",
+      "そこ"
+    ]
+  },
+  {
+    "jp": "刻",
+    "type": "kanji",
+    "en": [
+      "carve"
+    ],
+    "known_readings": [
+      "こく",
+      "きざ"
+    ]
+  },
+  {
+    "jp": "爪",
+    "type": "kanji",
+    "en": [
+      "claw"
+    ],
+    "known_readings": [
+      "そう",
+      "つめ",
+      "つま"
+    ]
+  },
+  {
+    "jp": "肺臓",
+    "type": "vocabulary",
+    "en": [
+      "lung"
+    ],
+    "known_readings": [
+      "はいぞう"
+    ]
+  },
+  {
+    "jp": "内臓",
+    "type": "vocabulary",
+    "en": [
+      "internal organ"
+    ],
+    "known_readings": [
+      "ないぞう"
+    ]
   }
 ]

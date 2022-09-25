@@ -115840,5 +115840,225 @@
     "known_readings": [
       "さといも"
     ]
+  },
+  {
+    "id": 8976,
+    "jp": "股",
+    "kanji_ids": [
+      8964
+    ],
+    "context_sentences": [
+      {
+        "en": "There is a star-shaped mole on Koichi's crotch.",
+        "ja": "コウイチの股には星の形のホクロがある。"
+      },
+      {
+        "en": "I'm thinking of getting a Tofugu tattoo in my groin area.",
+        "ja": "股の辺りにトーフグのタトゥーを入れようと思っているんだ。"
+      },
+      {
+        "en": "After I passed through the tunnel, there was a fork in the road.",
+        "ja": "トンネルを出ると、道が二股に分かれていた。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Crotch",
+      "Groin",
+      "Fork"
+    ],
+    "known_readings": [
+      "また",
+      "もも"
+    ]
+  },
+  {
+    "id": 5722,
+    "jp": "追い越す",
+    "kanji_ids": [
+      802,
+      1437
+    ],
+    "context_sentences": [
+      {
+        "en": "I always wave my hand to say hi whenever I pass other bikers.",
+        "ja": "他の自転車走者を追い越す時、いつも挨拶代わりに手を振ります。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "transitive verb",
+      "godan verb"
+    ],
+    "en": [
+      "To Overtake",
+      "To Surpass",
+      "To Pass",
+      "To Pull Ahead"
+    ],
+    "known_readings": [
+      "おいこす"
+    ]
+  },
+  {
+    "id": 5723,
+    "jp": "祖父母",
+    "kanji_ids": [
+      1489,
+      512,
+      524
+    ],
+    "context_sentences": [
+      {
+        "en": "My grandparents still see their pediatrician.",
+        "ja": "私の祖父母はまだ小児科医にかかっています。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Grandparents"
+    ],
+    "known_readings": [
+      "そふぼ"
+    ]
+  },
+  {
+    "id": 5724,
+    "jp": "飼い主",
+    "kanji_ids": [
+      1498,
+      528
+    ],
+    "context_sentences": [
+      {
+        "en": "If a dog’s owner had chickenpox, could the dog get it too?",
+        "ja": "もし犬の飼い主が水疱瘡になったら、その犬も水疱瘡になる可能性はあるんでしょうか。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Pet Owner"
+    ],
+    "known_readings": [
+      "かいぬし"
+    ]
+  },
+  {
+    "id": 5721,
+    "jp": "引っ越す",
+    "kanji_ids": [
+      507,
+      1437
+    ],
+    "context_sentences": [
+      {
+        "en": "\"Dad, Fugu and I are getting married and moving to Japan.\" \"Not while I’m alive, you won’t.\"",
+        "ja": "「パパ、フグと私、結婚して日本に引っ越すつもりよ。」「俺の目の黒いうちはそんなことはさせないぞ。」"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "intransitive verb",
+      "godan verb"
+    ],
+    "en": [
+      "To Move",
+      "To Move Homes"
+    ],
+    "known_readings": [
+      "ひっこす"
+    ]
+  },
+  {
+    "id": 5726,
+    "jp": "傷つける",
+    "kanji_ids": [
+      1499
+    ],
+    "context_sentences": [
+      {
+        "en": "I might have scratched my contact lens.",
+        "ja": "コンタクトレンズを傷つけちゃったかも。"
+      },
+      {
+        "en": "We may also be hurting people without knowing it.",
+        "ja": "私たちも知らないうちに人を傷つけているかもしれません。"
+      },
+      {
+        "en": "Who the heck damaged my Mercedes with an iron bar?! They'll pay for this!",
+        "ja": "誰だよ？俺のベンツに鉄棒で傷つけやがったのは？！見つけたらただじゃおかねえぞ！"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "transitive verb",
+      "ichidan verb"
+    ],
+    "en": [
+      "To Hurt Someone",
+      "To Scratch",
+      "To Damage"
+    ],
+    "known_readings": [
+      "きずつける"
+    ]
+  },
+  {
+    "id": 5719,
+    "jp": "肺臓",
+    "kanji_ids": [
+      1537,
+      1546
+    ],
+    "context_sentences": [
+      {
+        "en": "My grandfather died of inflammation of the lungs.",
+        "ja": "私の祖父は肺臓炎で亡くなりました。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Lung"
+    ],
+    "known_readings": [
+      "はいぞう"
+    ]
+  },
+  {
+    "id": 5720,
+    "jp": "内臓",
+    "kanji_ids": [
+      500,
+      1546
+    ],
+    "context_sentences": [
+      {
+        "en": "They take the internal organs out of deer in my neighbor’s garage.",
+        "ja": "ご近所さんのガレージで鹿の内臓を取り出すんです。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun",
+      "の adjective"
+    ],
+    "en": [
+      "Internal Organ"
+    ],
+    "known_readings": [
+      "ないぞう"
+    ]
   }
 ]

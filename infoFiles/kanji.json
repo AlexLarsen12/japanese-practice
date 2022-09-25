@@ -30503,5 +30503,223 @@
       "ばく",
       "とばり"
     ]
+  },
+  {
+    "id": 1558,
+    "jp": "聖",
+    "radical_ids": [
+      88,
+      16,
+      48
+    ],
+    "vocabulary_ids": [
+      5773,
+      5774,
+      5776
+    ],
+    "level": 34,
+    "en": [
+      "Holy"
+    ],
+    "known_readings": [
+      "せい"
+    ]
+  },
+  {
+    "id": 1574,
+    "jp": "枝",
+    "radical_ids": [
+      23,
+      81
+    ],
+    "vocabulary_ids": [
+      5825,
+      5950
+    ],
+    "level": 34,
+    "en": [
+      "Branch"
+    ],
+    "known_readings": [
+      "し",
+      "えだ"
+    ]
+  },
+  {
+    "id": 1556,
+    "jp": "縦",
+    "radical_ids": [
+      86,
+      99,
+      8767,
+      229
+    ],
+    "vocabulary_ids": [
+      5768,
+      5769,
+      5770
+    ],
+    "level": 34,
+    "en": [
+      "Vertical"
+    ],
+    "known_readings": [
+      "じゅう",
+      "たて"
+    ]
+  },
+  {
+    "id": 1571,
+    "jp": "歓",
+    "radical_ids": [
+      72,
+      240,
+      142
+    ],
+    "vocabulary_ids": [
+      5739,
+      5819
+    ],
+    "level": 34,
+    "en": [
+      "Delight"
+    ],
+    "known_readings": [
+      "かん"
+    ]
+  },
+  {
+    "id": 1572,
+    "jp": "承",
+    "radical_ids": [
+      34,
+      7,
+      45
+    ],
+    "vocabulary_ids": [
+      5816,
+      5817,
+      5818,
+      6002,
+      6022
+    ],
+    "level": 34,
+    "en": [
+      "Consent"
+    ],
+    "known_readings": [
+      "しょう",
+      "うけたまわ"
+    ]
+  },
+  {
+    "id": 8864,
+    "jp": "痩",
+    "radical_ids": [
+      187,
+      190,
+      30
+    ],
+    "vocabulary_ids": [
+      8878,
+      8879
+    ],
+    "level": 34,
+    "en": [
+      "Thin"
+    ],
+    "known_readings": [
+      "そう",
+      "や"
+    ]
+  },
+  {
+    "id": 1570,
+    "jp": "勤",
+    "radical_ids": [
+      428,
+      13
+    ],
+    "vocabulary_ids": [
+      5813,
+      5814,
+      5815,
+      5944
+    ],
+    "level": 34,
+    "en": [
+      "Work"
+    ],
+    "known_readings": [
+      "きん",
+      "つと"
+    ]
+  },
+  {
+    "id": 1573,
+    "jp": "損",
+    "radical_ids": [
+      63,
+      349
+    ],
+    "vocabulary_ids": [
+      5820,
+      5821,
+      5822,
+      5823,
+      5824
+    ],
+    "level": 34,
+    "en": [
+      "Loss",
+      "Hurt"
+    ],
+    "known_readings": [
+      "そん",
+      "そこ"
+    ]
+  },
+  {
+    "id": 1577,
+    "jp": "刻",
+    "radical_ids": [
+      351,
+      128
+    ],
+    "vocabulary_ids": [
+      5834,
+      5835,
+      5836,
+      5860,
+      5862
+    ],
+    "level": 34,
+    "en": [
+      "Carve"
+    ],
+    "known_readings": [
+      "こく",
+      "きざ"
+    ]
+  },
+  {
+    "id": 1575,
+    "jp": "爪",
+    "radical_ids": [
+      350
+    ],
+    "vocabulary_ids": [
+      5832,
+      5833
+    ],
+    "level": 34,
+    "en": [
+      "Claw"
+    ],
+    "known_readings": [
+      "そう",
+      "つめ",
+      "つま"
+    ]
   }
 ]
