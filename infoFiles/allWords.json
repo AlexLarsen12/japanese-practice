@@ -58382,5 +58382,103 @@
     "known_readings": [
       "じゅん"
     ]
+  },
+  {
+    "jp": "沿",
+    "type": "kanji",
+    "en": [
+      "run alongside"
+    ],
+    "known_readings": [
+      "えん",
+      "そ"
+    ]
+  },
+  {
+    "jp": "粋",
+    "type": "kanji",
+    "en": [
+      "stylish"
+    ],
+    "known_readings": [
+      "すい",
+      "いき"
+    ]
+  },
+  {
+    "jp": "揮",
+    "type": "kanji",
+    "en": [
+      "brandish"
+    ],
+    "known_readings": [
+      "き"
+    ]
+  },
+  {
+    "jp": "推",
+    "type": "kanji",
+    "en": [
+      "infer"
+    ],
+    "known_readings": [
+      "すい",
+      "お"
+    ]
+  },
+  {
+    "jp": "源",
+    "type": "kanji",
+    "en": [
+      "origin"
+    ],
+    "known_readings": [
+      "げん",
+      "みなもと"
+    ]
+  },
+  {
+    "jp": "豆",
+    "type": "kanji",
+    "en": [
+      "beans"
+    ],
+    "known_readings": [
+      "とう",
+      "まめ"
+    ]
+  },
+  {
+    "jp": "腐",
+    "type": "kanji",
+    "en": [
+      "rot"
+    ],
+    "known_readings": [
+      "ふ",
+      "くさ"
+    ]
+  },
+  {
+    "jp": "幕",
+    "type": "kanji",
+    "en": [
+      "curtain"
+    ],
+    "known_readings": [
+      "まく",
+      "ばく",
+      "とばり"
+    ]
+  },
+  {
+    "jp": "里芋",
+    "type": "vocabulary",
+    "en": [
+      "taro"
+    ],
+    "known_readings": [
+      "さといも"
+    ]
   }
 ]

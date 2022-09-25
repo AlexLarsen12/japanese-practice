@@ -30320,5 +30320,188 @@
     "known_readings": [
       "じゅん"
     ]
+  },
+  {
+    "id": 1567,
+    "jp": "沿",
+    "radical_ids": [
+      103,
+      2,
+      16
+    ],
+    "vocabulary_ids": [
+      5798,
+      5799,
+      5800,
+      5801
+    ],
+    "level": 34,
+    "en": [
+      "Run Alongside"
+    ],
+    "known_readings": [
+      "えん",
+      "そ"
+    ]
+  },
+  {
+    "id": 1557,
+    "jp": "粋",
+    "radical_ids": [
+      98,
+      11,
+      15
+    ],
+    "vocabulary_ids": [
+      5771,
+      5772
+    ],
+    "level": 34,
+    "en": [
+      "Stylish"
+    ],
+    "known_readings": [
+      "すい",
+      "いき"
+    ]
+  },
+  {
+    "id": 1566,
+    "jp": "揮",
+    "radical_ids": [
+      63,
+      76,
+      93
+    ],
+    "vocabulary_ids": [
+      5796,
+      5797,
+      5947
+    ],
+    "level": 34,
+    "en": [
+      "Brandish"
+    ],
+    "known_readings": [
+      "き"
+    ]
+  },
+  {
+    "id": 1565,
+    "jp": "推",
+    "radical_ids": [
+      63,
+      240
+    ],
+    "vocabulary_ids": [
+      5791,
+      5792,
+      5793,
+      5864,
+      7344
+    ],
+    "level": 34,
+    "en": [
+      "Infer"
+    ],
+    "known_readings": [
+      "すい",
+      "お"
+    ]
+  },
+  {
+    "id": 1568,
+    "jp": "源",
+    "radical_ids": [
+      103,
+      230
+    ],
+    "vocabulary_ids": [
+      5802,
+      5803,
+      5804,
+      5805,
+      5948
+    ],
+    "level": 34,
+    "en": [
+      "Origin"
+    ],
+    "known_readings": [
+      "げん",
+      "みなもと"
+    ]
+  },
+  {
+    "id": 1576,
+    "jp": "豆",
+    "radical_ids": [
+      181
+    ],
+    "vocabulary_ids": [
+      5826,
+      5827,
+      5828,
+      5950,
+      5951,
+      6228
+    ],
+    "level": 34,
+    "en": [
+      "Beans"
+    ],
+    "known_readings": [
+      "とう",
+      "まめ"
+    ]
+  },
+  {
+    "id": 1578,
+    "jp": "腐",
+    "radical_ids": [
+      62,
+      248,
+      108
+    ],
+    "vocabulary_ids": [
+      5829,
+      5830,
+      5831,
+      5951,
+      6228,
+      6384,
+      7950
+    ],
+    "level": 34,
+    "en": [
+      "Rot"
+    ],
+    "known_readings": [
+      "ふ",
+      "くさ"
+    ]
+  },
+  {
+    "id": 1562,
+    "jp": "幕",
+    "radical_ids": [
+      356,
+      102
+    ],
+    "vocabulary_ids": [
+      5786,
+      5787,
+      5788,
+      7608
+    ],
+    "level": 34,
+    "en": [
+      "Curtain"
+    ],
+    "known_readings": [
+      "まく",
+      "ばく",
+      "とばり"
+    ]
   }
 ]

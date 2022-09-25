@@ -115808,5 +115808,37 @@
     "known_readings": [
       "じぞう"
     ]
+  },
+  {
+    "id": 9043,
+    "jp": "里芋",
+    "kanji_ids": [
+      597,
+      1553
+    ],
+    "context_sentences": [
+      {
+        "en": "The Japanese-style taro salad at that izakaya is delicious.",
+        "ja": "その居酒屋の和風里芋サラダは美味しいよ。"
+      },
+      {
+        "en": "What’s the best way to preserve taro?",
+        "ja": "里芋はどうやって保存するのが一番いいですか？"
+      },
+      {
+        "en": "Taro has been eaten in Japan for thousands of years.",
+        "ja": "里芋は日本で何千年も前から食べられています。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Taro"
+    ],
+    "known_readings": [
+      "さといも"
+    ]
   }
 ]
