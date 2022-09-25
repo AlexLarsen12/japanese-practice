@@ -116060,5 +116060,96 @@
     "known_readings": [
       "ないぞう"
     ]
+  },
+  {
+    "id": 5714,
+    "jp": "複数形",
+    "kanji_ids": [
+      1493,
+      703,
+      589
+    ],
+    "context_sentences": [
+      {
+        "en": "The plural of sheep is sheep.",
+        "ja": "Sheepの複数形はsheepです。"
+      },
+      {
+        "en": "My friend said, \"You don't even know the plural of this word?\" and laughed at me, and I was very hurt.",
+        "ja": "「この単語の複数形も知らないの？」って友達に笑われて、とても傷つきました。"
+      },
+      {
+        "en": "In Japanese you don’t need to change things to the plural form as often as in English.",
+        "ja": "日本語では英語に比べて単語を複数形にすることは少ないです。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Plural",
+      "Plural Form"
+    ],
+    "known_readings": [
+      "ふくすうけい"
+    ]
+  },
+  {
+    "id": 2592,
+    "jp": "久しぶり",
+    "kanji_ids": [
+      496
+    ],
+    "context_sentences": [
+      {
+        "en": "Long time no see!",
+        "ja": "久しぶりですね！"
+      },
+      {
+        "en": "Beer after being sober for so long was so good it brought me to tears.",
+        "ja": "久しぶりのビールは、なみだが出るほどおいしかった。"
+      },
+      {
+        "en": "I was told \"long time no see\" by a person that I had never met before.",
+        "ja": "久しぶり！とあったことのない人にいわれた。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "な adjective",
+      "の adjective"
+    ],
+    "en": [
+      "Long Time No See",
+      "It's Been A While"
+    ],
+    "known_readings": [
+      "ひさしぶり"
+    ]
+  },
+  {
+    "id": 5718,
+    "jp": "心臓",
+    "kanji_ids": [
+      508,
+      1546
+    ],
+    "context_sentences": [
+      {
+        "en": "I have a kind of telephone phobia and my heart starts beating very fast whenever I talk on the phone.",
+        "ja": "電話恐怖症みたいなのがあって、電話で話をする時に心臓がバクバクするんです。"
+      }
+    ],
+    "level": 34,
+    "word_type": [
+      "noun"
+    ],
+    "en": [
+      "Heart"
+    ],
+    "known_readings": [
+      "しんぞう"
+    ]
   }
 ]

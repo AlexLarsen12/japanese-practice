@@ -248,10 +248,29 @@ app.get('/syncTable', async function(req, res) {
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
-  // useful info: the number corresponds to the last high tone mora. (I thinki)
-  // 0: 平板式: starts low, goes UP. There is no high pitch mora so
-  // 1: 頭高型: starts high, and the first mora is the last high pitch morea so it goes down and stays down.
-  // 2-6: 尾高型 or 仲間型: the last high pitch mora hapens at mora 2-6, then it goes down!.
+  let db = await getDBConnection("japanese-old.db");
+  let vocabulary = await db.all("SELECT * FROM Vocabulary");
+  let words = [];
+
+  let db2 = await getDBConnection("japanese-new.db");
+  let allWords = (await db2.all("SELECT characters FROM Kanji WHERE type ='vocabulary'")).map(characters => characters.characters);
+  console.log(allWords);
+
+  for (let vocab of vocabulary) {
+    if (allWords.includes(vocab.jp.trim())) { // known word
+      let sources = JSON.parse(vocab.source);
+      sources.forEach(source => {
+        if (source.indexOf("WaniKani") === -1) {
+          console.log("This source shouldn't be wanikani related! " + source);
+          words.push({
+            source: source,
+            jp: vocab.jp
+          })
+        }
+      });
+    }
+  }
+  res.json(words)
 });
 
 // OUTDATED (and deleted) AS OF 9/20/2022
@@ -259,7 +278,7 @@ app.get("/funnyGoofyTest", async function(req, res) {
 app.post('/modifyWord', async function(req, res) {
 });
 
-// OUTDATED ( AND DELETED) AS OF 9/20/2022
+// WARNING: DO not use yet, it doesn't work to remove all of the internal state.
 // will remove a known word from the database.
 app.post('/removeWord', async function(req, res) {
   try {
@@ -578,6 +597,14 @@ async function recursiveFetchTime(url, list) {
 async function getDBConnection() {
   const db = await sqlite.open({
     filename: "japanese-new.db",
+    driver: sqlite3.Database
+  });
+  return db;
+}
+
+async function getDBConnection(specificDB) {
+  const db = await sqlite.open({
+    filename: specificDB,
     driver: sqlite3.Database
   });
   return db;

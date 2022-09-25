@@ -58679,5 +58679,37 @@
     "known_readings": [
       "ないぞう"
     ]
+  },
+  {
+    "jp": "複数形",
+    "type": "vocabulary",
+    "en": [
+      "plural",
+      "plural form"
+    ],
+    "known_readings": [
+      "ふくすうけい"
+    ]
+  },
+  {
+    "jp": "久しぶり",
+    "type": "vocabulary",
+    "en": [
+      "long time no see",
+      "it's been a while"
+    ],
+    "known_readings": [
+      "ひさしぶり"
+    ]
+  },
+  {
+    "jp": "心臓",
+    "type": "vocabulary",
+    "en": [
+      "heart"
+    ],
+    "known_readings": [
+      "しんぞう"
+    ]
   }
 ]

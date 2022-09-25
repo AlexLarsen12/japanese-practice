@@ -7,7 +7,7 @@
   window.addEventListener("load", init);
 
   function init() {
-    document.querySelector("body").classList.add(FONT_STYLES[Math.floor(Math.random() * FONT_STYLES.length)]);
+    document.querySelector("body").classList.add("kosugi-maru"); // for random FONT_STYLES[Math.floor(Math.random() * FONT_STYLES.length()]
     refreshDictionary();
     id("add-word").addEventListener("change", changeWordType);
     id("search").addEventListener("input", searchWords);
