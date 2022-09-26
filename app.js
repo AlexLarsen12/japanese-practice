@@ -28,7 +28,7 @@ const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings"
 //
 // ID_TO_WORD
 // WORD_TO_ID
-// allWords.json
+// ALL_WORDS
 // japanese-new.db
 //
 // anytime you make ANY modification to ANYTHING. (adding/removing/etc),
@@ -36,33 +36,13 @@ const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings"
 
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
 // only question is how do we keep it up to date after the server is initialized.
-const ID_TO_WORD = createIdToWordDict();
-function createIdToWordDict() {
-  // let  dict = {}
-  // for (let file of WORD_TYPES) {
-  //   let content = JSON.parse(fs_sync.readFileSync("infoFiles/" + file + ".json", "utf8"));
-  //   for (let word of content) dict[word.id] = word;
-  // }
-  // return dict;
-  return JSON.parse(fs_sync.readFileSync("infoFiles/idToSubject.json"));
-}
+const ID_TO_WORD = JSON.parse(fs_sync.readFileSync("infoFiles/idToSubject.json"));
 
 // dictionary that goes word -> type -> id (whole object)
-let WORD_TO_ID = createWordToIdDictionary();
-function createWordToIdDictionary() {
-  // let dict = {};
-  // for (let type of WORD_TYPES) {
-  //   let contents = JSON.parse(fs_sync.readFileSync("infoFiles/" + type + ".json", "utf-8"));
-  //   for (let word of contents) if (word.jp !== null) dict[word.jp] ? dict[word.jp][type] = word: dict[word.jp] = {[type]: word};
-  // }// need to ignore NULL for this because it will never be UNIQUE.
-  // return dict;
-  return JSON.parse(fs_sync.readFileSync("infoFiles/subjectToId.json"));
-}
+let WORD_TO_ID = JSON.parse(fs_sync.readFileSync("infoFiles/subjectToId.json"));
 
-const ALL_WORDS = createAllWords()
-function createAllWords() {
-  return JSON.parse(fs_sync.readFileSync("infoFiles/allWords.json"));
-}
+// a brief summary of all the words.
+const ALL_WORDS = JSON.parse(fs_sync.readFileSync("infoFiles/allWords.json"));
 
 // THIS INFORMATION SHOULD _NEVER_ CHANGE
 const PITCH_INFO = createPitchInfoDict();
@@ -183,37 +163,12 @@ app.post("/addWord", async function (req, res) {
 
     delete req.body.jp;
     delete req.body.type;
-    for (let key of Object.keys(req.body)) req.body[key] = JSON.parse(req.body[key]);
-    req.body.jp = jp; // i want to parse all the lists.. there's probably a better
-    // way to do this but for now it works.
+    for (let key of Object.keys(req.body)) req.body[key] = JSON.parse(req.body[key]); // make it iterable
 
-    await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
-    if (req.body.en) await req.body.en.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, jp, type]));
-    if (req.body.sources) await req.body.sources.forEach(async source => await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [jp, source, type]));
-    if (req.body.notes) await req.body.notes.forEach(async note => await db.run("INSERT INTO Notes (characters, type, note) VALUES (?, ?, ?)", [jp, type, note]));
-    if (req.body["known_kanji"]) await req.body["known_kanji"].forEach(async kanji => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [kanji, jp]));
-    if (req.body["known_readings"]) await req.body["known_readings"].forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, jp, type]));
-    if (req.body["radical_composition"]) await req.body["radical_composition"].forEach(async radical => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [jp, radical]));
-    if (req.body["known_vocabulary"]) await req.body["known_vocabulary"].forEach(async vocab => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [jp, vocab]));
-    if (req.body["kanji_composition"]) await req.body["kanji_composition"].forEach(async kanji => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [kanji, jp]));
-    if (req.body["word_type"]) await req.body["word_type"].forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [jp, wordType]));
-    if (req.body.sentences) await req.body.sentences.forEach(async sen => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [jp. sen.en, sen.jp]));
+    // need to add the word to the database.
+    await addToDatabase(jp, type, req.body, db);
 
-    // THIS HAS A SPECIFIC WAY YOU NEED TO ENTER THE PITCHINFO. IF IT DOESN'T EXIST. I WILL LOOKIT UP MYSELF.
-    if (req.body["pitch_data"]) {
-      await req.body["pitch_data"].forEach(async info => await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, info.reading, info.pitch]));
-    } else if (type === "vocabulary" && req.body["known_readings"]) {
-      for (let reading of req.body["known_readings"]) {
-        let pitchInfo = findPitchInfo(jp, reading);
-        if (pitchInfo) await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, reading, pitchInfo.pitchInfo]);
-      }
-    }
-
-    // changing the keys to match the save data better.
-    renameKey("known_kanji", "kanji_ids", req.body);
-    renameKey("radical_composition", "radical_ids", req.body);
-    renameKey("known_vocabulary", "vocabulary_ids", req.body);
-    renameKey("kanji_composition", "kanji_ids", req.body);
+    req.body.jp = jp; // we want it back onto the body! because this should be added to both files.
 
     let potentialLists = [{subjects: req.body.kanji_ids, type:"kanji", key:"kanji_ids"},
     {subjects:req.body.vocaulary_ids, type:"vocabulary", key:"vocabulary_ids"},
@@ -231,22 +186,13 @@ app.post("/addWord", async function (req, res) {
       }
     }
 
-    // all I need to do know is to update each global object, and then overwrite
-    // write to the files!
-    let knownReadings = req.body["known_readings"] ? req.body["known_readings"] : [];
-    let en = req.body.en ? req.body.en : [];
-    ALL_WORDS.push({jp: jp, type: type, en: en, known_readings: knownReadings});
-    await fs.writeFile("infoFiles/allWords.json", JSON.stringify(ALL_WORDS, null, 2));
+    // the words are properly formatted now!
+    await writeToAllWords(req.body, type);
 
     // need to create a new unused ID
     let newId = createUniqueId();
     req.body.id = newId;
-
-    ID_TO_WORD[newId] = req.body;
-    await fs.writeFile("infoFiles/idToSubject.json", JSON.stringify(ID_TO_WORD, null, 2));
-
-    WORD_TO_ID[jp] ? WORD_TO_ID[jp][type] = jp : WORD_TO_ID[jp] = {[type]:req.body};
-    await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
+    await writeToSubjectInformation(req.body, newId, type);
 
     await db.close();
     res.send("New " + type + " added: " + jp);
@@ -329,18 +275,16 @@ app.get("/updateLastVisited",  async function(req, res) {
 
   let addedWords = [];
   // we have all of our assignments!!
+
+  let db = await getDBConnection();
   for (let entry of assignments) {
-    let addedWord = await findIfSubject(entry);
-    if (addedWord) {
-      ID_TO_WORD[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
-      await fs.writeFile("infoFiles/idToSubject.json", JSON.stringify(ID_TO_WORD, null, 2));
+    let wordToBeAdded = await findIfSubject(entry);
+    if (wordToBeAdded) {
+      await addToDatabase(wordToBeAdded.jp, entry.data.subject_type, wordToBeAdded, db);
 
-      WORD_TO_ID[addedWord.jp] ?  WORD_TO_ID[addedWord.jp][entry.data.subject_type] = addedWord : WORD_TO_ID[addedWord.jp] = {[entry.data.subject_type]: addedWord};
-      await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
+      await writeToAllWords(wordToBeAdded, wordToBeAdded.type);
 
-      ALL_WORDS.push({jp: addedWord.jp, type: entry.data.subject_type, en: addedWord.en, known_readings: addedWords.known_readings});
-      await addWordToDBFromWaniKani(addedWord, entry.data.subject_type);
-      addedWords.push({jp: addedWord.jp, type: entry.data.subject_type});
+      await writeToSubjectInformation(wordToBeAdded, wordToBeAdded.id, entry.data.subject_type);
     }
     // this is largely untested. as of 9/26/2022 update. Caution ahead!
   }
@@ -349,6 +293,7 @@ app.get("/updateLastVisited",  async function(req, res) {
   let now = (new Date()).toISOString();
   await fs.appendFile("infoFiles/lastUpdated.txt", "\n" + now);
 
+  await db.close();
   res.json({
     assignments_checked: assignments.length,
     last_updated: now,
@@ -358,6 +303,64 @@ app.get("/updateLastVisited",  async function(req, res) {
 });
 
 /** -- helper functions -- */
+
+// assumes I have a perflectly_formatted thing.
+// possible keys:
+// en
+// source
+// notes
+// known_kanji
+// radical_composition
+// word_type
+// sentences
+// pitch_data
+// known_readings
+// kanji_composition
+//
+// weirdly enough does NOT require jp to be in the subject.
+async function addToDatabase(jp, type, subject, db) {
+  await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
+  if (subject.en) await subject.en.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, jp, type]));
+  if (subject.sources) await subject.sources.forEach(async source => await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [jp, source, type]));
+  if (subject.notes) await subject.notes.forEach(async note => await db.run("INSERT INTO Notes (characters, type, note) VALUES (?, ?, ?)", [jp, type, note]));
+  if (subject["known_kanji"]) await subject["known_kanji"].forEach(async kanji => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [kanji, jp]));
+  if (subject["known_readings"]) await subject["known_readings"].forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, jp, type]));
+  if (subject["radical_composition"]) await subject["radical_composition"].forEach(async radical => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [jp, radical]));
+  if (subject["known_vocabulary"]) await subject["known_vocabulary"].forEach(async vocab => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [jp, vocab]));
+  if (subject["kanji_composition"]) await subject["kanji_composition"].forEach(async kanji => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [kanji, jp]));
+  if (subject["word_type"]) await subject["word_type"].forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [jp, wordType]));
+  if (subject.sentences) await subject.sentences.forEach(async sen => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [jp. sen.en, sen.jp]));
+
+  // THIS HAS A SPECIFIC WAY YOU NEED TO ENTER THE PITCHINFO. IF IT DOESN'T EXIST. I WILL LOOKIT UP MYSELF.
+  if (subject["pitch_data"]) {
+    await subject["pitch_data"].forEach(async info => await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, info.reading, info.pitch]));
+  } else if (type === "vocabulary" && subject["known_readings"]) {
+    for (let reading of subject["known_readings"]) {
+      let pitchInfo = findPitchInfo(jp, reading);
+      if (pitchInfo) await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, reading, pitchInfo.pitchInfo]);
+    }
+  }
+  renameKey("known_kanji", "kanji_ids", subject);
+  renameKey("radical_composition", "radical_ids", subject);
+  renameKey("known_vocabulary", "vocabulary_ids", subject);
+  renameKey("kanji_composition", "kanji_ids", subject);
+  return subject // this is probably unnecessary since I think it will edit in-place, but i'll keep for now.
+}
+
+async function writeToAllWords(subject, type) {
+  let knownReadings = subject["known_readings"] ? subject["known_readings"] : [];
+  let en = req.body.en ? req.body.en : [];
+  ALL_WORDS.push({jp: subject.jp, type: type, en: en, known_readings: knownReadings});
+  await fs.writeFile("infoFiles/allWords.json", JSON.stringify(ALL_WORDS, null, 2));
+}
+
+async function writeToSubjectInformation(subject, id, type) {
+  ID_TO_WORD[id] = subject;
+  await fs.writeFile("infoFiles/idToSubject.json", JSON.stringify(ID_TO_WORD, null, 2));
+
+  WORD_TO_ID[subject.jp] ? WORD_TO_ID[subject.jp][type] = subject : WORD_TO_ID[subject.jp] = {[type]:subject};
+  await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
+}
 
 // hopefully this doesn't have to run too often
 // My unique id's will be negative since the ids for WaniKani are all positive.
@@ -432,42 +435,6 @@ function allKatakana(phrase) {
   return list.map(char => char.charCodeAt(0)).map(char => (12353 <= char && char <= 12438) ? char + 96 : char).map(char => String.fromCharCode(char)).join("");
 }
 
-async function addWordToDBFromWaniKani(finalThing, subjectType) {
-   let db = await getDBConnection();
-   await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [finalThing.jp, subjectType]);
-   await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [finalThing.jp, "WaniKani level: " + finalThing.level, subjectType]);
-
-   if (subjectType === "radical") finalThing.en = [finalThing.en]; //maybe should stay consistent with this being a list or not.
-   let lowerCaseReadings = finalThing.en.map(word => word.toLowerCase());
-   await lowerCaseReadings.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, finalThing.jp, subjectType]));
-
-   if (subjectType === "radical") {
-     await finalThing.kanji_ids.forEach(async kanjiId => { if (ID_TO_WORD[kanjiId]) await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [ID_TO_WORD[kanjiId].jp, finalThing.jp])});
-
-   } else if (subjectType === "kanji") {
-     await finalThing.radical_ids.forEach(async radicalId => {
-      if (ID_TO_WORD[radicalId].jp !== null) {
-        await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [finalThing.jp, ID_TO_WORD[radicalId].jp])
-      }
-    }); //don't want to add the radicals that don't exist.
-
-     await finalThing.vocabulary_ids.forEach(async vocabId => { if (ID_TO_WORD[vocabId]) await db.run("INSERT INTO Radicals (characters, vocab) VALUES (?, ?)", [finalThing.jp, ID_TO_WORD[vocabId].jp])});
-     await finalThing.known_readings.forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, finalThing.jp, subjectType]));
-
-   } else if (subjectType === "vocabulary") {
-     await finalThing.known_readings.forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, finalThing.jp, subjectType]));
-     await finalThing.word_type.forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [finalThing.jp, wordType]));
-     await finalThing.kanji_ids.forEach(async kanjiId => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [ID_TO_WORD[kanjiId].jp, finalThing.jp]));
-
-     for (let reading of finalThing.known_readings) {
-       let pitchInfo = findPitchInfo(finalThing.jp, reading);
-       if (pitchInfo) await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", finalThing.jp, reading, pitchInfo.pitchInfo);
-     }
-     await finalThing.context_sentences.forEach(async sentence => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [finalThing.jp, sentence.en, sentence.ja]));
-     // NOTE FOR ABOVE. THIS USES THE KEY "ja" FOR SENTENCES. THIS WILL NOT WORK ON THE PREVIOUSLY KNWON WORDS BUT THIS ISN'T FOR THAT SO IT SHOULD BE FINE.
-   }
-}
-
 async function findIfSubject(subject) {
   let subjectType = subject.data.subject_type;
 
@@ -488,12 +455,12 @@ async function findIfSubject(subject) {
 
       let finalThing = createResponse(newWord); // NEW ADDITION 9/25/2022.
       if (subjectType === "radical") {
-        renameKey("amalgamation_ids", "kanji_ids", finalThing);
+        renameKey("amalgamation_ids", "known_kanji", finalThing);
       } else if (subjectType === "kanji") {
-        renameKey("amalgamation_ids", "vocabulary_ids", finalThing);
-        renameKey("component_ids", "radical_ids", finalThing);
+        renameKey("amalgamation_ids", "known_vocabulary", finalThing);
+        renameKey("component_ids", "radical_composition", finalThing);
       } else if (subjectType === "vocabulary") {
-        renameKey("component_ids", amalgamation_ids, finalThing);
+        renameKey("component_ids", "kanji_composition", finalThing);
       }
       return finalThing;
     } else {
@@ -512,7 +479,7 @@ function renameKey(old, newname, obj) {
 
 function createResponse(subject) {
   let subjectObject = {
-    jp: subject.data.characters,
+    // jp: subject.data.characters, do not need the JP since it's passed separately?
     level: subject.data.level,
     id: subject.id,
     en: subject.meanings.map(meaning => meaning.meaning) // now turns the RADICALS.JSON radicals to have a list with their meanings.
