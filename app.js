@@ -15,6 +15,7 @@ const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
 const { runInNewContext } = require("vm");
+const { deepStrictEqual } = require("assert");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -186,7 +187,6 @@ app.post("/addWord", async function (req, res) {
     req.body.jp = jp; // i want to parse all the lists.. there's probably a better
     // way to do this but for now it works.
 
-
     await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
     if (req.body.en) await req.body.en.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, jp, type]));
     if (req.body.sources) await req.body.sources.forEach(async source => await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [jp, source, type]));
@@ -277,7 +277,6 @@ app.post('/removeWord', async function(req, res) {
     let db = await getDBConnection();
     let subjectTypeCombo = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [req.body.jp, req.body.type])
     if (!subjectTypeCombo) throw new Error("This subject/type combination is not currently known");
-    // now my error checking is done.
 
     // run through every table in the DB and just try to delete any record of its existence.
     // need to be careful on the tables that have no reference to a "type" cuz it could screw it up.
@@ -298,7 +297,6 @@ app.post('/removeWord', async function(req, res) {
       await db.run("DELETE FROM WordType WHERE characters = ?", [subjectTypeCombo.characters]);
     }
 
-    // removed from the database. maybe.
     // update ALL_WORDS, ID_TO_WORD, WORD_TO_ID
     ALL_WORDS.forEach((subject, index, obj) => {
       if (subject.jp === subjectTypeCombo.characters && subject.type === subjectTypeCombo.type) obj.splice(index, 1);
@@ -310,10 +308,9 @@ app.post('/removeWord', async function(req, res) {
     await fs.writeFile("infoFiles/idToSubject.json", JSON.stringify(ID_TO_WORD, null, 2));
 
     delete WORD_TO_ID[subjectTypeCombo.characters][subjectTypeCombo.type];
-    if (Object.keys(WORD_TO_ID[subjectTypeCombo.characters]).length === 0) delete WORD_TO_ID[subjectTypeCombo.characters];
+    if (Object.keys(WORD_TO_ID[subjectTypeCombo.characters]).length === 0) delete WORD_TO_ID[subjectTypeCombo.characters]; //remove the reference entirely.
     await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
 
-    // ok this should work.. maybe.
     res.type("text").send("Successfully deleted the " + subjectTypeCombo.type + ": " + subjectTypeCombo.characters + " from the database.");
   } catch(err) {
     res.status(500).type("text").send(err.message);
@@ -336,7 +333,12 @@ app.get("/updateLastVisited",  async function(req, res) {
     let addedWord = await findIfSubject(entry);
     if (addedWord) {
       ID_TO_WORD[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
+      await fs.writeFile("infoFiles/idToSubject.json", JSON.stringify(ID_TO_WORD, null, 2));
+
       WORD_TO_ID[addedWord.jp] ?  WORD_TO_ID[addedWord.jp][entry.data.subject_type] = addedWord : WORD_TO_ID[addedWord.jp] = {[entry.data.subject_type]: addedWord};
+      await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
+
+      ALL_WORDS.push({jp: addedWord.jp, type: entry.data.subject_type, en: addedWord.en, known_readings: addedWords.known_readings});
       await addWordToDBFromWaniKani(addedWord, entry.data.subject_type);
       addedWords.push({jp: addedWord.jp, type: entry.data.subject_type});
     }
@@ -373,22 +375,6 @@ function countMora(reading) {
       if (!characters.match(/[ぁぃぅぇぉょゃゅゎ]/)) mora++;
     }
     return mora;
-}
-
-// removes a word from the given file (vocabulary/kanji/radical).
-// also returns the subjects ID so you can properly remove it from ID_TO_WORD
-async function removeFromFile(filename, wordToRemove, type) {
-  let subjectId;
-  let currentSubjects = JSON.parse(await fs.readFile(filename, "utf8"));
-  console.log(currentSubjects.length);
-  let filteredSubjects = currentSubjects.filter(subject => {
-    if (subject.jp !== wordToRemove && !type) return subject;
-    if (subject.jp !== wordToRemove || type && subject.jp === wordToRemove && subject.type !== type) return subject;
-    subjectId = subject.id;
-  })
-  console.log(filteredSubjects.length);
-  await fs.writeFile(filename, JSON.stringify(filteredSubjects, null, 2));
-  return subjectId;
 }
 
 // for a SPECIFIC reading.
@@ -515,14 +501,11 @@ async function findIfSubject(subject) {
       let finalThing = createResponse(newWord); // NEW ADDITION 9/25/2022.
       if (subjectType === "radical") {
         renameKey("amalgamation_ids", "kanji_ids", finalThing);
-        updateJSONFile("infoFiles/radicals.json", [finalThing]); // while testing don't want to add to the json file yet.
       } else if (subjectType === "kanji") {
         renameKey("amalgamation_ids", "vocabulary_ids", finalThing);
         renameKey("component_ids", "radical_ids", finalThing);
-        updateJSONFile("infoFiles/kanji.json", [finalThing]);
       } else if (subjectType === "vocabulary") {
         renameKey("component_ids", amalgamation_ids, finalThing);
-        updateJSONFile("infoFiles/vocabulary.json", [finalThing]);
       }
       return finalThing;
     } else {
