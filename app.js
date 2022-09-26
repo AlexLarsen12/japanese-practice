@@ -14,9 +14,12 @@ const fs = require("fs").promises;
 const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
-const { rawListeners } = require("process");
-const { type } = require("os");
+const { allowedNodeEnvironmentFlags } = require("process");
 const e = require("express");
+const { create } = require("domain");
+// const { rawListeners } = require("process");
+// const { type } = require("os");
+// const e = require("express");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -152,6 +155,7 @@ app.get("/matchCloseness", async function(req, res) {
 // so I can use this to "MODIFY" but idk...
 // should rename, but basically it will ADD a new word based on the forms in the front-end.
 app.post("/addWord", async function (req, res) {
+  // ASSUMING ALL ENTRIES ARE IN A LIST PLEASE PUT THEM IN A LIST.
   res.type("text");
   try {
     if (!req.body.jp || !req.body.type) throw new Error("You must have at least the japanese and the type to add a new word");
@@ -186,6 +190,25 @@ app.post("/addWord", async function (req, res) {
       }
     }
 
+    // need to add words to , and the respective .json file...
+    // should be a new word. ALL CONTAINED WITHIN BODY
+    let knownReadings = req.body["known-readings"] ? req.body["known-readings"] : [];
+    let en = req.body.en ? req.body.en : [];
+    let allWords = JSON.parse(await fs.readFile("infoFiles/allWords.json", "utf-8"));
+    allWords.push({jp: jp, type: type, en: en, known_readings: knownReadings});
+    await fs.writeFile("infoFiles/allWords.json", JSON.stringify(allWords, null, 2));
+
+    delete req.body.type; // this key is no longer needed to be added to the next parts
+    // (plus the key is saved in the type variable)
+
+    // need to create a new unused ID
+    let newId = createUniqueId();
+    req.body.id = newId;
+    WORDS_DICT[newId] = req.body;
+    await updateJSONFile("infoFiles/" + type + ".json", [req.body]);
+    // somehow need to actually go from the kanji themselves... to find the ID...
+    // currently does not do this.
+
     await db.close();
     res.send("New " + type + " added: " + jp);
   } catch(err) {
@@ -198,6 +221,10 @@ app.post("/addWord", async function (req, res) {
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
   // a
+});
+
+app.post("/funnyGoofTest123", function(req, res) {
+  res.json(req.body);
 });
 
 // OUTDATED (and deleted) AS OF 9/20/2022
@@ -247,7 +274,8 @@ app.post('/removeWord', async function(req, res) {
   }
 });
 
-// CURRENTLY WORKING ON AS OF 9/20/2022. Need to make it work with new DB schema.
+// SUPER UNTESTED AS OF 9/25/2022. It should work, but we know how that goes. MAKE SURE TO GIT
+// PUSH BEFORE EVER CALLING THIS.
 // unlessing I'm learning 60+ new words (guru+) with each fetch... this should run fine.
 app.get("/updateLastVisited",  async function(req, res) {
   let updatedDate = (await fs.readFile("infoFiles/lastUpdated.txt", "utf-8")).split("\n");
@@ -260,7 +288,7 @@ app.get("/updateLastVisited",  async function(req, res) {
   // we have all of our assignments!!
   for (let entry of assignments) {
     let addedWord = await findIfSubject(entry);
-    if (addedWord ) {
+    if (addedWord) {
       WORDS_DICT[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
       await addWordToDBFromWaniKani(addedWord, entry.data.subject_type);
       addedWords.push({jp: addedWord.jp, type: entry.data.subject_type});
@@ -281,6 +309,14 @@ app.get("/updateLastVisited",  async function(req, res) {
 });
 
 /** -- helper functions -- */
+
+// hopefully this doesn't have to run too often
+// My unique id's will be negative since the ids for WaniKani are all positive.
+function createUniqueId() {
+  let num = Math.floor(Math.random() * 1000);
+  while (WORDS_DICT[num]) num = (Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) * -1;
+  return num;
+}
 
 // so this is the crude method I've come up with for finding the mora of a reading. I think it works... but I'm not sure.
 function countMora(reading) {
