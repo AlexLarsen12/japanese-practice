@@ -14,13 +14,6 @@ const fs = require("fs").promises;
 const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
-const { allowedNodeEnvironmentFlags } = require("process");
-const e = require("express");
-const { create } = require("domain");
-const { brotliDecompress } = require("zlib");
-// const { rawListeners } = require("process");
-// const { type } = require("os");
-// const e = require("express");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -54,6 +47,19 @@ function createIdToWordDict() {
 }
 // WE RE-CREATE THE DICT EVERY TIME WE LOAD THE PAGE. IT IS BASED OFF OF THE FILES.
 
+// dictionary that goes word -> type -> id (whole object)
+let WORD_TO_ID = createWordToIdDictionary();
+function createWordToIdDictionary() {
+  let dict = {};
+  for (let type of WORD_TYPES) {
+    let contents = JSON.parse(fs_sync.readFileSync("infoFiles/" + type + ".json", "utf-8"));
+    for (let word of contents) {
+      dict[word.jp] ? dict[word.jp][type] = word: dict[word.jp] = {[type]: word};
+    }
+  }
+  return dict;
+}
+
 // THIS INFORMATION SHOULD _NEVER_ CHANGE
 const PITCH_INFO = createPitchInfoDict();
 function createPitchInfoDict() {
@@ -76,18 +82,6 @@ function createPitchInfoDict() {
   } else {
     return JSON.parse(fs_sync.readFileSync("infoFiles/pitchLookup.json", "utf8"));
   }
-}
-
-let WORD_TO_ID = createWordToIdDictionary();
-function createWordToIdDictionary() {
-  let dict = {};
-  for (let type of WORD_TYPES) {
-    let contents = JSON.parse(fs_sync.readFileSync("infoFiles/" + type + ".json", "utf-8"));
-    for (let word of contents) {
-      dict[word.jp] ? dict[word.jp][type] = word: dict[word.jp] = {[type]: word};
-    }
-  }
-  return dict;
 }
 
 // Returns the word that is specified. Requires also query parameter of "type" to be passed in.
@@ -177,10 +171,10 @@ app.post("/addWord", async function (req, res) {
     if (!req.body.jp || !req.body.type) throw new Error("You must have at least the japanese and the type to add a new word");
     if (!WORD_TYPES.includes(req.body.type)) throw new Error("This is an unrecognized word type");
 
+    let db = await getDBConnection();
     let wordCheck = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [req.body.jp, req.body.type]);
     if (wordCheck) throw new Error(req.body.jp + " is an already known " + req.body.type);
 
-    let db = await getDBConnection();
     let jp = req.body.jp;
     let type = req.body.type;
 
@@ -221,9 +215,8 @@ app.post("/addWord", async function (req, res) {
     let newId = createUniqueId();
     req.body.id = newId;
     ID_TO_WORD[newId] = req.body;
+    WORD_TO_ID[jp] ? WORD_TO_ID[jp][type] = jp : WORD_TO_ID[jp] = {[type]:jp};
     await updateJSONFile("infoFiles/" + type + ".json", [req.body]);
-    // somehow need to actually go from the kanji themselves... to find the ID...
-    // currently does not do this.
 
     await db.close();
     res.send("New " + type + " added: " + jp);
@@ -236,11 +229,7 @@ app.post("/addWord", async function (req, res) {
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
-  let radicals = JSON.parse(await fs.readFile("infoFiles/radical.json", "utf8"));
-  for (let radical of radicals) {
-    radical.en = [radical.en];
-  }
-  await fs.writeFile("infoFiles/radical.json", JSON.stringify(radicals, null, 2));
+
 });
 
 // OUTDATED (and deleted) AS OF 9/20/2022
@@ -281,6 +270,7 @@ app.post('/removeWord', async function(req, res) {
 
     let wordId = await removeFromFile("infoFiles/" + subjectTypeCombo.type + ".json", subjectTypeCombo.characters);
     if (wordId) delete ID_TO_WORD[wordId]; // I don't like this solution... I don't know if it works either.
+    delete WORD_TO_ID[req.body.jp][req.body.type];
     await removeFromFile("infoFiles/allWords.json", subjectTypeCombo.characters, subjectTypeCombo.type);
     // above should probably (untested) DELETE from everything.
 
