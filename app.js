@@ -215,12 +215,15 @@ app.post("/addWord", async function (req, res) {
     renameKey("known_vocabulary", "vocabulary_ids", req.body);
     renameKey("kanji_composition", "kanji_ids", req.body);
 
-    let potentialLists = [{subjects: req.body.kanji_ids, type:"kanji"}, {subjects:req.body.vocaulary_ids, type:"vocabulary"}, {subjects: req.body.radical_ids, type:"radical"}];
+    let potentialLists = [{subjects: req.body.kanji_ids, type:"kanji", key:"kanji_ids"},
+    {subjects:req.body.vocaulary_ids, type:"vocabulary", key:"vocabulary_ids"},
+    {subjects: req.body.radical_ids, type:"radical", key:"radical_ids"}];
+
     for (let list of potentialLists) {
       if (list.subjects) { // we have a list in the first place
         for (let i = 0; i < list.subjects.length; i++) {
           if (WORD_TO_ID[list.subjects[i]][list.type]) { // we have this one :)
-            req.body[list][i] = WORD_TO_ID[list.subjects[i]][list.type].id;
+            req.body[list.key][i] = WORD_TO_ID[list.subjects[i]][list.type].id;
           } else {
             // uh oh we don't have this one! gotta create it maybe.
           }
@@ -244,9 +247,6 @@ app.post("/addWord", async function (req, res) {
 
     WORD_TO_ID[jp] ? WORD_TO_ID[jp][type] = jp : WORD_TO_ID[jp] = {[type]:req.body};
     await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
-
-    console.log(ID_TO_WORD[newId]);
-    console.log(WORD_TO_ID[jp][type]);
 
     await db.close();
     res.send("New " + type + " added: " + jp);
@@ -299,12 +299,21 @@ app.post('/removeWord', async function(req, res) {
     }
 
     // removed from the database. maybe.
+    // update ALL_WORDS, ID_TO_WORD, WORD_TO_ID
+    ALL_WORDS.forEach((subject, index, obj) => {
+      if (subject.jp === subjectTypeCombo.characters && subject.type === subjectTypeCombo.type) obj.splice(index, 1);
+    });
+    await fs.writeFile("infoFiles/allWords.json", JSON.stringify(ALL_WORDS, null, 2));
 
-    // let wordId = await removeFromFile("infoFiles/" + subjectTypeCombo.type + ".json", subjectTypeCombo.characters);
-    // if (wordId) delete ID_TO_WORD[wordId]; // I don't like this solution... I don't know if it works either.
-    // delete WORD_TO_ID[req.body.jp][req.body.type];
-    // await removeFromFile("infoFiles/allWords.json", subjectTypeCombo.characters, subjectTypeCombo.type);
+    let id = WORD_TO_ID[subjectTypeCombo.characters][subjectTypeCombo.type].id;
+    delete ID_TO_WORD[id];
+    await fs.writeFile("infoFiles/idToSubject.json", JSON.stringify(ID_TO_WORD, null, 2));
 
+    delete WORD_TO_ID[subjectTypeCombo.characters][subjectTypeCombo.type];
+    if (Object.keys(WORD_TO_ID[subjectTypeCombo.characters]).length === 0) delete WORD_TO_ID[subjectTypeCombo.characters];
+    await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
+
+    // ok this should work.. maybe.
     res.type("text").send("Successfully deleted the " + subjectTypeCombo.type + ": " + subjectTypeCombo.characters + " from the database.");
   } catch(err) {
     res.status(500).type("text").send(err.message);
