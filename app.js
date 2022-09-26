@@ -15,12 +15,25 @@ const fs_sync = require("fs");
 
 const fetch = require("node-fetch");
 const { rawListeners } = require("process");
+const { type } = require("os");
+const e = require("express");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
 
 const WORD_TYPES = ["radical", "kanji", "vocabulary"];
+const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings", "Sentences",
+                "Source", "Vocabulary", "WordType"]; // might be useful??
 
+// BIG NOTE: YOU HAVE THE FOLLOWING DATA THAT NEEDS TO BE IN SYNC
+//
+// WORDS_DICT
+// allWords.json
+// vocabulary.json/kanji.json/radicals.json
+// japanese-new.db
+//
+// anytime you make ANY modification to ANYTHING. (adding/removing/etc),
+// these 4 need to be in sync in some way.
 
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
 // only question is how do we keep it up to date after the server is initialized.
@@ -35,7 +48,9 @@ function createDict(files) {
   }
   return dict;
 }
+// WE RE-CREATE THE DICT EVERY TIME WE LOAD THE PAGE. IT IS BASED OFF OF THE FILES.
 
+// THIS INFORMATION SHOULD _NEVER_ CHANGE
 const PITCH_INFO = createPitchInfoDict();
 function createPitchInfoDict() {
   if (!fs_sync.existsSync("infoFiles/pitchLookup.json")) {
@@ -59,7 +74,8 @@ function createPitchInfoDict() {
   }
 }
 
-// Returns the word that is specified. Requires also query parameter of "type" t  o be passed in.
+
+// Returns the word that is specified. Requires also query parameter of "type" to be passed in.
 // "type" can be - "vocabulary", "kanji", or "radical".
 // UPDATED TO WORK WITH JAPANESE NEW.db 8/24/2022
 app.get('/word/:word', async function(req, res) {
@@ -78,7 +94,7 @@ app.get('/word/:word', async function(req, res) {
 });
 
 // returns all words in a list!
-// updated 9/19/2022... This is way faster if an obj doesn't exist. I don't quite like that there are
+// updated 9/19/2022... This is way faster if an obj does exist. I don't quite like that there are
 // a bajillion objects that need to be updated independently now, so will maybe look for a fix for that
 // in the future.
 // Only sends back the japanese, the english, and the readings.
@@ -138,8 +154,8 @@ app.get("/matchCloseness", async function(req, res) {
 app.post("/addWord", async function (req, res) {
   res.type("text");
   try {
-    if (!WORD_TYPES.includes(req.body.type)) throw new Error("This is an unrecognized word type");
     if (!req.body.jp || !req.body.type) throw new Error("You must have at least the japanese and the type to add a new word");
+    if (!WORD_TYPES.includes(req.body.type)) throw new Error("This is an unrecognized word type");
 
     let wordCheck = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [req.body.jp, req.body.type]);
     if (wordCheck) throw new Error(req.body.jp + " is an already known " + req.body.type);
@@ -147,7 +163,6 @@ app.post("/addWord", async function (req, res) {
     let db = await getDBConnection();
     let jp = req.body.jp;
     let type = req.body.type;
-
 
     await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
     if(req.body.en) await req.body.en.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, jp, type]));
@@ -204,13 +219,14 @@ app.post("/syncWaniKani", async function(req, res) {
         })
         subjectRequest = await subjectRequest.json();
 
-        let subjectObj;
+        let subjectObj = createResponse(subjectRequest); // NEW ADDITION AS OF 9/25/2022
         if (subjectType === "radical") {
-          subjectObj = createRadicalResponse(subjectRequest);
+          renameKey("amalgamation_ids", "kanji_ids", subjectObj);
         } else if (subjectType === "kanji") {
-          subjectObj = createKanjiResponse(subjectRequest);
+          renameKey("amalgamation_ids", "vocabulary_ids", subjectObj);
+          renameKey("component_ids", "radical_ids", subjectObj);
         } else if (subjectType === "vocabulary") {
-          subjectObj = createVocabularyResponse(subjectRequest);
+          renameKey("component_ids", "amalgamation_ids", subjectObj);
         }
 
         bigSubjectObject.push(subjectObj);
@@ -237,42 +253,11 @@ app.post("/syncWaniKani", async function(req, res) {
   }
 });
 
-// used to actually sync the information from the .txt files into my database.
-// realisitcally should never be used again as long as I maintain the current website.
-app.get('/syncTable', async function(req, res) {
-  // REMOVED FUNCTIONALITY BECAUSE IT WAS WORKING WITH _OLD_ database. Therefore no longer necessary.
-  // If wanted, can update this to work with the _NEW_ database.
-});
-
 // the thing I use to test different endpoints. Most of the code does very specific things and I
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
-  let db = await getDBConnection("japanese-old.db");
-  let vocabulary = await db.all("SELECT * FROM Vocabulary");
-  let words = [];
-
-  let db2 = await getDBConnection("japanese-new.db");
-  let allWords = (await db2.all("SELECT characters FROM Kanji WHERE type ='vocabulary'")).map(characters => characters.characters);
-  console.log(allWords);
-
-  for (let vocab of vocabulary) {
-    if (allWords.includes(vocab.jp.trim())) { // known word
-      let sources = JSON.parse(vocab.source);
-      await sources.forEach(async source => {
-        if (source.indexOf("WaniKani") === -1) {
-          console.log("This source shouldn't be wanikani related! " + source);
-          await db2.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)",
-                        [vocab.jp.trim(), source, "vocabulary"]);
-          words.push({
-            source: source,
-            jp: vocab.jp
-          })
-        }
-      });
-    }
-  }
-  res.json(words)
+  // a
 });
 
 // OUTDATED (and deleted) AS OF 9/20/2022
@@ -280,12 +265,12 @@ app.get("/funnyGoofyTest", async function(req, res) {
 app.post('/modifyWord', async function(req, res) {
 });
 
-// WARNING: DO not use yet, it doesn't work to remove all of the internal state.
-// will remove a known word from the database.
+// will remove a known word from the website in its entirity. should be working as of 9/25/2022.
+// requires a word and the type to remove.
 app.post('/removeWord', async function(req, res) {
   try {
     if (!req.body.jp) throw new Error("Please add a subject to remove.");
-    if (!req.body.type) throw new Error("You must also include the type of subject you wish to remove.");
+    if (!WORD_TYPES.includes(req.body.type)) throw new Error("You must also include the type of subject you wish to remove.");
 
     let db = await getDBConnection();
     let subjectTypeCombo = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [req.body.jp, req.body.type])
@@ -310,9 +295,13 @@ app.post('/removeWord', async function(req, res) {
       await db.run("DELETE FROM Vocabulary WHERE vocab = ?", [subjectTypeCombo.characters]);
       await db.run("DELETE FROM WordType WHERE characters = ?", [subjectTypeCombo.characters]);
     }
-    res.type("text").send("Successfully deleted the " + subjectTypeCombo.type + ": " + subjectTypeCombo.characters + " from the database.");
 
-    // this is nice and all... but it's ONLY updating the DB. there are other objects (allWords and WORD_DICT) that probably stores this info somewhere.
+    let wordId = await removeFromFile("infoFiles/" + subjectTypeCombo.type + ".json", subjectTypeCombo.characters);
+    if (wordId) delete WORDS_DICT[wordId]; // I don't like this solution... I don't know if it works either.
+    await removeFromFile("infoFiles/allWords.json", subjectTypeCombo.characters, subjectTypeCombo.type);
+    // above should probably (untested) DELETE from everything.
+
+    res.type("text").send("Successfully deleted the " + subjectTypeCombo.type + ": " + subjectTypeCombo.characters + " from the database.");
   } catch(err) {
     res.status(500).type("text").send(err.message);
   }
@@ -363,6 +352,22 @@ function countMora(reading) {
     return mora;
 }
 
+// removes a word from the given file (vocabulary/kanji/radical).
+// also returns the subjects ID so you can properly remove it from WORDS_DICT
+async function removeFromFile(filename, wordToRemove, type) {
+  let subjectId;
+  let currentSubjects = JSON.parse(await fs.readFile(filename, "utf8"));
+  console.log(currentSubjects.length);
+  let filteredSubjects = currentSubjects.filter(subject => {
+    if (subject.jp !== wordToRemove && !type) return subject;
+    if (subject.jp !== wordToRemove || type && subject.jp === wordToRemove && subject.type !== type) return subject;
+    subjectId = subject.id;
+  })
+  console.log(filteredSubjects.length);
+  await fs.writeFile(filename, JSON.stringify(filteredSubjects, null, 2));
+  return subjectId;
+}
+
 // for a SPECIFIC reading.
 function findPitchInfo(kanji, reading) {
   let wordPitchInfo = PITCH_INFO[kanji + "\t" + reading] // try to find the combo in here, but it won't work for everything
@@ -404,8 +409,10 @@ async function getWord(type, word, db) {
       wordObj.sentences = (await db.all("SELECT * FROM Sentences WHERE characters = ?", data.characters)).map(line => {return {en: line.en, jp: line.jp}});
       wordObj.pitch_data = (await db.all("SELECT * FROM PitchInfo WHERE characters = ?", data.characters)).map(line => {return {reading: line.reading, pitch: line.pitch}});
     }
+    await db.close();
     return wordObj;
   }
+  await db.close();
 }
 
 // uses a fun little thing
@@ -485,15 +492,16 @@ async function findIfSubject(subject) {
       console.log("The new learned word is: " + newWord.data.characters);
       console.log("");
 
-      let finalThing
+      let finalThing = createResponse(newWord); // NEW ADDITION 9/25/2022.
       if (subjectType === "radical") {
-        finalThing = createRadicalResponse(newWord);
+        renameKey("amalgamation_ids", "kanji_ids", finalThing);
         updateJSONFile("infoFiles/radicals.json", [finalThing]); // while testing don't want to add to the json file yet.
       } else if (subjectType === "kanji") {
-        finalThing = createKanjiResponse(newWord);
+        renameKey("amalgamation_ids", "vocabulary_ids", finalThing);
+        renameKey("component_ids", "radical_ids", finalThing);
         updateJSONFile("infoFiles/kanji.json", [finalThing]);
       } else if (subjectType === "vocabulary") {
-        finalThing = createVocabularyResponse(newWord)
+        renameKey("component_ids", amalgamation_ids, finalThing);
         updateJSONFile("infoFiles/vocabulary.json", [finalThing]);
       }
       return finalThing;
@@ -504,69 +512,24 @@ async function findIfSubject(subject) {
   console.log("");
 }
 
-function createRadicalResponse(radical) {
-  return {
-    en: radical.data.meanings[0].meaning,
-    jp: radical.data.characters,
-    level: radical.data.level,
-    id: radical.id,
-    kanji_ids: radical.data.amalgamation_subject_ids
-  }
+function renameKey(old, newname, obj) {
+  obj[newname] = obj[old];
+  delete obj[old];
 }
 
-function createVocabularyResponse(vocab) {
-  let resp = {
-    id: vocab.id,
-    jp: vocab.data.characters,
-    kanji_ids: vocab.data.component_subject_ids,
-    context_sentences: vocab.data.context_sentences, // this makes it so it writes in "ja" instead of "jp" for sentences
-    level: vocab.data.level,
-    word_type: vocab.data.parts_of_speech
+function createResponse(subject) {
+  let subjectObject = {
+    jp: subject.data.characters,
+    level: subject.data.level,
+    id: subject.id,
+    en: subject.meanings.map(meaning => meaning.meaning) // now turns the RADICALS.JSON radicals to have a list with their meanings.
   }
-
-  for (let entry of vocab.data.meanings) {
-    if (!resp["en"]) {
-      resp["en"] = [entry.meaning]
-    } else {
-      resp["en"] = resp["en"].concat(entry.meaning);
-    }
-  }
-
-  for (let entry of vocab.data.readings) {
-    if (!resp["known_readings"]) {
-      resp["known_readings"] = [entry.reading]
-    } else {
-      resp["known_readings"] = resp["known_readings"].concat(entry.reading);
-    }
-  }
-  return resp;
-}
-
-function createKanjiResponse(kanji) {
-  let resp = {
-    id: kanji.id,
-    jp: kanji.data.characters,
-    radical_ids: kanji.data.component_subject_ids,
-    vocabulary_ids: kanji.data.amalgamation_subject_ids,
-    level: kanji.data.level
-  }
-
-  for (let entry of kanji.data.meanings) {
-    if (!resp["en"]) {
-      resp["en"] = [entry.meaning]
-    } else {
-      resp["en"] = resp["en"].concat(entry.meaning);
-    }
-  }
-
-  for (let entry of kanji.data.readings) {
-    if (!resp["known_readings"]) {
-      resp["known_readings"] = [entry.reading]
-    } else {
-      resp["known_readings"] = resp["known_readings"].concat(entry.reading);
-    }
-  }
-  return resp;
+  if (subject.data.context_sentences) subjectObject.context_sentences = subject.data.context_sentences;
+  if (subject.data.parts_of_speech) subjectObject.word_type = subject.data.parts_of_speech;
+  if (subject.data.readings) subjectObject.known_readings = subject.readings.map(reading => reading.reading);
+  if (subject.data.component_subject_ids) subjectObject.component_ids = subject.data.component_subject_ids;
+  if (subject.data.amalgamation_subject_ids) subjectObject.amalgamation_ids = subject.data.amalgamation_subject_ids;
+  return subjectObject;
 }
 
 async function updateJSONFile(filename, listData) {
@@ -603,14 +566,6 @@ async function getDBConnection() {
   });
   return db;
 }
-
-// async function getDBConnection(specificDB) {
-//   const db = await sqlite.open({
-//     filename: specificDB,
-//     driver: sqlite3.Database
-//   });
-//   return db;
-// }
 
 app.use(express.static('public'));
 const PORT = process.env.PORT || 8080;
