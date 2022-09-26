@@ -259,9 +259,11 @@ app.get("/funnyGoofyTest", async function(req, res) {
   for (let vocab of vocabulary) {
     if (allWords.includes(vocab.jp.trim())) { // known word
       let sources = JSON.parse(vocab.source);
-      sources.forEach(source => {
+      await sources.forEach(async source => {
         if (source.indexOf("WaniKani") === -1) {
           console.log("This source shouldn't be wanikani related! " + source);
+          await db2.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)",
+                        [vocab.jp.trim(), source, "vocabulary"]);
           words.push({
             source: source,
             jp: vocab.jp
@@ -602,13 +604,13 @@ async function getDBConnection() {
   return db;
 }
 
-async function getDBConnection(specificDB) {
-  const db = await sqlite.open({
-    filename: specificDB,
-    driver: sqlite3.Database
-  });
-  return db;
-}
+// async function getDBConnection(specificDB) {
+//   const db = await sqlite.open({
+//     filename: specificDB,
+//     driver: sqlite3.Database
+//   });
+//   return db;
+// }
 
 app.use(express.static('public'));
 const PORT = process.env.PORT || 8080;
