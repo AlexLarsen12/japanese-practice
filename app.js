@@ -193,66 +193,6 @@ app.post("/addWord", async function (req, res) {
   }
 });
 
-// used to SYNC completely WaniKani and my program. Doesn't work with large batches,
-// and should never need to be used again. Also it only ADDS on to existing .txt files so you
-// may get a lot of duplicated unless you completely wipe the .txt files. It is meant more as a
-// blank slate sync.
-app.post("/syncWaniKani", async function(req, res) {
-  try {
-    let subjectType = req.query.type; // needs to be radical, kanji, vocabulary
-    if (!(subjectType === "radical" || subjectType === "kanji" || subjectType === "vocabulary")) {
-      throw new Error("u made an oopsies");
-    }
-
-    // initial fetches to get all the subject_ids that we need
-    let subjects = await recursiveFetchTime(WANIKANI + "assignments?srs_stages=5,6,7,8,9&subject_types=" + subjectType, []);
-    console.log(subjects.length);
-    console.log("This should take... around " + (((1100 * subjects.length) + 2020) / 60000).toFixed(2) + " minutes");
-
-    let bigSubjectObject = [];
-    // my rates are limited to 60 per minute... RIP
-    let delay = 1100 * ((subjects.length / 500) + 1);
-    for (let i = 0; i < subjects.length; i++) {
-      setTimeout(async function() {
-        let subjectRequest = await fetch(WANIKANI + "subjects/" + subjects[i].subject_id, { // THIS COULD BE BROKEN.. MADE CHANGES TO recursiveFetchTime;
-          headers: {Authorization: "Bearer " + TSURUKAME}
-        })
-        subjectRequest = await subjectRequest.json();
-
-        let subjectObj = createResponse(subjectRequest); // NEW ADDITION AS OF 9/25/2022
-        if (subjectType === "radical") {
-          renameKey("amalgamation_ids", "kanji_ids", subjectObj);
-        } else if (subjectType === "kanji") {
-          renameKey("amalgamation_ids", "vocabulary_ids", subjectObj);
-          renameKey("component_ids", "radical_ids", subjectObj);
-        } else if (subjectType === "vocabulary") {
-          renameKey("component_ids", "amalgamation_ids", subjectObj);
-        }
-
-        bigSubjectObject.push(subjectObj);
-        console.log("adding " + subjectObj.en + " " + subjectType + ". Number " + (i + 1) + " of " + subjects.length
-                    + ". " + (((i+1) / subjects.length) * 100).toFixed(2) + "% complete");
-      }, delay)
-      delay += 1010
-    }
-
-    setTimeout(async function() {
-      let filename = "infoFiles/radicals.json";
-      if (subjectType === "kanji") {
-        filename = "infoFiles/kanji.json";
-      } else if (subjectType === "vocabulary") {
-        filename = "infoFiles/vocabulary.json";
-      }
-
-      await updateJSONFile(filename, bigSubjectObject)
-      res.send(bigSubjectObject);
-    }, delay + 1100);
-  }
-  catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
 // the thing I use to test different endpoints. Most of the code does very specific things and I
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
