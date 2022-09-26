@@ -441,18 +441,6 @@ async function addWordToDBFromWaniKani(finalThing, subjectType) {
    let lowerCaseReadings = finalThing.en.map(word => word.toLowerCase());
    await lowerCaseReadings.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, finalThing.jp, subjectType]));
 
-  let allWords = JSON.parse(await fs.readFile("infoFiles/allWords.json"));
-  let word = {
-    jp: finalThing.jp,
-    type: subjectType,
-    en: lowerCaseReadings
-  };
-  finalThing.known_readings ? (word.known_readings = finalThing.known_readings) : word.known_readings = [];
-  allWords.push(word);
-  await fs.writeFile("infoFiles/allWords.json", JSON.stringify(allWords, null, 2));
-  // this is a VERY scuffed way to update this for every word added. I don't really like it, but it should
-  // keep things up to date for now.
-
    if (subjectType === "radical") {
      await finalThing.kanji_ids.forEach(async kanjiId => { if (ID_TO_WORD[kanjiId]) await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [ID_TO_WORD[kanjiId].jp, finalThing.jp])});
 
@@ -535,16 +523,6 @@ function createResponse(subject) {
   if (subject.data.component_subject_ids) subjectObject.component_ids = subject.data.component_subject_ids;
   if (subject.data.amalgamation_subject_ids) subjectObject.amalgamation_ids = subject.data.amalgamation_subject_ids;
   return subjectObject;
-}
-
-async function updateJSONFile(filename, listData) {
-  let fileContents = await fs.readFile(filename, "utf8");
-  if (!fileContents) {
-    await fs.writeFile(filename, JSON.stringify(listData, null, 2));
-  } else {
-    let newContents = JSON.parse(fileContents).concat(listData);
-    await fs.writeFile(filename, JSON.stringify(newContents, null, 2));
-  }
 }
 
 // should make this general so I can use it for any request that queries the API
