@@ -27,23 +27,25 @@ const WANIKANI = "https://api.wanikani.com/v2/";
 const WORD_TYPES = ["radical", "kanji", "vocabulary"];
 const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings", "Sentences",
                 "Source", "Vocabulary", "WordType"]; // might be useful??
+const FILE_NAMES = ["infoFiles/radicals.json", "infoFiles/kanji.json", "infoFiles/vocabulary.json"]
 
 // BIG NOTE: YOU HAVE THE FOLLOWING DATA THAT NEEDS TO BE IN SYNC
 //
-// WORDS_DICT
+// ID_TO_WORD
+// WORD_TO_ID
 // allWords.json
 // vocabulary.json/kanji.json/radicals.json
 // japanese-new.db
 //
 // anytime you make ANY modification to ANYTHING. (adding/removing/etc),
-// these 4 need to be in sync in some way.
+// these 5 need to be in sync in some way.
 
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
 // only question is how do we keep it up to date after the server is initialized.
-const WORDS_DICT = createDict(["infoFiles/radicals.json", "infoFiles/kanji.json", "infoFiles/vocabulary.json"]);
-function createDict(files) {
+const ID_TO_WORD = createDict();
+function createDict() {
   let  dict = {}
-  for (let file of files) {
+  for (let file of FILE_NAMES) {
     let content = JSON.parse(fs_sync.readFileSync(file, "utf8"));
     for (let word of content) {
       dict[word.id] = word;
@@ -77,6 +79,25 @@ function createPitchInfoDict() {
   }
 }
 
+let WORD_TO_ID = createWordToIdDictionary();
+function createWordToIdDictionary() {
+  let dict = {};
+  for (let file of FILE_NAMES) {
+    let contents = JSON.parse(fs_sync.readFileSync(file, "utf-8"));
+    for (let word of contents) {
+      if (dict[word.jp]) { // word is in here and we can just add it.
+        if (word.kanji_ids && !word.context_sentences) dict[word.jp]["radical"] = word;
+        if (word.radical_ids && word.vocabulary_ids) dict[word.jp]["kanji"] = word;
+        if (word.context_sentences) dict[word.jp]["vocabulary"] = word;
+      } else { // need to initiate the object
+        if (word.kanji_ids && !word.context_sentences) dict[word.jp] = {radical: word};
+        if (word.radical_ids && word.vocabulary_ids) dict[word.jp] = {kanji: word};
+        if (word.context_sentences) dict[word.jp] = {vocabulary: word};
+      }
+    }
+  }
+  return dict;
+}
 
 // Returns the word that is specified. Requires also query parameter of "type" to be passed in.
 // "type" can be - "vocabulary", "kanji", or "radical".
@@ -204,7 +225,7 @@ app.post("/addWord", async function (req, res) {
     // need to create a new unused ID
     let newId = createUniqueId();
     req.body.id = newId;
-    WORDS_DICT[newId] = req.body;
+    ID_TO_WORD[newId] = req.body;
     await updateJSONFile("infoFiles/" + type + ".json", [req.body]);
     // somehow need to actually go from the kanji themselves... to find the ID...
     // currently does not do this.
@@ -264,7 +285,7 @@ app.post('/removeWord', async function(req, res) {
     }
 
     let wordId = await removeFromFile("infoFiles/" + subjectTypeCombo.type + ".json", subjectTypeCombo.characters);
-    if (wordId) delete WORDS_DICT[wordId]; // I don't like this solution... I don't know if it works either.
+    if (wordId) delete ID_TO_WORD[wordId]; // I don't like this solution... I don't know if it works either.
     await removeFromFile("infoFiles/allWords.json", subjectTypeCombo.characters, subjectTypeCombo.type);
     // above should probably (untested) DELETE from everything.
 
@@ -289,7 +310,7 @@ app.get("/updateLastVisited",  async function(req, res) {
   for (let entry of assignments) {
     let addedWord = await findIfSubject(entry);
     if (addedWord) {
-      WORDS_DICT[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
+      ID_TO_WORD[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
       await addWordToDBFromWaniKani(addedWord, entry.data.subject_type);
       addedWords.push({jp: addedWord.jp, type: entry.data.subject_type});
     }
@@ -314,7 +335,7 @@ app.get("/updateLastVisited",  async function(req, res) {
 // My unique id's will be negative since the ids for WaniKani are all positive.
 function createUniqueId() {
   let num = Math.floor(Math.random() * 1000);
-  while (WORDS_DICT[num]) num = (Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) * -1;
+  while (ID_TO_WORD[num]) num = (Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) * -1;
   return num;
 }
 
@@ -329,7 +350,7 @@ function countMora(reading) {
 }
 
 // removes a word from the given file (vocabulary/kanji/radical).
-// also returns the subjects ID so you can properly remove it from WORDS_DICT
+// also returns the subjects ID so you can properly remove it from ID_TO_WORD
 async function removeFromFile(filename, wordToRemove, type) {
   let subjectId;
   let currentSubjects = JSON.parse(await fs.readFile(filename, "utf8"));
@@ -424,22 +445,22 @@ async function addWordToDBFromWaniKani(finalThing, subjectType) {
   // keep things up to date for now.
 
    if (subjectType === "radical") {
-     await finalThing.kanji_ids.forEach(async kanjiId => { if (WORDS_DICT[kanjiId]) await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, finalThing.jp])});
+     await finalThing.kanji_ids.forEach(async kanjiId => { if (ID_TO_WORD[kanjiId]) await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [ID_TO_WORD[kanjiId].jp, finalThing.jp])});
 
    } else if (subjectType === "kanji") {
      await finalThing.radical_ids.forEach(async radicalId => {
-      if (WORDS_DICT[radicalId].jp !== null) {
-        await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [finalThing.jp, WORDS_DICT[radicalId].jp])
+      if (ID_TO_WORD[radicalId].jp !== null) {
+        await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [finalThing.jp, ID_TO_WORD[radicalId].jp])
       }
     }); //don't want to add the radicals that don't exist.
 
-     await finalThing.vocabulary_ids.forEach(async vocabId => { if (WORDS_DICT[vocabId]) await db.run("INSERT INTO Radicals (characters, vocab) VALUES (?, ?)", [finalThing.jp, WORDS_DICT[vocabId].jp])});
+     await finalThing.vocabulary_ids.forEach(async vocabId => { if (ID_TO_WORD[vocabId]) await db.run("INSERT INTO Radicals (characters, vocab) VALUES (?, ?)", [finalThing.jp, ID_TO_WORD[vocabId].jp])});
      await finalThing.known_readings.forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, finalThing.jp, subjectType]));
 
    } else if (subjectType === "vocabulary") {
      await finalThing.known_readings.forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, finalThing.jp, subjectType]));
      await finalThing.word_type.forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [finalThing.jp, wordType]));
-     await finalThing.kanji_ids.forEach(async kanjiId => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [WORDS_DICT[kanjiId].jp, finalThing.jp]));
+     await finalThing.kanji_ids.forEach(async kanjiId => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [ID_TO_WORD[kanjiId].jp, finalThing.jp]));
 
      for (let reading of finalThing.known_readings) {
        let pitchInfo = findPitchInfo(finalThing.jp, reading);
@@ -453,8 +474,8 @@ async function addWordToDBFromWaniKani(finalThing, subjectType) {
 async function findIfSubject(subject) {
   let subjectType = subject.data.subject_type;
 
-  if (WORDS_DICT[subject.data.subject_id]) { // I know this word
-    console.log("I already know this " + subjectType + "(" + WORDS_DICT[subject.data.subject_id].jp +
+  if (ID_TO_WORD[subject.data.subject_id]) { // I know this word
+    console.log("I already know this " + subjectType + "(" + ID_TO_WORD[subject.data.subject_id].jp +
     "). It doesn't need to be added to the database, but the new SRS level is " + subject.data.srs_stage);
     if (subject.data.srs_stage < 5) console.log("The SRS is below WaniKani's 'proficent' range, you might want to focus on this word!");
   } else { // new word moment;
