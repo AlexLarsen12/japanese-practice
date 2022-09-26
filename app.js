@@ -27,7 +27,7 @@ const WANIKANI = "https://api.wanikani.com/v2/";
 const WORD_TYPES = ["radical", "kanji", "vocabulary"];
 const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings", "Sentences",
                 "Source", "Vocabulary", "WordType"]; // might be useful??
-const FILE_NAMES = ["infoFiles/radicals.json", "infoFiles/kanji.json", "infoFiles/vocabulary.json"]
+const FILE_NAMES = ["infoFiles/radical.json", "infoFiles/kanji.json", "infoFiles/vocabulary.json"]
 
 // BIG NOTE: YOU HAVE THE FOLLOWING DATA THAT NEEDS TO BE IN SYNC
 //
@@ -42,14 +42,12 @@ const FILE_NAMES = ["infoFiles/radicals.json", "infoFiles/kanji.json", "infoFile
 
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
 // only question is how do we keep it up to date after the server is initialized.
-const ID_TO_WORD = createDict();
-function createDict() {
+const ID_TO_WORD = createIdToWordDict();
+function createIdToWordDict() {
   let  dict = {}
   for (let file of FILE_NAMES) {
     let content = JSON.parse(fs_sync.readFileSync(file, "utf8"));
-    for (let word of content) {
-      dict[word.id] = word;
-    }
+    for (let word of content) dict[word.id] = word;
   }
   return dict;
 }
@@ -82,18 +80,10 @@ function createPitchInfoDict() {
 let WORD_TO_ID = createWordToIdDictionary();
 function createWordToIdDictionary() {
   let dict = {};
-  for (let file of FILE_NAMES) {
-    let contents = JSON.parse(fs_sync.readFileSync(file, "utf-8"));
+  for (let type of WORD_TYPES) {
+    let contents = JSON.parse(fs_sync.readFileSync("infoFiles/" + type + ".json", "utf-8"));
     for (let word of contents) {
-      if (dict[word.jp]) { // word is in here and we can just add it.
-        if (word.kanji_ids && !word.context_sentences) dict[word.jp]["radical"] = word;
-        if (word.radical_ids && word.vocabulary_ids) dict[word.jp]["kanji"] = word;
-        if (word.context_sentences) dict[word.jp]["vocabulary"] = word;
-      } else { // need to initiate the object
-        if (word.kanji_ids && !word.context_sentences) dict[word.jp] = {radical: word};
-        if (word.radical_ids && word.vocabulary_ids) dict[word.jp] = {kanji: word};
-        if (word.context_sentences) dict[word.jp] = {vocabulary: word};
-      }
+      dict[word.jp] ? dict[word.jp][type] = word: dict[word.jp] = {[type]: word};
     }
   }
   return dict;
@@ -244,10 +234,6 @@ app.get("/funnyGoofyTest", async function(req, res) {
   // a
 });
 
-app.post("/funnyGoofTest123", function(req, res) {
-  res.json(req.body);
-});
-
 // OUTDATED (and deleted) AS OF 9/20/2022
 // will modify a known word in the database.
 app.post('/modifyWord', async function(req, res) {
@@ -311,11 +297,12 @@ app.get("/updateLastVisited",  async function(req, res) {
     let addedWord = await findIfSubject(entry);
     if (addedWord) {
       ID_TO_WORD[addedWord.id] = addedWord; // making sure our internal state is the same thing as our words!
+      WORD_TO_ID[addedWord.jp] ?  WORD_TO_ID[addedWord.jp][entry.data.subject_type] = addedWord : WORD_TO_ID[addedWord.jp] = {[entry.data.subject_type]: addedWord};
       await addWordToDBFromWaniKani(addedWord, entry.data.subject_type);
       addedWords.push({jp: addedWord.jp, type: entry.data.subject_type});
     }
+    // this is largely untested. as of 9/26/2022 update. Caution ahead!
   }
-  // as of the most recent update, (9/19/2022) the changes here to simplify functions is UNTESTED.
 
   // we've updated everything so we can say the last time we updated!
   let now = (new Date()).toISOString();
