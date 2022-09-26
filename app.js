@@ -17,6 +17,7 @@ const fetch = require("node-fetch");
 const { allowedNodeEnvironmentFlags } = require("process");
 const e = require("express");
 const { create } = require("domain");
+const { brotliDecompress } = require("zlib");
 // const { rawListeners } = require("process");
 // const { type } = require("os");
 // const e = require("express");
@@ -98,8 +99,10 @@ app.get('/word/:word', async function(req, res) {
     if (!type) throw new Error("Please input a type!!");
     if (!WORD_TYPES.includes(type)) throw new Error("Sorry this word type is unrecognized");
 
+    let db = await getDBConnection();
     let word = req.params.word;
-    let resp = await getWord(type, word);
+    let resp = await getWord(type, word, db);
+    await db.close();
     if (!resp) throw new Error("This word isn't known yet!!!");
     res.json(resp);
   } catch(err) {
@@ -145,9 +148,11 @@ app.get("/randomWord", async function(req, res) {
     let db = await getDBConnection(); // maybe
     let words = await db.all("SELECT * FROM Kanji WHERE type ='radical'");
     let target = words[Math.floor(Math.random() * words.length)];
-    res.json(await getWord(target.type, target.characters, db)); // returns a lot of information, could be useless?
+    let randomWord = await getWord(target.type, target.characters); // returns a lot of information, could be useless?
+    await db.close();
+    res.json(randomWord);
   } catch(err) {
-    res.status(500).send(err.message);
+    res.type("text").status(500).send(err.message);
   }
 });
 // should maybe make this grab from the object if it exists??
@@ -231,7 +236,11 @@ app.post("/addWord", async function (req, res) {
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
-  // a
+  let radicals = JSON.parse(await fs.readFile("infoFiles/radical.json", "utf8"));
+  for (let radical of radicals) {
+    radical.en = [radical.en];
+  }
+  await fs.writeFile("infoFiles/radical.json", JSON.stringify(radicals, null, 2));
 });
 
 // OUTDATED (and deleted) AS OF 9/20/2022
@@ -363,8 +372,7 @@ function findPitchInfo(kanji, reading) {
 }
 
 // will return a word with COMPLETE INFORMATIONof any type and any word. Will return nothing if can't find
-async function getWord(type, word, db) {
-  if (!db) db = await getDBConnection();
+async function getWord(type, word) {
   let data = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [word, type]);
   if (data) {
     let wordObj = {
@@ -393,10 +401,8 @@ async function getWord(type, word, db) {
       wordObj.sentences = (await db.all("SELECT * FROM Sentences WHERE characters = ?", data.characters)).map(line => {return {en: line.en, jp: line.jp}});
       wordObj.pitch_data = (await db.all("SELECT * FROM PitchInfo WHERE characters = ?", data.characters)).map(line => {return {reading: line.reading, pitch: line.pitch}});
     }
-    await db.close();
     return wordObj;
   }
-  await db.close();
 }
 
 // uses a fun little thing
