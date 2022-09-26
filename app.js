@@ -39,7 +39,7 @@ const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings"
 const ID_TO_WORD = JSON.parse(fs_sync.readFileSync("infoFiles/idToSubject.json"));
 
 // dictionary that goes word -> type -> id (whole object)
-let WORD_TO_ID = JSON.parse(fs_sync.readFileSync("infoFiles/subjectToId.json"));
+const WORD_TO_ID = JSON.parse(fs_sync.readFileSync("infoFiles/subjectToId.json"));
 
 // a brief summary of all the words.
 const ALL_WORDS = JSON.parse(fs_sync.readFileSync("infoFiles/allWords.json"));
@@ -205,7 +205,6 @@ app.post("/addWord", async function (req, res) {
 // should save all of it in somewhere  for future use. Most of it is to test functionality of
 // wanikani but you know how it is.
 app.get("/funnyGoofyTest", async function(req, res) {
-
 });
 
 // OUTDATED (and deleted) AS OF 9/20/2022
@@ -263,7 +262,7 @@ app.post('/removeWord', async function(req, res) {
   }
 });
 
-// SUPER UNTESTED AS OF 9/25/2022. It should work, but we know how that goes. MAKE SURE TO GIT
+// SUPER UNTESTED AS OF 9/26/2022. It should work, but we know how that goes. MAKE SURE TO GIT
 // PUSH BEFORE EVER CALLING THIS.
 // unlessing I'm learning 60+ new words (guru+) with each fetch... this should run fine.
 app.get("/updateLastVisited",  async function(req, res) {
@@ -281,12 +280,10 @@ app.get("/updateLastVisited",  async function(req, res) {
     let wordToBeAdded = await findIfSubject(entry);
     if (wordToBeAdded) {
       await addToDatabase(wordToBeAdded.jp, entry.data.subject_type, wordToBeAdded, db);
-
       await writeToAllWords(wordToBeAdded, wordToBeAdded.type);
-
       await writeToSubjectInformation(wordToBeAdded, wordToBeAdded.id, entry.data.subject_type);
+      addedWords.push({jp: wordToBeAdded.jp, type:entry.data.subject_type});
     }
-    // this is largely untested. as of 9/26/2022 update. Caution ahead!
   }
 
   // we've updated everything so we can say the last time we updated!
@@ -349,7 +346,7 @@ async function addToDatabase(jp, type, subject, db) {
 
 async function writeToAllWords(subject, type) {
   let knownReadings = subject["known_readings"] ? subject["known_readings"] : [];
-  let en = req.body.en ? req.body.en : [];
+  let en = subject.en ? subject.en : [];
   ALL_WORDS.push({jp: subject.jp, type: type, en: en, known_readings: knownReadings});
   await fs.writeFile("infoFiles/allWords.json", JSON.stringify(ALL_WORDS, null, 2));
 }
@@ -479,7 +476,7 @@ function renameKey(old, newname, obj) {
 
 function createResponse(subject) {
   let subjectObject = {
-    // jp: subject.data.characters, do not need the JP since it's passed separately?
+    jp: subject.data.characters,
     level: subject.data.level,
     id: subject.id,
     en: subject.meanings.map(meaning => meaning.meaning) // now turns the RADICALS.JSON radicals to have a list with their meanings.
@@ -509,13 +506,21 @@ async function recursiveFetchTime(url, list) {
   }
 }
 
-async function getDBConnection() {
-  const db = await sqlite.open({
-    filename: "japanese-new.db",
+async function getDBConnection(file) {
+    const db = await sqlite.open({
+    filename: file + ".db",
     driver: sqlite3.Database
   });
   return db;
 }
+
+// async function getDBConnection() {
+//   const db = await sqlite.open({
+//     filename: "japanese-new.db",
+//     driver: sqlite3.Database
+//   });
+//   return db;
+// }
 
 app.use(express.static('public'));
 const PORT = process.env.PORT || 8080;
