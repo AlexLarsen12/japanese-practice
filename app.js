@@ -24,6 +24,12 @@ const WORD_TYPES = ["radical", "kanji", "vocabulary"];
 const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings", "Sentences",
                 "Source", "Vocabulary", "WordType"]; // might be useful??
 
+const KEY_TO_QUERY = {
+  en: {
+    query: "INSERT INTO English (characters, en) VALUES (?, ?)"
+  }
+}
+
 // BIG NOTE: YOU HAVE THE FOLLOWING DATA THAT NEEDS TO BE IN SYNC
 //
 // ID_TO_WORD
@@ -207,9 +213,39 @@ app.post("/addWord", async function (req, res) {
 app.get("/funnyGoofyTest", async function(req, res) {
 });
 
-// OUTDATED (and deleted) AS OF 9/20/2022
-// will modify a known word in the database.
+// will modify (basically add to) a known word in the database.
 app.post('/modifyWord', async function(req, res) {
+  try {
+    let jp = req.body.jp;
+    let type = req.body.type;
+
+    if (!jp || !type) throw new Error("Please include the japanese and the type.");
+    let db = await getDBConnection();
+    if (!(await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [jp, type])))
+      throw new Error("This word isn't known yet. Consider adding this word!");
+
+    delete req.body.jp;
+    delete req.body.type;
+    for (let key of Object.keys(req.body)) req.body[key] = JSON.parse(req.body[key]);
+
+    if (subject.en)
+    if (subject.sources) {
+      console.log(WORD_TO_ID[jp][type].sources);
+    }
+    if (subject.notes)
+    if (subject["known_kanji"])
+    if (subject["known_readings"])
+    if (subject["radical_composition"])
+    if (subject["known_vocabulary"])
+    if (subject["kanji_composition"])
+    if (subject["word_type"])
+    if (subject["context_sentences"])
+    if (subject["pitch_data"])
+
+    res.json(req.body);
+  } catch (err) {
+    res.status(500).type("text").send("You probably messed up your inputs: " + err.message);
+  }
 });
 
 // will remove a known word from the website in its entirity. should be working as of 9/25/2022.
@@ -309,7 +345,7 @@ app.get("/updateLastVisited",  async function(req, res) {
 // known_kanji
 // radical_composition
 // word_type
-// sentences
+// context_sentences
 // pitch_data
 // known_readings
 // kanji_composition
@@ -318,7 +354,7 @@ app.get("/updateLastVisited",  async function(req, res) {
 async function addToDatabase(jp, type, subject, db) {
   await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
   if (subject.en) await subject.en.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, jp, type]));
-  if (subject.sources) await subject.sources.forEach(async source => await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [jp, source, type]));
+  if (subject.source) await subject.sources.forEach(async source => await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [jp, source, type]));
   if (subject.notes) await subject.notes.forEach(async note => await db.run("INSERT INTO Notes (characters, type, note) VALUES (?, ?, ?)", [jp, type, note]));
   if (subject["known_kanji"]) await subject["known_kanji"].forEach(async kanji => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [kanji, jp]));
   if (subject["known_readings"]) await subject["known_readings"].forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, jp, type]));
@@ -326,7 +362,7 @@ async function addToDatabase(jp, type, subject, db) {
   if (subject["known_vocabulary"]) await subject["known_vocabulary"].forEach(async vocab => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [jp, vocab]));
   if (subject["kanji_composition"]) await subject["kanji_composition"].forEach(async kanji => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [kanji, jp]));
   if (subject["word_type"]) await subject["word_type"].forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [jp, wordType]));
-  if (subject.sentences) await subject.sentences.forEach(async sen => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [jp. sen.en, sen.jp]));
+  if (subject["context_sentences"]) await subject["context_sentences"].forEach(async sen => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [jp. sen.en, sen.ja]));
 
   // THIS HAS A SPECIFIC WAY YOU NEED TO ENTER THE PITCHINFO. IF IT DOESN'T EXIST. I WILL LOOKIT UP MYSELF.
   if (subject["pitch_data"]) {
@@ -477,7 +513,7 @@ function renameKey(old, newname, obj) {
 function createResponse(subject) {
   let subjectObject = {
     jp: subject.data.characters,
-    level: subject.data.level,
+    source: ["WaniKani level " + subject.data.level], // recently updated.
     id: subject.id,
     en: subject.meanings.map(meaning => meaning.meaning) // now turns the RADICALS.JSON radicals to have a list with their meanings.
   }
@@ -506,21 +542,13 @@ async function recursiveFetchTime(url, list) {
   }
 }
 
-async function getDBConnection(file) {
-    const db = await sqlite.open({
-    filename: file + ".db",
+async function getDBConnection() {
+  const db = await sqlite.open({
+    filename: "japanese-new.db",
     driver: sqlite3.Database
   });
   return db;
 }
-
-// async function getDBConnection() {
-//   const db = await sqlite.open({
-//     filename: "japanese-new.db",
-//     driver: sqlite3.Database
-//   });
-//   return db;
-// }
 
 app.use(express.static('public'));
 const PORT = process.env.PORT || 8080;
