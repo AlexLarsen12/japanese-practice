@@ -1,0 +1,62 @@
+{
+  "jp": {
+    "insertQuery": "INSERT INTO Kanji (characters, type) VALUES (?, ?)",
+    "deleteQuery": "DELETE FROM Kanji WHERE characters = ? AND type = ?",
+    "needType": true
+  },
+  "en": {
+    "insertQuery": "INSERT INTO English (characters, english, type) VALUES (?, ?, ?)",
+    "deleteQuery": "DELETE FROM English WHERE characters = ? AND type = ?",
+    "needType": true
+  },
+  "source": {
+    "insertQuery": "INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)",
+    "deleteQuery": "DELETE FROM Source WHERE characters = ? AND source = ?",
+    "needType": true
+  },
+  "notes": {
+    "insertQuery": "INSERT INTO Notes (characters, note, type) VALUES (?, ?, ?)",
+    "deleteQuery": "DELETE FROM Notes WHERE characters = ? AND type = ?",
+    "needType": true
+  },
+  "known_kanji": {
+    "insertQuery": "INSERT INTO Radicals (radical, characters) VALUES (?, ?)",
+    "deleteQuery": "DELETE FROM Radicals WHERE radical = ?",
+    "needType": false
+  },
+  "radical_composition": {
+    "insertQuery": "INSERT INTO Radicals (characters, radical) VALUES (?, ?)",
+    "deleteQuery": "DELETE FROM Radicals WHERE characters = ?",
+    "needType": false
+  },
+  "word_type": {
+    "insertQuery": "INSERT INTO WordType (characters, type) VALUES (?, ?)",
+    "deleteQuery": "DELETE FROM WordType WHERE characters = ?",
+    "needType": false
+  },
+  "context_sentences": {
+    "insertQuery": "INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)",
+    "deleteQuery": "DELETE FROM Sentences WHERE characters = ?",
+    "needType": false
+  },
+  "pitch_data": {
+    "insertQuery": "INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)",
+    "deleteQuery": "DELETE FROM PitchInfo WHERE characters = ?",
+    "needType": false
+  },
+  "known_readings": {
+    "insertQuery": "INSERT INTO Readings (characters, reading, type) VALUES (?, ?, ?)",
+    "deleteQuery": "DELETE FROM Readings WHERE characters = ? AND type = ?",
+    "needType": true
+  },
+  "kanji_composition": {
+    "insertQuery": "INSERT INTO Vocabulary (vocab, characters) VALUES (?, ?)",
+    "deleteQuery": "DELETE FROM Vocabulary WHERE vocab = ?",
+    "needType": false
+  },
+  "known_vocabulary": {
+    "insertQuery": "INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)",
+    "deleteQuery": "DELETE FROM Vocabulary WHERE characters = ?",
+    "needType": false
+  }
+}
