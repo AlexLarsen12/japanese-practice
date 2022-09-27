@@ -16,6 +16,7 @@ const fs_sync = require("fs");
 const fetch = require("node-fetch");
 const { runInNewContext } = require("vm");
 const { deepStrictEqual } = require("assert");
+const { ALL } = require("dns");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
@@ -24,11 +25,35 @@ const WORD_TYPES = ["radical", "kanji", "vocabulary"];
 const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings", "Sentences",
                 "Source", "Vocabulary", "WordType"]; // might be useful??
 
-const KEY_TO_QUERY = {
-  en: {
-    query: "INSERT INTO English (characters, en) VALUES (?, ?)"
-  }
+// possible keys: (this format holds for all entrances to the database.)
+// en
+// source
+// notes
+// known_kanji
+// radical_composition
+// word_type
+// context_sentences
+// pitch_data
+// known_readings
+// kanji_composition
+// known_vocabulary
+const KEY_TO_INSERT_QUERY = {
+  en: {query: "INSERT INTO English (characters, english, type) VALUES (?, ?, ?)", needType: true},
+  source: {query: "INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", needType: true},
+  notes: {query: "INSERT INTO Notes (characters, note, type) VALUES (?, ?, ?)", needType: true},
+  known_kanji: {query: "INSERT INTO Radicals (radical, characters) VALUES (?, ?)", needType: false},
+  radical_composition: {query: "INSERT INTO Radicals (characters, radical) VALUES (?, ?)", needType: false},
+  word_type: {query: "INSERT INTO WordType (characters, type) VALUES (?, ?)", needType: false},
+  context_sentences: {query: "INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", needType: false},
+  pitch_data: {query: "INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", needType: false},
+  known_readings: {query: "INSERT INTO Readings (characters, reading, type) VALUES (?, ?, ?)", needType: true},
+  kanji_composition: {query: "INSERT INTO Vocabulary (vocab, characters) VALUES (?, ?)", needType: false},
+  known_vocabulary: {query: "INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", needType: false}
 }
+// large note: For the above ^^, I am to assume that the order of the ?'s go like this:
+// [jp (of the word being inserted), otherinfo, type (if needed)].
+// with it set up like this, we are able to correctly write the above queries.
+
 
 // BIG NOTE: YOU HAVE THE FOLLOWING DATA THAT NEEDS TO BE IN SYNC
 //
@@ -226,27 +251,66 @@ app.post('/modifyWord', async function(req, res) {
 
     delete req.body.jp;
     delete req.body.type;
-    for (let key of Object.keys(req.body)) req.body[key] = JSON.parse(req.body[key]);
+    for (let key of Object.keys(req.body)) {
+      req.body[key] = JSON.parse(req.body[key]);
+      let subject = req.body;
 
-    if (subject.en)
-    if (subject.sources) {
-      console.log(WORD_TO_ID[jp][type].sources);
+      for (let content of subject[key]) {
+        if (!WORD_TO_ID[jp][type][key]) WORD_TO_ID[jp][type][key] = [];
+        if (!WORD_TO_ID[jp][type][key].includes(content)) {
+          WORD_TO_ID[jp][type][key].push(content);
+          ID_TO_WORD[WORD_TO_ID[jp][type].id][key] = WORD_TO_ID[jp][type][key];
+
+          let newId = WORD_TO_ID[jp][type].id; // this needs to be updated somehow...
+          // also this logic below assumes that the kanji/radical/vocabulary is known to me. whoopy.
+          if (key === "radical_composition") {
+            let targetId = WORD_TO_ID[content]["radical"];
+            addLink(content, "radical", targetId, key, newId);
+          }
+          if (key === "known_kanji" || key === "kanji_composition") {
+            let targetId = WORD_TO_ID[content]["kanji"];
+            addLink(content, "kanji", targetId, key, newId);
+          }
+          if (key === "known_vocabulary") {
+            let targetId = WORD_TO_ID[content]["vocabulary"];
+            addLink(content, "vocabulary", targetId, key, newId);
+          }
+          await fs.writeFile("infoFiles/idToSubject.json", JSON.stringify(ID_TO_WORD, null, 2));
+          await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
+
+          // ugh need to update ALL_WORDS;
+          if (key === "known_readings" || key === "en") {
+            ALL_WORDS[getIndexOfSubject(jp, type)][key].push(content);
+            await fs.writeFile("infoFiles/allWords.json", JSON.stringify(ALL_WORDS, null, 2));
+          }
+
+          // I have to create the proper thing content will be a string or an object.
+          let additions = [jp];
+          if (typeof(content) === "string") {
+            additions.push(content);
+          } else {
+            // this is an object and loop through the keys.
+            Object.keys(content).forEach(key => additions.push(content[key]));
+          }
+          if (KEY_TO_INSERT_QUERY[key].needType) additions.push(type);
+          await db.run(KEY_TO_INSERT_QUERY[key].query, additions);
+        }
+      }
     }
-    if (subject.notes)
-    if (subject["known_kanji"])
-    if (subject["known_readings"])
-    if (subject["radical_composition"])
-    if (subject["known_vocabulary"])
-    if (subject["kanji_composition"])
-    if (subject["word_type"])
-    if (subject["context_sentences"])
-    if (subject["pitch_data"])
 
-    res.json(req.body);
+    res.json(WORD_TO_ID[jp][type]);
   } catch (err) {
     res.status(500).type("text").send("You probably messed up your inputs: " + err.message);
   }
 });
+
+function addLink(target, targetType, targetId, targetList, newId) {
+  // we're adding to either kanji_ids, radical_ids, or vocabulary_ids.
+  if (!WORD_TO_ID[target][targetType][targetList].includes(newId))
+    WORD_TO_ID[target][targetType][targetList].push(newId);
+  if (!ID_TO_WORD[targetId][targetList].includes(newId))
+    ID_TO_WORD[targetId][targetList].push(newId);
+}
 
 // will remove a known word from the website in its entirity. should be working as of 9/25/2022.
 // requires a word and the type to remove.
@@ -337,6 +401,13 @@ app.get("/updateLastVisited",  async function(req, res) {
 
 /** -- helper functions -- */
 
+function getIndexOfSubject(word, type) {
+  for (let i = 0; i < ALL_WORDS.length; i++) {
+    if (ALL_WORDS[i].jp === word && ALL_WORDS[i].type === type) return i;
+  }
+  return -1;
+}
+
 // assumes I have a perflectly_formatted thing.
 // possible keys:
 // en
@@ -349,6 +420,7 @@ app.get("/updateLastVisited",  async function(req, res) {
 // pitch_data
 // known_readings
 // kanji_composition
+// known_vocabulary
 //
 // weirdly enough does NOT require jp to be in the subject.
 async function addToDatabase(jp, type, subject, db) {
