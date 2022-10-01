@@ -55452,6 +55452,45 @@
       "source": [
         "WaniKani level 34"
       ]
+    },
+    "vocabulary": {
+      "jp": "丼",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5756,
+      "en": [
+        "Rice Bowl"
+      ],
+      "context_sentences": [
+        {
+          "en": "I'd like to buy some tableware in America, like Japanese rice bowls, but I can't find the right size!",
+          "ja": "アメリカで日本の丼みたいな食器を買いたいんですが、ちょうどいいサイズのがないんですよね〜。"
+        },
+        {
+          "en": "Hey, there was dried-up natto in that rice bowl!",
+          "ja": "ねえ、あの丼の中に干からびた納豆が入ってたよ。"
+        },
+        {
+          "en": "You're eating a crab bowl in the morning? You're a real morning person, aren't you?",
+          "ja": "朝から蟹丼なんて食べてるの？あんたって、本当に朝型人間ね。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "どんぶり"
+      ],
+      "pitch_data": [
+        {
+          "reading": "どんぶり",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1549
+      ]
     }
   },
   "隷": {
@@ -55501,6 +55540,37 @@
       "source": [
         "WaniKani level 34"
       ]
+    },
+    "vocabulary": {
+      "jp": "芋",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5760,
+      "en": [
+        "Potato"
+      ],
+      "context_sentences": [
+        {
+          "en": "Could you microwave this potato, please?",
+          "ja": "このお芋、レンジでチンしてくれない？"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "いも"
+      ],
+      "pitch_data": [
+        {
+          "reading": "いも",
+          "pitch": "2\r"
+        }
+      ],
+      "kanji_ids": [
+        1553
+      ]
     }
   },
   "奴": {
@@ -55525,6 +55595,39 @@
       ],
       "source": [
         "WaniKani level 34"
+      ]
+    },
+    "vocabulary": {
+      "jp": "奴",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5758,
+      "en": [
+        "Dude",
+        "Guy"
+      ],
+      "context_sentences": [
+        {
+          "en": "After winning the lottery, that dude was on a high for weeks.",
+          "ja": "宝くじが当たってから、奴は数週間最高の気分を味わったんだ。"
+        }
+      ],
+      "word_type": [
+        "pronoun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "やつ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "やつ",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1551
       ]
     }
   },
@@ -55636,6 +55739,45 @@
       "source": [
         "WaniKani level 34"
       ]
+    },
+    "vocabulary": {
+      "jp": "咳",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 8986,
+      "en": [
+        "Cough"
+      ],
+      "context_sentences": [
+        {
+          "en": "Honey is good for coughs.",
+          "ja": "咳にはハチミツがいいですよ。"
+        },
+        {
+          "en": "I'm going to go and buy cough syrup.",
+          "ja": "咳止めシロップを買いに行ってきます。"
+        },
+        {
+          "en": "My cough is lingering.",
+          "ja": "咳が長引いています。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "せき"
+      ],
+      "pitch_data": [
+        {
+          "reading": "せき",
+          "pitch": "2\r"
+        }
+      ],
+      "kanji_ids": [
+        8968
+      ]
     }
   },
   "紅": {
@@ -55662,6 +55804,46 @@
       ],
       "source": [
         "WaniKani level 34"
+      ]
+    },
+    "vocabulary": {
+      "jp": "紅",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5780,
+      "en": [
+        "Deep Red",
+        "Dark Red",
+        "Crimson",
+        "Rouge",
+        "Lipstick"
+      ],
+      "context_sentences": [
+        {
+          "en": "What’s the name of the dark red flower?",
+          "ja": "その紅色の花の名前は何ですか？"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "くれない",
+        "べに"
+      ],
+      "pitch_data": [
+        {
+          "reading": "くれない",
+          "pitch": "0\r"
+        },
+        {
+          "reading": "べに",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1560
       ]
     }
   },
@@ -56015,6 +56197,37 @@
       "source": [
         "WaniKani level 34"
       ]
+    },
+    "vocabulary": {
+      "jp": "幕",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5786,
+      "en": [
+        "Curtain"
+      ],
+      "context_sentences": [
+        {
+          "en": "In the play, the curtain came down when the heroine passed away.",
+          "ja": "その劇では、女主人公が死んで幕が下りました。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "まく"
+      ],
+      "pitch_data": [
+        {
+          "reading": "まく",
+          "pitch": "2\r"
+        }
+      ],
+      "kanji_ids": [
+        1562
+      ]
     }
   },
   "聖": {
@@ -56090,6 +56303,37 @@
       ],
       "source": [
         "WaniKani level 34"
+      ]
+    },
+    "vocabulary": {
+      "jp": "縦",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5768,
+      "en": [
+        "Vertical"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’m looking for nice curtains that will suit our 100 centimeter by 160 centimeter window.",
+          "ja": "縦100cm横160cmの窓に合う良いカーテンを探しています。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "たて"
+      ],
+      "pitch_data": [
+        {
+          "reading": "たて",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1556
       ]
     }
   },
@@ -175088,6 +175332,1782 @@
       ],
       "source": [
         "WaniKani level 34"
+      ]
+    }
+  },
+  "人込み": {
+    "vocabulary": {
+      "jp": "人込み",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5733,
+      "en": [
+        "Crowd Of People",
+        "Crowded",
+        "Crowded With People"
+      ],
+      "context_sentences": [
+        {
+          "en": "I can't go into the middle of a crowd of people because I'm scared.",
+          "ja": "怖くて人込みの中に行けません。"
+        },
+        {
+          "en": "When I walk inside Shinjuku Station, I always get frustrated with the crowds of people.",
+          "ja": "新宿駅構内を歩く時は、人込みでいつもイライラする。"
+        },
+        {
+          "en": "They’re going to try <a href=\"https://en.wikipedia.org/wiki/Kanchō\" target=\"_blank\">kanchō</a> me in the crowd. You guys are gonna protect me, right?",
+          "ja": "あいつら、人込みに紛れて俺に浣腸しようとしてやがるんだ。お前らは俺を守ってくれるよなあ？"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "ひとごみ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ひとごみ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        444,
+        1504
+      ]
+    }
+  },
+  "汚す": {
+    "vocabulary": {
+      "jp": "汚す",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5736,
+      "en": [
+        "To Make Dirty",
+        "To Make Something Dirty"
+      ],
+      "context_sentences": [
+        {
+          "en": "We are out of clean bibs. Our baby boy got them all dirty.",
+          "ja": "綺麗な涎かけが無くなっちゃった。うちの赤ちゃんが全部汚しちゃって。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "よごす",
+        "けがす"
+      ],
+      "pitch_data": [
+        {
+          "reading": "よごす",
+          "pitch": "0\r"
+        },
+        {
+          "reading": "けがす",
+          "pitch": "2,0\r"
+        }
+      ],
+      "kanji_ids": [
+        1506
+      ]
+    }
+  },
+  "染み": {
+    "vocabulary": {
+      "jp": "染み",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5734,
+      "en": [
+        "Stain",
+        "A Stain"
+      ],
+      "context_sentences": [
+        {
+          "en": "Couldn’t you find some way to remove this stain?",
+          "ja": "この染みなんとか取れないかなあ。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "しみ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "しみ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1512
+      ]
+    }
+  },
+  "投げ捨てる": {
+    "vocabulary": {
+      "jp": "投げ捨てる",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5728,
+      "en": [
+        "To Throw Away"
+      ],
+      "context_sentences": [
+        {
+          "en": "I threw my alarm clock away when it went off at six this morning.",
+          "ja": "今朝、六時に目覚ましがなった時に、その時計を投げ捨ててしまいました。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "ichidan verb"
+      ],
+      "known_readings": [
+        "なげすてる"
+      ],
+      "pitch_data": [
+        {
+          "reading": "なげすてる",
+          "pitch": "0,4\r"
+        }
+      ],
+      "kanji_ids": [
+        686,
+        1503
+      ]
+    }
+  },
+  "書き込む": {
+    "vocabulary": {
+      "jp": "書き込む",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5732,
+      "en": [
+        "To Fill Out",
+        "To Write In"
+      ],
+      "context_sentences": [
+        {
+          "en": "You better hurry up and fill out an application. The office will close in ten minutes.",
+          "ja": "急いで申込書に書き込んだ方がいいよ。あと十分で事務所は閉まっちゃうんだから。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "かきこむ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "かきこむ",
+          "pitch": "3,0\r"
+        }
+      ],
+      "kanji_ids": [
+        962,
+        1504
+      ]
+    }
+  },
+  "詰め込む": {
+    "vocabulary": {
+      "jp": "詰め込む",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5738,
+      "en": [
+        "To Stuff",
+        "To Cram"
+      ],
+      "context_sentences": [
+        {
+          "en": "I managed to cram all my clothes into my suitcase.",
+          "ja": "なんとか洋服を全部スーツケースに詰め込めました。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "つめこむ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "つめこむ",
+          "pitch": "0,3\r"
+        }
+      ],
+      "kanji_ids": [
+        1411,
+        1504
+      ]
+    }
+  },
+  "血液型": {
+    "vocabulary": {
+      "jp": "血液型",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5740,
+      "en": [
+        "Blood Type",
+        "Blood Group"
+      ],
+      "context_sentences": [
+        {
+          "en": "I don’t like people whose blood type is B.",
+          "ja": "私は血液型がB型の人が苦手です。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "けつえきがた"
+      ],
+      "pitch_data": [
+        {
+          "reading": "けつえきがた",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        619,
+        1487,
+        1232
+      ]
+    }
+  },
+  "賛成する": {
+    "vocabulary": {
+      "jp": "賛成する",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5742,
+      "en": [
+        "To Agree",
+        "To Support"
+      ],
+      "context_sentences": [
+        {
+          "en": "I agree that it’s a game we must win by any means necessary.",
+          "ja": "それがどんな汚い手を使ってでも勝たなきゃいけない試合だってことには賛成するよ。"
+        }
+      ],
+      "word_type": [
+        "する verb"
+      ],
+      "known_readings": [
+        "さんせいする"
+      ],
+      "pitch_data": [
+        {
+          "reading": "さんせい",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1495,
+        780
+      ]
+    }
+  },
+  "飛び込み自殺": {
+    "vocabulary": {
+      "jp": "飛び込み自殺",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5731,
+      "en": [
+        "Suicide By Train"
+      ],
+      "context_sentences": [
+        {
+          "en": "He hooked up my PlayStation to his TV before leaving our house to commit suicide by jumping in front of a train. Do you think it means something?",
+          "ja": "あいつ、飛び込み自殺をするために家を出る前、俺のプレイステーションをあいつのテレビに繋いだんだよな。何か意味があったのかな？"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "とびこみじさつ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "とびこみじさつ",
+          "pitch": "5\r"
+        }
+      ],
+      "kanji_ids": [
+        1092,
+        1504,
+        578,
+        880
+      ]
+    }
+  },
+  "言い訳": {
+    "vocabulary": {
+      "jp": "言い訳",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5737,
+      "en": [
+        "Excuse",
+        "Explanation"
+      ],
+      "context_sentences": [
+        {
+          "en": "I sent her an explanation email and I hope she can understand.",
+          "ja": "分かってもらえることを願って、言い訳を書いたEメールを送りました。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "いいわけ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "いいわけ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        593,
+        1511
+      ]
+    }
+  },
+  "染まる": {
+    "vocabulary": {
+      "jp": "染まる",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5735,
+      "en": [
+        "To Be Dyed"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’m worried that our kids will be tainted by this bad environment.",
+          "ja": "子供たちがこの悪い環境に染まってしまうことを心配してるのよ。"
+        }
+      ],
+      "word_type": [
+        "intransitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "そまる"
+      ],
+      "pitch_data": [
+        {
+          "reading": "そまる",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1512
+      ]
+    }
+  },
+  "興味がない": {
+    "vocabulary": {
+      "jp": "興味がない",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5741,
+      "en": [
+        "No Interest",
+        "Not Interested"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’m not interested in building personal relationships with customers. ",
+          "ja": "俺は顧客と個人的に仲良くなることには興味がないんだ。"
+        }
+      ],
+      "word_type": [
+        "expression"
+      ],
+      "known_readings": [
+        "きょうみがない"
+      ],
+      "kanji_ids": [
+        1491,
+        812
+      ]
+    }
+  },
+  "申し込む": {
+    "vocabulary": {
+      "jp": "申し込む",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5730,
+      "en": [
+        "To Apply",
+        "To Submit An Application"
+      ],
+      "context_sentences": [
+        {
+          "en": "I forgot to apply for the JLPT exam.",
+          "ja": "JLPTのテストに申し込むのを忘れてしまった。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "もうしこむ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "もうしこむ",
+          "pitch": "4,0\r"
+        }
+      ],
+      "kanji_ids": [
+        538,
+        1504
+      ]
+    }
+  },
+  "使い捨て": {
+    "vocabulary": {
+      "jp": "使い捨て",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5727,
+      "en": [
+        "Disposable"
+      ],
+      "context_sentences": [
+        {
+          "en": "For me, disposable pocket warmers are indispensable in winter.",
+          "ja": "私にとって、使い捨てカイロは冬には無くてはならないものです。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "つかいすて"
+      ],
+      "pitch_data": [
+        {
+          "reading": "つかいすて",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        709,
+        1503
+      ]
+    }
+  },
+  "牛丼": {
+    "vocabulary": {
+      "jp": "牛丼",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5754,
+      "en": [
+        "Beef Bowl",
+        "Beef Rice Bowl"
+      ],
+      "context_sentences": [
+        {
+          "en": "\"This beef bowl is my treat.\" \"Oh, thank you. I’ll take you up on that.\"",
+          "ja": "「この牛丼は、私のおごりね。」「わあ、ありがとう。じゃあ、お言葉に甘えます。」"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "ぎゅうどん"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ぎゅうどん",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        511,
+        1549
+      ]
+    }
+  },
+  "焼き芋": {
+    "vocabulary": {
+      "jp": "焼き芋",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5761,
+      "en": [
+        "Baked Sweet Potato",
+        "Roast Sweet Potato"
+      ],
+      "context_sentences": [
+        {
+          "en": "My boyfriend is such a jerk! He ate my roasted sweet potato that I’d been really, really looking forward to eating.",
+          "ja": "私の彼氏、本当にムカつくんだけど！私がすっごくすっごく楽しみしてた焼き芋、食べちゃったの。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "やきいも"
+      ],
+      "pitch_data": [
+        {
+          "reading": "やきいも",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1040,
+        1553
+      ]
+    }
+  },
+  "じゃが芋": {
+    "vocabulary": {
+      "jp": "じゃが芋",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5762,
+      "en": [
+        "Potato",
+        "White Potato"
+      ],
+      "context_sentences": [
+        {
+          "en": "\"Can you peel the potatoes?\" \"Don’t worry. It’s a piece of cake.\"",
+          "ja": "「じゃが芋の皮、剥ける？」「心配しないで。朝飯前だよ。」"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "じゃがいも"
+      ],
+      "kanji_ids": [
+        1553
+      ]
+    }
+  },
+  "貴い": {
+    "vocabulary": {
+      "jp": "貴い",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5747,
+      "en": [
+        "Valuable",
+        "Sacred"
+      ],
+      "context_sentences": [
+        {
+          "en": "Life is as precious as bacon.",
+          "ja": "命ってのはベーコンと同じくらい貴いものなんだよ。"
+        }
+      ],
+      "word_type": [
+        "い adjective"
+      ],
+      "known_readings": [
+        "とうとい",
+        "たっとい"
+      ],
+      "pitch_data": [
+        {
+          "reading": "とうとい",
+          "pitch": "3\r"
+        },
+        {
+          "reading": "たっとい",
+          "pitch": "3\r"
+        }
+      ],
+      "kanji_ids": [
+        1547
+      ]
+    }
+  },
+  "兄貴": {
+    "vocabulary": {
+      "jp": "兄貴",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5748,
+      "en": [
+        "Older Brother",
+        "Big Brother",
+        "Elder Brother",
+        "One's Senior"
+      ],
+      "context_sentences": [
+        {
+          "en": "Your older brother is a really cool guy, but mine is not.",
+          "ja": "お前の兄貴はイケてるけど、俺の兄貴はダサイからな。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "あにき"
+      ],
+      "pitch_data": [
+        {
+          "reading": "あにき",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        515,
+        1547
+      ]
+    }
+  },
+  "貴様": {
+    "vocabulary": {
+      "jp": "貴様",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5749,
+      "en": [
+        "You"
+      ],
+      "context_sentences": [
+        {
+          "en": "I couldn’t sleep well because YOU were very noisy.",
+          "ja": "貴様がうるさかったせいで、昨日全然寝れなかったじゃねぇか。"
+        }
+      ],
+      "word_type": [
+        "pronoun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "きさま"
+      ],
+      "pitch_data": [
+        {
+          "reading": "きさま",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1547,
+        865
+      ]
+    }
+  },
+  "貴族": {
+    "vocabulary": {
+      "jp": "貴族",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5750,
+      "en": [
+        "The Nobility",
+        "A Noble"
+      ],
+      "context_sentences": [
+        {
+          "en": "If I had been born to a noble family, I would have been able to talk to her.",
+          "ja": "ああ、もし私が貴族の家柄に生まれていたら、彼女と話をすることも可能だったかもしれないのに。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "きぞく"
+      ],
+      "pitch_data": [
+        {
+          "reading": "きぞく",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1547,
+        830
+      ]
+    }
+  },
+  "奴隷": {
+    "vocabulary": {
+      "jp": "奴隷",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5759,
+      "en": [
+        "Slave"
+      ],
+      "context_sentences": [
+        {
+          "en": "Don’t lose your cool. Don’t worry. We are still slaves now, but things will work out.",
+          "ja": "そう取り乱すなよ。心配ないって。俺らはまだ奴隷だけど、そのうち何とかなるよ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "どれい"
+      ],
+      "pitch_data": [
+        {
+          "reading": "どれい",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1551,
+        1552
+      ]
+    }
+  },
+  "誤解": {
+    "vocabulary": {
+      "jp": "誤解",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5743,
+      "en": [
+        "Misunderstanding"
+      ],
+      "context_sentences": [
+        {
+          "en": "You’ve got the wrong idea. She’s my older sister.",
+          "ja": "君は誤解しているよ。あれは俺の姉貴だよ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "ごかい"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ごかい",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1545,
+        1150
+      ]
+    }
+  },
+  "誤字": {
+    "vocabulary": {
+      "jp": "誤字",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5744,
+      "en": [
+        "Typo"
+      ],
+      "context_sentences": [
+        {
+          "en": "For now, all you have to do is find typos.",
+          "ja": "とりあえず今は誤字脱字を見つけてくれればそれでいいから。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "ごじ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ごじ",
+          "pitch": "1,0\r"
+        }
+      ],
+      "kanji_ids": [
+        1545,
+        545
+      ]
+    }
+  },
+  "誤用": {
+    "vocabulary": {
+      "jp": "誤用",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5745,
+      "en": [
+        "Misuse"
+      ],
+      "context_sentences": [
+        {
+          "en": "Misuse of medicine can be fatal.",
+          "ja": "薬の誤用は命に関わることがあります。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "ごよう"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ごよう",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1545,
+        525
+      ]
+    }
+  },
+  "誤算": {
+    "vocabulary": {
+      "jp": "誤算",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5746,
+      "en": [
+        "Miscalculation"
+      ],
+      "context_sentences": [
+        {
+          "en": "I was wrong in thinking that she would speak decent English.",
+          "ja": "彼女は英語がペラペラだと思ったが、とんだ誤算だった。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "ごさん"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ごさん",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1545,
+        762
+      ]
+    }
+  },
+  "降る": {
+    "vocabulary": {
+      "jp": "降る",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5751,
+      "en": [
+        "To Fall",
+        "To Come Down"
+      ],
+      "context_sentences": [
+        {
+          "en": "I was walking my dog in the afternoon while the rain fell.",
+          "ja": "お昼過ぎ、にわか雨が降る中、私は愛犬の散歩をしていました。"
+        }
+      ],
+      "word_type": [
+        "intransitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "ふる"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ふる",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1548
+      ]
+    }
+  },
+  "降参": {
+    "vocabulary": {
+      "jp": "降参",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5752,
+      "en": [
+        "Surrender"
+      ],
+      "context_sentences": [
+        {
+          "en": "I haven’t given up yet.",
+          "ja": "私はまだ降参していません。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "こうさん"
+      ],
+      "pitch_data": [
+        {
+          "reading": "こうさん",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1548,
+        899
+      ]
+    }
+  },
+  "降車": {
+    "vocabulary": {
+      "jp": "降車",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5753,
+      "en": [
+        "Getting Off",
+        "Alighting",
+        "Disembarking"
+      ],
+      "context_sentences": [
+        {
+          "en": "\"What did you think of that roller coaster?\" \"It was so intense that I threw up right after getting off.\"",
+          "ja": "「あのジェットコースター、どうだった？」「すっごく良かったから、降車した瞬間にゲロっちゃったよ。」"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "こうしゃ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "こうしゃ",
+          "pitch": "0,1\r"
+        }
+      ],
+      "kanji_ids": [
+        1548,
+        562
+      ]
+    }
+  },
+  "注射": {
+    "vocabulary": {
+      "jp": "注射",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5782,
+      "en": [
+        "Shot",
+        "Injection"
+      ],
+      "context_sentences": [
+        {
+          "en": "My lower back was sore so the doctor gave me a shot of painkillers.",
+          "ja": "腰が痛かったんですが、お医者さんが痛み止めの注射を打ってくれました。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "ちゅうしゃ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ちゅうしゃ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        794,
+        1561
+      ]
+    }
+  },
+  "反射": {
+    "vocabulary": {
+      "jp": "反射",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5783,
+      "en": [
+        "Reflection"
+      ],
+      "context_sentences": [
+        {
+          "en": "The field of snow brightly reflects the winter sunlight like a giant mirror.",
+          "ja": "雪野原は、巨大な鏡のように、冬の太陽の光をキラキラと反射します。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "はんしゃ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "はんしゃ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        855,
+        1561
+      ]
+    }
+  },
+  "発射する": {
+    "vocabulary": {
+      "jp": "発射する",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5784,
+      "en": [
+        "To Launch",
+        "To Fire"
+      ],
+      "context_sentences": [
+        {
+          "en": "The missile was launched as planned.",
+          "ja": "ミサイルは予定通り発射された。"
+        }
+      ],
+      "word_type": [
+        "する verb"
+      ],
+      "known_readings": [
+        "はっしゃする"
+      ],
+      "pitch_data": [
+        {
+          "reading": "はっしゃ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        729,
+        1561
+      ]
+    }
+  },
+  "放射": {
+    "vocabulary": {
+      "jp": "放射",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5785,
+      "en": [
+        "Radiation"
+      ],
+      "context_sentences": [
+        {
+          "en": "It was very cold when I got up this morning because of radiational cooling.",
+          "ja": "放射冷却のせいで今朝起きた時はものすごい冷え込みだったよ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "ほうしゃ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ほうしゃ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        791,
+        1561
+      ]
+    }
+  },
+  "磁気": {
+    "vocabulary": {
+      "jp": "磁気",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5777,
+      "en": [
+        "Magnetism"
+      ],
+      "context_sentences": [
+        {
+          "en": "You shouldn’t put magnetic cards and magnets together.",
+          "ja": "磁気カードと磁石を一緒にしない方がいいよ。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "じき"
+      ],
+      "pitch_data": [
+        {
+          "reading": "じき",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1559,
+        548
+      ]
+    }
+  },
+  "磁石": {
+    "vocabulary": {
+      "jp": "磁石",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5778,
+      "en": [
+        "Magnet",
+        "A Magnet"
+      ],
+      "context_sentences": [
+        {
+          "en": "I got some cute magnets for your souvenir.",
+          "ja": "お土産に可愛い磁石をいくつか買ったわよ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "じしゃく"
+      ],
+      "pitch_data": [
+        {
+          "reading": "じしゃく",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1559,
+        493
+      ]
+    }
+  },
+  "磁場": {
+    "vocabulary": {
+      "jp": "磁場",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5779,
+      "en": [
+        "Magnetic Field"
+      ],
+      "context_sentences": [
+        {
+          "en": "The Earth has a substantial magnetic field.",
+          "ja": "地球にはとても強い磁場があります。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "じば"
+      ],
+      "pitch_data": [
+        {
+          "reading": "じば",
+          "pitch": "1,2\r"
+        }
+      ],
+      "kanji_ids": [
+        1559,
+        694
+      ]
+    }
+  },
+  "紅茶": {
+    "vocabulary": {
+      "jp": "紅茶",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5781,
+      "en": [
+        "Black Tea"
+      ],
+      "context_sentences": [
+        {
+          "en": "How do you like your black tea?",
+          "ja": "お紅茶はどのようにおいれ致しましょうか。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "こうちゃ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "こうちゃ",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1560,
+        643
+      ]
+    }
+  },
+  "単純": {
+    "vocabulary": {
+      "jp": "単純",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5765,
+      "en": [
+        "Simple"
+      ],
+      "context_sentences": [
+        {
+          "en": "I can make up simple sentences in Japanese, but I can’t do complicated ones yet.",
+          "ja": "日本語で単純な文章なら作れますが、難しいのはまだ無理です。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "な adjective"
+      ],
+      "known_readings": [
+        "たんじゅん"
+      ],
+      "pitch_data": [
+        {
+          "reading": "たんじゅん",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        942,
+        1555
+      ]
+    }
+  },
+  "不純": {
+    "vocabulary": {
+      "jp": "不純",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5766,
+      "en": [
+        "Impure"
+      ],
+      "context_sentences": [
+        {
+          "en": "I started studying Japanese out of impure motives.",
+          "ja": "私は不純な動機から日本語を勉強し始めました。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "な adjective"
+      ],
+      "known_readings": [
+        "ふじゅん"
+      ],
+      "pitch_data": [
+        {
+          "reading": "ふじゅん",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        563,
+        1555
+      ]
+    }
+  },
+  "純毛": {
+    "vocabulary": {
+      "jp": "純毛",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5767,
+      "en": [
+        "All Wool"
+      ],
+      "context_sentences": [
+        {
+          "en": "My new all-wool sweater prickles and makes me itchy.",
+          "ja": "新しい純毛のセーター、チクチクして痒いんだよね。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "じゅんもう"
+      ],
+      "pitch_data": [
+        {
+          "reading": "じゅんもう",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1555,
+        513
+      ]
+    }
+  },
+  "拝む": {
+    "vocabulary": {
+      "jp": "拝む",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5789,
+      "en": [
+        "To Worship",
+        "To Pray To",
+        "To See"
+      ],
+      "context_sentences": [
+        {
+          "en": "My family gathers in front of our family Buddhist altar to pray to Buddha every morning.",
+          "ja": "私の家族は、毎朝仏壇の前に集まって仏様に拝みます。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "おがむ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "おがむ",
+          "pitch": "2\r"
+        }
+      ],
+      "kanji_ids": [
+        1563
+      ]
+    }
+  },
+  "拝見する": {
+    "vocabulary": {
+      "jp": "拝見する",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5790,
+      "en": [
+        "To Have A Look At",
+        "To See"
+      ],
+      "context_sentences": [
+        {
+          "en": "I took a look at your painting of a girl sitting in the shade.",
+          "ja": "あなたが描いた日陰に座っている少女の絵を拝見しました。"
+        }
+      ],
+      "word_type": [
+        "する verb"
+      ],
+      "known_readings": [
+        "はいけんする"
+      ],
+      "pitch_data": [
+        {
+          "reading": "はいけん",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1563,
+        558
+      ]
+    }
+  },
+  "吐く": {
+    "vocabulary": {
+      "jp": "吐く",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5757,
+      "en": [
+        "To Puke",
+        "To Throw Up",
+        "To Barf",
+        "To Vomit"
+      ],
+      "context_sentences": [
+        {
+          "en": "\"I’m sorry I’m late. I was sick and threw up this morning.\" \"It’s okay. Better late than never.\"",
+          "ja": "「遅れてごめんなさい。朝、少し気分が悪くて吐いてしまって。」「大丈夫だよ。遅れても来ないよりはましだよ。」"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "はく"
+      ],
+      "pitch_data": [
+        {
+          "reading": "はく",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1550
+      ]
+    }
+  },
+  "黒幕": {
+    "vocabulary": {
+      "jp": "黒幕",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5788,
+      "en": [
+        "Wirepuller",
+        "Mastermind",
+        "Black Curtain",
+        "Dick Cheney"
+      ],
+      "context_sentences": [
+        {
+          "en": "So, you are the mastermind, huh? No wonder you seemed so professional when you killed her.",
+          "ja": "結局、あんたが黒幕だったんだな。どうりであの女を殺した時手慣れていたと思ったよ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "くろまく"
+      ],
+      "pitch_data": [
+        {
+          "reading": "くろまく",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        677,
+        1562
+      ]
+    }
+  },
+  "推理": {
+    "vocabulary": {
+      "jp": "推理",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5792,
+      "en": [
+        "Reasoning",
+        "Inference"
+      ],
+      "context_sentences": [
+        {
+          "en": "I inferred that the intimidating letter was written by an American due to the way the date was written.",
+          "ja": "日付の書き方から、その脅迫状はアメリカ人によって書かれたものだと推理しました。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb",
+        "の adjective"
+      ],
+      "known_readings": [
+        "すいり"
+      ],
+      "pitch_data": [
+        {
+          "reading": "すいり",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1565,
+        669
+      ]
+    }
+  },
+  "歓迎": {
+    "vocabulary": {
+      "jp": "歓迎",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5739,
+      "en": [
+        "A Welcome",
+        "Welcome"
+      ],
+      "context_sentences": [
+        {
+          "en": "I saw a box on the counter that had \"tips welcome\" written on it.",
+          "ja": "カウンターの上に「チップ大歓迎」と書かれた箱がありましたよ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb",
+        "の adjective"
+      ],
+      "known_readings": [
+        "かんげい"
+      ],
+      "pitch_data": [
+        {
+          "reading": "かんげい",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1571,
+        1481
+      ]
+    }
+  },
+  "縦書": {
+    "vocabulary": {
+      "jp": "縦書",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5769,
+      "en": [
+        "Vertical Writing",
+        "Vertical Style Writing"
+      ],
+      "context_sentences": [
+        {
+          "en": "I want to write compositions using vertical style writing.",
+          "ja": "文章を縦書にしたいんです。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "たてがき"
+      ],
+      "pitch_data": [
+        {
+          "reading": "たてがき",
+          "pitch": "0\r"
+        }
+      ],
+      "kanji_ids": [
+        1556,
+        962
+      ]
+    }
+  },
+  "縦横": {
+    "vocabulary": {
+      "jp": "縦横",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5770,
+      "en": [
+        "Length And Width",
+        "Vertical And Horizontal"
+      ],
+      "context_sentences": [
+        {
+          "en": "Can you help me measure the vertical and horizontal lengths of this wall?",
+          "ja": "壁の縦横の長さを測りたいんだけどちょっと手伝ってくれない。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "たてよこ",
+        "じゅうおう"
+      ],
+      "pitch_data": [
+        {
+          "reading": "たてよこ",
+          "pitch": "1\r"
+        },
+        {
+          "reading": "じゅうおう",
+          "pitch": "3,0\r"
+        }
+      ],
+      "kanji_ids": [
+        1556,
+        768
+      ]
+    }
+  },
+  "聖書": {
+    "vocabulary": {
+      "jp": "聖書",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5774,
+      "en": [
+        "Bible"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’m halfway through the bible.",
+          "ja": "聖書を半分ぐらい読み終わりました。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "せいしょ"
+      ],
+      "pitch_data": [
+        {
+          "reading": "せいしょ",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1558,
+        962
+      ]
+    }
+  },
+  "聖地": {
+    "vocabulary": {
+      "jp": "聖地",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5776,
+      "en": [
+        "Holy Land",
+        "Holy Ground"
+      ],
+      "context_sentences": [
+        {
+          "en": "This road leads to the holy land.",
+          "ja": "この道は聖地に続いています。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "せいち"
+      ],
+      "pitch_data": [
+        {
+          "reading": "せいち",
+          "pitch": "1\r"
+        }
+      ],
+      "kanji_ids": [
+        1558,
+        608
       ]
     }
   }

@@ -25,7 +25,7 @@ const WORD_TYPES = ["radical", "kanji", "vocabulary"];
 const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings", "Sentences",
                 "Source", "Vocabulary", "WordType"]; // might be useful??
 
-// possible keys: (this format holds for all entrances to the database.)
+// possible keys: (this format holds for all entrances/removals to the database.)
 // en
 // source
 // notes
@@ -39,10 +39,16 @@ const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings"
 // known_vocabulary
 // jp
 const KEY_TO_QUERY = JSON.parse(fs_sync.readFileSync("infoFiles/queryData.json"));
-
 // large note: For the above ^^, I am to assume that the order of the ?'s go like this:
 // [jp (of the word being inserted), otherinfo, type (if needed)].
 // with it set up like this, we are able to correctly write the above queries.
+
+const TARGET_TYPES = {
+  "radical_composition": "radical",
+  "kanji_composition": "kanji",
+  "known_vocabulary": "vocabulary",
+  "known_kanji": "kanji"
+}
 
 
 // BIG NOTE: YOU HAVE THE FOLLOWING DATA THAT NEEDS TO BE IN SYNC
@@ -152,58 +158,57 @@ app.get("/matchCloseness", async function(req, res) {
 app.get("/funnyGoofyTest", async function(req, res) {
 });
 
-// updated 9/26/2022. Adds a new word to the back-end.
-// requires the post input to be in a specific way, and assumes everything
-// (besides jp and type) are in a list.
+// updated 9/27/2022. should work functionally decent!
 app.post("/addWord", async function (req, res) {
   res.type("text");
   try {
-    if (!req.body.jp || !req.body.type) throw new Error("You must have at least the japanese and the type to add a new word");
-    if (!WORD_TYPES.includes(req.body.type)) throw new Error("This is an unrecognized word type");
-
-    let db = await getDBConnection();
-    let wordCheck = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [req.body.jp, req.body.type]);
-    if (wordCheck) throw new Error(req.body.jp + " is an already known " + req.body.type);
-
     let jp = req.body.jp;
     let type = req.body.type;
 
-    delete req.body.jp;
-    delete req.body.type;
-    for (let key of Object.keys(req.body)) req.body[key] = JSON.parse(req.body[key]); // make it iterable
+    if (!jp || !type) throw new Error("The japanese and the type are the only required parameters to add a new word.");
+    if (!WORD_TYPES.includes(type)) throw new Error("This is an unrecognized word type");
 
-    // need to add the word to the database.
-    await addToDatabase(jp, type, req.body, db);
+    let db = await getDBConnection();
+    let existingWord = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [jp, type]);
+    if (existingWord) throw new Error(jp + " is an already known " + type + ". Are you trying to modify this word?");
 
-    req.body.jp = jp; // we want it back onto the body! because this should be added to both files.
+    // addToDatabase()! should be here.
 
-    let potentialLists = [{subjects: req.body.kanji_ids, type:"kanji", key:"kanji_ids"},
-    {subjects:req.body.vocaulary_ids, type:"vocabulary", key:"vocabulary_ids"},
-    {subjects: req.body.radical_ids, type:"radical", key:"radical_ids"}];
-
-    for (let list of potentialLists) {
-      if (list.subjects) { // we have a list in the first place
-        for (let i = 0; i < list.subjects.length; i++) {
-          if (WORD_TO_ID[list.subjects[i]][list.type]) { // we have this one :)
-            req.body[list.key][i] = WORD_TO_ID[list.subjects[i]][list.type].id;
+    let subject = req.body // just to make it a little more clear.
+    for (let key of Object.keys(KEY_TO_QUERY)) { // it's easier to go through the keys I allow it rather than what the body sends me.
+      if (subject[key]) { // need to make sure the key exists.
+        isJson(subject[key]) ? subject[key] = JSON.parse(subject[key]) : subject[key] = [subject[key]]; // now everything will be a list and we won't break it!
+        for (let i = 0; i < subject[key].length; i++) {
+          let additions = key === "jp" ? [] : [jp];
+          typeof(subject[key][i]) === "string" ? additions.push(subject[key][i]) : subject[key][i].forEach(secondKey => additions.push(subject[key][i][secondKey]));
+          if (KEY_TO_QUERY[key].needType) additions.push(type);
+          await db.run(KEY_TO_QUERY[key].insertQuery, additions);
+          if (TARGET_TYPES[key]) {
+            subject[key][i] = WORD_TO_ID[subject[key][i]][TARGET_TYPES[key]].id;
           } else {
-            // uh oh we don't have this one! gotta create it maybe.
+            // we didn't find it :(
+            // should create a new id for it! can maybe add it to the thing but... more work.
           }
         }
       }
     }
+    renameKey("known_kanji", "kanji_ids", subject);
+    renameKey("radical_composition", "radical_ids", subject);
+    renameKey("known_vocabulary", "vocabulary_ids", subject);
+    renameKey("kanji_composition", "kanji_ids", subject);
+    // database is completely updated. Next up comes internals.
 
     // the words are properly formatted now!
-    await writeToAllWords(req.body, type);
+    await writeToAllWords(subject, type);
 
     // need to create a new unused ID
-    let newId = createUniqueId();
-    req.body.id = newId;
-    await writeToSubjectInformation(req.body, newId, type);
+    let newId = createUniqueId(jp + type);
+    subject.id = newId;
+    await writeToSubjectInformation(subject, newId, type);
 
     await db.close();
     res.send("New " + type + " added: " + jp);
-  } catch(err) {
+  } catch (err) {
     res.status(500).send(err.message);
   }
 });
@@ -287,27 +292,13 @@ app.post('/removeWord', async function(req, res) {
 
     // run through every table in the DB and just try to delete any record of its existence.
     // need to be careful on the tables that have no reference to a "type" cuz it could screw it up.
-    await db.run("DELETE FROM Kanji WHERE characters = ? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
-    await db.run("DELETE FROM English WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
-    await db.run("DELETE FROM Notes WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
-    await db.run("DELETE FROM Readings WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
-    await db.run("DELETE FROM Source WHERE characters =? AND type = ?", [subjectTypeCombo.characters, subjectTypeCombo.type]);
-    if (req.body.type === "radical") {
-      await db.run("DELETE FROM Radicals WHERE radical = ?", [subjectTypeCombo.characters]);
-    } else if (req.body.type === "kanji") {
-      await db.run("DELETE FROM Radicals WHERE characters = ?", [subjectTypeCombo.characters]);
-      await db.run("DELETE FROM Vocabulary WHERE characters = ?", [subjectTypeCombo.characters]);
-    } else if (req.body.type === "vocabulary") {
-      await db.run("DELETE FROM PitchInfo WHERE characters = ?", [subjectTypeCombo.characters]);
-      await db.run("DELETE FROM Sentences WHERE characters = ?", [subjectTypeCombo.characters]);
-      await db.run("DELETE FROM Vocabulary WHERE vocab = ?", [subjectTypeCombo.characters]);
-      await db.run("DELETE FROM WordType WHERE characters = ?", [subjectTypeCombo.characters]);
+    for (let key of Object.keys(KEY_TO_QUERY)) {
+      let queryParams = KEY_TO_QUERY[key].needType ? [subjectTypeCombo.characters, subjectTypeCombo.type] : [subjectTypeCombo.characters];
+      await db.run(KEY_TO_QUERY[key].deleteQuery, queryParams);
     }
 
-    // update ALL_WORDS, ID_TO_WORD, WORD_TO_ID
-    ALL_WORDS.forEach((subject, index, obj) => {
-      if (subject.jp === subjectTypeCombo.characters && subject.type === subjectTypeCombo.type) obj.splice(index, 1);
-    });
+    // note: does NOT remove references to the item in kanji_ids, vocabulary_ids, radical_ids. Can change later if necessary.
+    ALL_WORDS.splice(getIndexOfSubject(subjectTypeCombo.characters, subjectTypeCombo.type), 1);
     await fs.writeFile("infoFiles/allWords.json", JSON.stringify(ALL_WORDS, null, 2));
 
     let id = WORD_TO_ID[subjectTypeCombo.characters][subjectTypeCombo.type].id;
@@ -318,7 +309,8 @@ app.post('/removeWord', async function(req, res) {
     if (Object.keys(WORD_TO_ID[subjectTypeCombo.characters]).length === 0) delete WORD_TO_ID[subjectTypeCombo.characters]; //remove the reference entirely.
     await fs.writeFile("infoFiles/subjectToId.json", JSON.stringify(WORD_TO_ID, null, 2));
 
-    res.type("text").send("Successfully deleted the " + subjectTypeCombo.type + ": " + subjectTypeCombo.characters + " from the database.");
+    await db.close();
+    res.type("text").send("Successfully deleted the " + subjectTypeCombo.type + ": " + subjectTypeCombo.characters + " from the website.");
   } catch(err) {
     res.status(500).type("text").send(err.message);
   }
@@ -334,30 +326,23 @@ app.get("/updateLastVisited",  async function(req, res) {
   let url = WANIKANI + "assignments?updated_after=" + lastDate;
   let assignments = await recursiveFetchTime(url, []); // hopefully this takes only like... 3 fetches max.
 
-  let addedWords = [];
-  // we have all of our assignments!!
-
+  let addedWords = []; // we have all the assignments, so we can start adding.
   let db = await getDBConnection();
   for (let entry of assignments) {
     let wordToBeAdded = await findIfSubject(entry);
     if (wordToBeAdded) {
-      await addToDatabase(wordToBeAdded.jp, entry.data.subject_type, wordToBeAdded, db);
-      await writeToAllWords(wordToBeAdded, wordToBeAdded.type);
+      await addToDatabase(entry.data.subject_type, wordToBeAdded, db);
+      await writeToAllWords(wordToBeAdded, entry.data.subject_type);
       await writeToSubjectInformation(wordToBeAdded, wordToBeAdded.id, entry.data.subject_type);
       addedWords.push({jp: wordToBeAdded.jp, type:entry.data.subject_type});
     }
   }
-
   // we've updated everything so we can say the last time we updated!
   let now = (new Date()).toISOString();
   await fs.appendFile("infoFiles/lastUpdated.txt", "\n" + now);
 
   await db.close();
-  res.json({
-    assignments_checked: assignments.length,
-    last_updated: now,
-    length: addedWords.length,
-    words: addedWords
+  res.json({assignments_checked: assignments.length, last_updated: now, length: addedWords.length, words: addedWords
   });
 });
 
@@ -378,8 +363,16 @@ function getIndexOfSubject(word, type) {
   return -1;
 }
 
-// assumes I have a perflectly_formatted thing.
-// possible keys:
+function isJson(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
+// possible keys: (this format holds for all entrances/removals to the database.)
 // en
 // source
 // notes
@@ -391,35 +384,53 @@ function getIndexOfSubject(word, type) {
 // known_readings
 // kanji_composition
 // known_vocabulary
-//
-// weirdly enough does NOT require jp to be in the subject.
-async function addToDatabase(jp, type, subject, db) {
-  await db.run("INSERT INTO Kanji (characters, type) VALUES (?, ?)", [jp, type]);
-  if (subject.en) await subject.en.forEach(async en => await db.run("INSERT INTO English (english, characters, type) VALUES (?, ?, ?)", [en, jp, type]));
-  if (subject.source) await subject.sources.forEach(async source => await db.run("INSERT INTO Source (characters, source, type) VALUES (?, ?, ?)", [jp, source, type]));
-  if (subject.notes) await subject.notes.forEach(async note => await db.run("INSERT INTO Notes (characters, type, note) VALUES (?, ?, ?)", [jp, type, note]));
-  if (subject["known_kanji"]) await subject["known_kanji"].forEach(async kanji => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [kanji, jp]));
-  if (subject["known_readings"]) await subject["known_readings"].forEach(async reading => await db.run("INSERT INTO Readings (reading, characters, type) VALUES (?, ?, ?)", [reading, jp, type]));
-  if (subject["radical_composition"]) await subject["radical_composition"].forEach(async radical => await db.run("INSERT INTO Radicals (characters, radical) VALUES (?, ?)", [jp, radical]));
-  if (subject["known_vocabulary"]) await subject["known_vocabulary"].forEach(async vocab => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [jp, vocab]));
-  if (subject["kanji_composition"]) await subject["kanji_composition"].forEach(async kanji => await db.run("INSERT INTO Vocabulary (characters, vocab) VALUES (?, ?)", [kanji, jp]));
-  if (subject["word_type"]) await subject["word_type"].forEach(async wordType => await db.run("INSERT INTO WordType (characters, type) VALUES (?, ?)", [jp, wordType]));
-  if (subject["context_sentences"]) await subject["context_sentences"].forEach(async sen => await db.run("INSERT INTO Sentences (characters, en, jp) VALUES (?, ?, ?)", [jp. sen.en, sen.ja]));
+// jp (this isn't in addToDatabase)
+// EVERYTHING NEEDS TO BE IN A LIST EXCEPT FOR JP.
+async function addToDatabase(type, subject, db) {
+  if (!subject["pitch_data"] && type === "vocabulary" && subject["known_readings"]) addPitchDataToObject(subject);
 
-  // THIS HAS A SPECIFIC WAY YOU NEED TO ENTER THE PITCHINFO. IF IT DOESN'T EXIST. I WILL LOOKIT UP MYSELF.
-  if (subject["pitch_data"]) {
-    await subject["pitch_data"].forEach(async info => await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, info.reading, info.pitch]));
-  } else if (type === "vocabulary" && subject["known_readings"]) {
-    for (let reading of subject["known_readings"]) {
-      let pitchInfo = findPitchInfo(jp, reading);
-      if (pitchInfo) await db.run("INSERT INTO PitchInfo (characters, reading, pitch) VALUES (?, ?, ?)", [jp, reading, pitchInfo.pitchInfo]);
+  let fakeSubject = JSON.parse(JSON.stringify(subject)); // necessary because I want to make changes for the sake of adding to the DB but not in backend.
+  fakeSubject["jp"] = [fakeSubject["jp"]];
+
+  for (let key of Object.keys(KEY_TO_QUERY)) { // it's easier to go through the keys I allow it rather than what the body sends me.
+    if (fakeSubject[key]) { // need to make sure the key exists.
+      if (Object.keys(TARGET_TYPES).includes(key)) fakeSubject[key] = translateIds(fakeSubject[key]); // translate from IDs to the string
+      for (let i = 0; i < fakeSubject[key].length; i++) {
+        let additions = key === "jp" ? [] : [fakeSubject["jp"]];
+        if (typeof(fakeSubject[key][i]) === "string") {
+            additions.push(fakeSubject[key][i]);
+        } else {
+          Object.keys(fakeSubject[key][i]).forEach(secondKey => additions.push(fakeSubject[key][i][secondKey]));
+        }
+        if (KEY_TO_QUERY[key].needType) additions.push(type);
+        await db.run(KEY_TO_QUERY[key].insertQuery, additions);
+      }
     }
   }
   renameKey("known_kanji", "kanji_ids", subject);
   renameKey("radical_composition", "radical_ids", subject);
   renameKey("known_vocabulary", "vocabulary_ids", subject);
   renameKey("kanji_composition", "kanji_ids", subject);
-  return subject // this is probably unnecessary since I think it will edit in-place, but i'll keep for now.
+  return subject;
+}
+
+function addPitchDataToObject(subject) {
+  let newPitchData = [];
+  for (let reading of subject["known_readings"]) {
+    let pitchInfo = findPitchInfo(subject["jp"], reading);
+    if (pitchInfo) newPitchData.push({"reading": pitchInfo.hiragana, "pitch": pitchInfo.pitchInfo});
+  }
+  if (newPitchData.length !== 0) subject["pitch_data"] = newPitchData;
+} // this works in place so don't need to return.
+
+// used to translate the list of kanji/radical/vocab ids to the strings themselves.
+// returns a new list of the currently KNOWN of the above.
+function translateIds(idList) {
+  let newList = [];
+  for (let id of idList) {
+    if (ID_TO_WORD[id]) newList.push(ID_TO_WORD[id].jp);
+  }
+  return newList;
 }
 
 async function writeToAllWords(subject, type) {
@@ -439,10 +450,20 @@ async function writeToSubjectInformation(subject, id, type) {
 
 // hopefully this doesn't have to run too often
 // My unique id's will be negative since the ids for WaniKani are all positive.
-function createUniqueId() {
-  let num = Math.floor(Math.random() * 10000 * -1);
-  while (ID_TO_WORD[num]) num = (Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) * -1;
-  return num;
+function createUniqueId(string) {
+  let hash = hashCode(string);
+  while (ID_TO_WORD[hash]) hash = hashCode(string += "xd");
+  return hash;
+}
+
+function hashCode(string){
+  var hash = 0;
+  for (var i = 0; i < string.length; i++) {
+      var code = string.charCodeAt(i);
+      hash = ((hash<<5)-hash)+code;
+      hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash) * -1;
 }
 
 // so this is the crude method I've come up with for finding the mora of a reading. I think it works... but I'm not sure.
@@ -512,7 +533,6 @@ function allKatakana(phrase) {
 
 async function findIfSubject(subject) {
   let subjectType = subject.data.subject_type;
-
   if (ID_TO_WORD[subject.data.subject_id]) { // I know this word
     console.log("I already know this " + subjectType + "(" + ID_TO_WORD[subject.data.subject_id].jp +
     "). It doesn't need to be added to the database, but the new SRS level is " + subject.data.srs_stage);
@@ -527,12 +547,11 @@ async function findIfSubject(subject) {
       newWord = await newWord.json();
       console.log("The new learned word is: " + newWord.data.characters);
       console.log("");
-
       return createResponse(newWord)
     } else {
       console.log("This " + subjectType + " does not have a WaniKani SRS level of 5 or higher, so it cannot be considered learned!")
     };
-  }
+  };
   console.log("");
 }
 
@@ -556,12 +575,12 @@ function createResponse(subject) {
   if (subject.data.component_subject_ids) subjectObject.component_ids = subject.data.component_subject_ids;
   if (subject.data.amalgamation_subject_ids) subjectObject.amalgamation_ids = subject.data.amalgamation_subject_ids;
 
-  if (subject.data["object"] === "radical") {
+  if (subject["object"] === "radical") {
     renameKey("amalgamation_ids", "known_kanji", subjectObject);
-  } else if (object.data["object"] === "kanji") {
+  } else if (subject["object"] === "kanji") {
     renameKey("amalgamation_ids", "known_vocabulary", subjectObject);
     renameKey("component_ids", "radical_composition", subjectObject);
-  } else if (object.data["object"] === "vocabulary") {
+  } else if (subject["object"] === "vocabulary") {
     renameKey("component_ids", "kanji_composition", subjectObject);
   }
   return subjectObject;
@@ -574,11 +593,9 @@ async function recursiveFetchTime(url, list) {
       headers: {Authorization: "Bearer " + TSURUKAME}
     });
     contents = await contents.json();
-
     for (let i = 0; i < contents.data.length; i++) {
       list.push(contents.data[i]); //can also do contents.data[i].data if we need less info
     }
-
     await recursiveFetchTime(contents.pages.next_url, list)
     return list;
   }

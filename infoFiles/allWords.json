@@ -58711,5 +58711,623 @@
     "known_readings": [
       "しんぞう"
     ]
+  },
+  {
+    "jp": "人込み",
+    "type": "vocabulary",
+    "en": [
+      "Crowd Of People",
+      "Crowded",
+      "Crowded With People"
+    ],
+    "known_readings": [
+      "ひとごみ"
+    ]
+  },
+  {
+    "jp": "汚す",
+    "type": "vocabulary",
+    "en": [
+      "To Make Dirty",
+      "To Make Something Dirty"
+    ],
+    "known_readings": [
+      "よごす",
+      "けがす"
+    ]
+  },
+  {
+    "jp": "染み",
+    "type": "vocabulary",
+    "en": [
+      "Stain",
+      "A Stain"
+    ],
+    "known_readings": [
+      "しみ"
+    ]
+  },
+  {
+    "jp": "投げ捨てる",
+    "type": "vocabulary",
+    "en": [
+      "To Throw Away"
+    ],
+    "known_readings": [
+      "なげすてる"
+    ]
+  },
+  {
+    "jp": "書き込む",
+    "type": "vocabulary",
+    "en": [
+      "To Fill Out",
+      "To Write In"
+    ],
+    "known_readings": [
+      "かきこむ"
+    ]
+  },
+  {
+    "jp": "詰め込む",
+    "type": "vocabulary",
+    "en": [
+      "To Stuff",
+      "To Cram"
+    ],
+    "known_readings": [
+      "つめこむ"
+    ]
+  },
+  {
+    "jp": "血液型",
+    "type": "vocabulary",
+    "en": [
+      "Blood Type",
+      "Blood Group"
+    ],
+    "known_readings": [
+      "けつえきがた"
+    ]
+  },
+  {
+    "jp": "賛成する",
+    "type": "vocabulary",
+    "en": [
+      "To Agree",
+      "To Support"
+    ],
+    "known_readings": [
+      "さんせいする"
+    ]
+  },
+  {
+    "jp": "飛び込み自殺",
+    "type": "vocabulary",
+    "en": [
+      "Suicide By Train"
+    ],
+    "known_readings": [
+      "とびこみじさつ"
+    ]
+  },
+  {
+    "jp": "言い訳",
+    "type": "vocabulary",
+    "en": [
+      "Excuse",
+      "Explanation"
+    ],
+    "known_readings": [
+      "いいわけ"
+    ]
+  },
+  {
+    "jp": "染まる",
+    "type": "vocabulary",
+    "en": [
+      "To Be Dyed"
+    ],
+    "known_readings": [
+      "そまる"
+    ]
+  },
+  {
+    "jp": "興味がない",
+    "type": "vocabulary",
+    "en": [
+      "No Interest",
+      "Not Interested"
+    ],
+    "known_readings": [
+      "きょうみがない"
+    ]
+  },
+  {
+    "jp": "申し込む",
+    "type": "vocabulary",
+    "en": [
+      "To Apply",
+      "To Submit An Application"
+    ],
+    "known_readings": [
+      "もうしこむ"
+    ]
+  },
+  {
+    "jp": "使い捨て",
+    "type": "vocabulary",
+    "en": [
+      "Disposable"
+    ],
+    "known_readings": [
+      "つかいすて"
+    ]
+  },
+  {
+    "jp": "牛丼",
+    "type": "vocabulary",
+    "en": [
+      "Beef Bowl",
+      "Beef Rice Bowl"
+    ],
+    "known_readings": [
+      "ぎゅうどん"
+    ]
+  },
+  {
+    "jp": "丼",
+    "type": "vocabulary",
+    "en": [
+      "Rice Bowl"
+    ],
+    "known_readings": [
+      "どんぶり"
+    ]
+  },
+  {
+    "jp": "芋",
+    "type": "vocabulary",
+    "en": [
+      "Potato"
+    ],
+    "known_readings": [
+      "いも"
+    ]
+  },
+  {
+    "jp": "焼き芋",
+    "type": "vocabulary",
+    "en": [
+      "Baked Sweet Potato",
+      "Roast Sweet Potato"
+    ],
+    "known_readings": [
+      "やきいも"
+    ]
+  },
+  {
+    "jp": "じゃが芋",
+    "type": "vocabulary",
+    "en": [
+      "Potato",
+      "White Potato"
+    ],
+    "known_readings": [
+      "じゃがいも"
+    ]
+  },
+  {
+    "jp": "奴",
+    "type": "vocabulary",
+    "en": [
+      "Dude",
+      "Guy"
+    ],
+    "known_readings": [
+      "やつ"
+    ]
+  },
+  {
+    "jp": "貴い",
+    "type": "vocabulary",
+    "en": [
+      "Valuable",
+      "Sacred"
+    ],
+    "known_readings": [
+      "とうとい",
+      "たっとい"
+    ]
+  },
+  {
+    "jp": "兄貴",
+    "type": "vocabulary",
+    "en": [
+      "Older Brother",
+      "Big Brother",
+      "Elder Brother",
+      "One's Senior"
+    ],
+    "known_readings": [
+      "あにき"
+    ]
+  },
+  {
+    "jp": "貴様",
+    "type": "vocabulary",
+    "en": [
+      "You"
+    ],
+    "known_readings": [
+      "きさま"
+    ]
+  },
+  {
+    "jp": "貴族",
+    "type": "vocabulary",
+    "en": [
+      "The Nobility",
+      "A Noble"
+    ],
+    "known_readings": [
+      "きぞく"
+    ]
+  },
+  {
+    "jp": "奴隷",
+    "type": "vocabulary",
+    "en": [
+      "Slave"
+    ],
+    "known_readings": [
+      "どれい"
+    ]
+  },
+  {
+    "jp": "誤解",
+    "type": "vocabulary",
+    "en": [
+      "Misunderstanding"
+    ],
+    "known_readings": [
+      "ごかい"
+    ]
+  },
+  {
+    "jp": "誤字",
+    "type": "vocabulary",
+    "en": [
+      "Typo"
+    ],
+    "known_readings": [
+      "ごじ"
+    ]
+  },
+  {
+    "jp": "誤用",
+    "type": "vocabulary",
+    "en": [
+      "Misuse"
+    ],
+    "known_readings": [
+      "ごよう"
+    ]
+  },
+  {
+    "jp": "誤算",
+    "type": "vocabulary",
+    "en": [
+      "Miscalculation"
+    ],
+    "known_readings": [
+      "ごさん"
+    ]
+  },
+  {
+    "jp": "咳",
+    "type": "vocabulary",
+    "en": [
+      "Cough"
+    ],
+    "known_readings": [
+      "せき"
+    ]
+  },
+  {
+    "jp": "降る",
+    "type": "vocabulary",
+    "en": [
+      "To Fall",
+      "To Come Down"
+    ],
+    "known_readings": [
+      "ふる"
+    ]
+  },
+  {
+    "jp": "降参",
+    "type": "vocabulary",
+    "en": [
+      "Surrender"
+    ],
+    "known_readings": [
+      "こうさん"
+    ]
+  },
+  {
+    "jp": "降車",
+    "type": "vocabulary",
+    "en": [
+      "Getting Off",
+      "Alighting",
+      "Disembarking"
+    ],
+    "known_readings": [
+      "こうしゃ"
+    ]
+  },
+  {
+    "jp": "注射",
+    "type": "vocabulary",
+    "en": [
+      "Shot",
+      "Injection"
+    ],
+    "known_readings": [
+      "ちゅうしゃ"
+    ]
+  },
+  {
+    "jp": "反射",
+    "type": "vocabulary",
+    "en": [
+      "Reflection"
+    ],
+    "known_readings": [
+      "はんしゃ"
+    ]
+  },
+  {
+    "jp": "発射する",
+    "type": "vocabulary",
+    "en": [
+      "To Launch",
+      "To Fire"
+    ],
+    "known_readings": [
+      "はっしゃする"
+    ]
+  },
+  {
+    "jp": "放射",
+    "type": "vocabulary",
+    "en": [
+      "Radiation"
+    ],
+    "known_readings": [
+      "ほうしゃ"
+    ]
+  },
+  {
+    "jp": "磁気",
+    "type": "vocabulary",
+    "en": [
+      "Magnetism"
+    ],
+    "known_readings": [
+      "じき"
+    ]
+  },
+  {
+    "jp": "磁石",
+    "type": "vocabulary",
+    "en": [
+      "Magnet",
+      "A Magnet"
+    ],
+    "known_readings": [
+      "じしゃく"
+    ]
+  },
+  {
+    "jp": "磁場",
+    "type": "vocabulary",
+    "en": [
+      "Magnetic Field"
+    ],
+    "known_readings": [
+      "じば"
+    ]
+  },
+  {
+    "jp": "紅",
+    "type": "vocabulary",
+    "en": [
+      "Deep Red",
+      "Dark Red",
+      "Crimson",
+      "Rouge",
+      "Lipstick"
+    ],
+    "known_readings": [
+      "くれない",
+      "べに"
+    ]
+  },
+  {
+    "jp": "紅茶",
+    "type": "vocabulary",
+    "en": [
+      "Black Tea"
+    ],
+    "known_readings": [
+      "こうちゃ"
+    ]
+  },
+  {
+    "jp": "単純",
+    "type": "vocabulary",
+    "en": [
+      "Simple"
+    ],
+    "known_readings": [
+      "たんじゅん"
+    ]
+  },
+  {
+    "jp": "不純",
+    "type": "vocabulary",
+    "en": [
+      "Impure"
+    ],
+    "known_readings": [
+      "ふじゅん"
+    ]
+  },
+  {
+    "jp": "純毛",
+    "type": "vocabulary",
+    "en": [
+      "All Wool"
+    ],
+    "known_readings": [
+      "じゅんもう"
+    ]
+  },
+  {
+    "jp": "拝む",
+    "type": "vocabulary",
+    "en": [
+      "To Worship",
+      "To Pray To",
+      "To See"
+    ],
+    "known_readings": [
+      "おがむ"
+    ]
+  },
+  {
+    "jp": "拝見する",
+    "type": "vocabulary",
+    "en": [
+      "To Have A Look At",
+      "To See"
+    ],
+    "known_readings": [
+      "はいけんする"
+    ]
+  },
+  {
+    "jp": "吐く",
+    "type": "vocabulary",
+    "en": [
+      "To Puke",
+      "To Throw Up",
+      "To Barf",
+      "To Vomit"
+    ],
+    "known_readings": [
+      "はく"
+    ]
+  },
+  {
+    "jp": "幕",
+    "type": "vocabulary",
+    "en": [
+      "Curtain"
+    ],
+    "known_readings": [
+      "まく"
+    ]
+  },
+  {
+    "jp": "黒幕",
+    "type": "vocabulary",
+    "en": [
+      "Wirepuller",
+      "Mastermind",
+      "Black Curtain",
+      "Dick Cheney"
+    ],
+    "known_readings": [
+      "くろまく"
+    ]
+  },
+  {
+    "jp": "推理",
+    "type": "vocabulary",
+    "en": [
+      "Reasoning",
+      "Inference"
+    ],
+    "known_readings": [
+      "すいり"
+    ]
+  },
+  {
+    "jp": "歓迎",
+    "type": "vocabulary",
+    "en": [
+      "A Welcome",
+      "Welcome"
+    ],
+    "known_readings": [
+      "かんげい"
+    ]
+  },
+  {
+    "jp": "縦",
+    "type": "vocabulary",
+    "en": [
+      "Vertical"
+    ],
+    "known_readings": [
+      "たて"
+    ]
+  },
+  {
+    "jp": "縦書",
+    "type": "vocabulary",
+    "en": [
+      "Vertical Writing",
+      "Vertical Style Writing"
+    ],
+    "known_readings": [
+      "たてがき"
+    ]
+  },
+  {
+    "jp": "縦横",
+    "type": "vocabulary",
+    "en": [
+      "Length And Width",
+      "Vertical And Horizontal"
+    ],
+    "known_readings": [
+      "たてよこ",
+      "じゅうおう"
+    ]
+  },
+  {
+    "jp": "聖書",
+    "type": "vocabulary",
+    "en": [
+      "Bible"
+    ],
+    "known_readings": [
+      "せいしょ"
+    ]
+  },
+  {
+    "jp": "聖地",
+    "type": "vocabulary",
+    "en": [
+      "Holy Land",
+      "Holy Ground"
+    ],
+    "known_readings": [
+      "せいち"
+    ]
   }
 ]
