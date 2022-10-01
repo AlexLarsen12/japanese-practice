@@ -147002,12 +147002,6 @@
     "known_readings": [
       "つかいすて"
     ],
-    "pitch_data": [
-      {
-        "reading": "つかいすて",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       709,
       1503
@@ -147034,12 +147028,6 @@
     ],
     "known_readings": [
       "なげすてる"
-    ],
-    "pitch_data": [
-      {
-        "reading": "なげすてる",
-        "pitch": "0,4\r"
-      }
     ],
     "kanji_ids": [
       686,
@@ -147069,12 +147057,6 @@
     "known_readings": [
       "もうしこむ"
     ],
-    "pitch_data": [
-      {
-        "reading": "もうしこむ",
-        "pitch": "4,0\r"
-      }
-    ],
     "kanji_ids": [
       538,
       1504
@@ -147100,12 +147082,6 @@
     ],
     "known_readings": [
       "とびこみじさつ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "とびこみじさつ",
-        "pitch": "5\r"
-      }
     ],
     "kanji_ids": [
       1092,
@@ -147136,12 +147112,6 @@
     ],
     "known_readings": [
       "かきこむ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "かきこむ",
-        "pitch": "3,0\r"
-      }
     ],
     "kanji_ids": [
       962,
@@ -147179,12 +147149,6 @@
     "known_readings": [
       "ひとごみ"
     ],
-    "pitch_data": [
-      {
-        "reading": "ひとごみ",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       444,
       1504
@@ -147212,12 +147176,6 @@
     "known_readings": [
       "しみ"
     ],
-    "pitch_data": [
-      {
-        "reading": "しみ",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       1512
     ]
@@ -147243,12 +147201,6 @@
     ],
     "known_readings": [
       "そまる"
-    ],
-    "pitch_data": [
-      {
-        "reading": "そまる",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1512
@@ -147278,16 +147230,6 @@
       "よごす",
       "けがす"
     ],
-    "pitch_data": [
-      {
-        "reading": "よごす",
-        "pitch": "0\r"
-      },
-      {
-        "reading": "けがす",
-        "pitch": "2,0\r"
-      }
-    ],
     "kanji_ids": [
       1506
     ]
@@ -147314,12 +147256,6 @@
     ],
     "known_readings": [
       "いいわけ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "いいわけ",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       593,
@@ -147348,12 +147284,6 @@
     ],
     "known_readings": [
       "つめこむ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "つめこむ",
-        "pitch": "0,3\r"
-      }
     ],
     "kanji_ids": [
       1411,
@@ -147384,12 +147314,6 @@
     "known_readings": [
       "かんげい"
     ],
-    "pitch_data": [
-      {
-        "reading": "かんげい",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       1571,
       1481
@@ -147416,12 +147340,6 @@
     ],
     "known_readings": [
       "けつえきがた"
-    ],
-    "pitch_data": [
-      {
-        "reading": "けつえきがた",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       619,
@@ -147478,12 +147396,6 @@
     "known_readings": [
       "さんせいする"
     ],
-    "pitch_data": [
-      {
-        "reading": "さんせい",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       1495,
       780
@@ -147511,12 +147423,6 @@
     "known_readings": [
       "ごかい"
     ],
-    "pitch_data": [
-      {
-        "reading": "ごかい",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       1545,
       1150
@@ -147542,12 +147448,6 @@
     ],
     "known_readings": [
       "ごじ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "ごじ",
-        "pitch": "1,0\r"
-      }
     ],
     "kanji_ids": [
       1545,
@@ -147576,12 +147476,6 @@
     "known_readings": [
       "ごよう"
     ],
-    "pitch_data": [
-      {
-        "reading": "ごよう",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       1545,
       525
@@ -147608,12 +147502,6 @@
     ],
     "known_readings": [
       "ごさん"
-    ],
-    "pitch_data": [
-      {
-        "reading": "ごさん",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1545,
@@ -147643,16 +147531,6 @@
       "とうとい",
       "たっとい"
     ],
-    "pitch_data": [
-      {
-        "reading": "とうとい",
-        "pitch": "3\r"
-      },
-      {
-        "reading": "たっとい",
-        "pitch": "3\r"
-      }
-    ],
     "kanji_ids": [
       1547
     ]
@@ -147681,12 +147559,6 @@
     "known_readings": [
       "あにき"
     ],
-    "pitch_data": [
-      {
-        "reading": "あにき",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       515,
       1547
@@ -147713,12 +147585,6 @@
     ],
     "known_readings": [
       "きさま"
-    ],
-    "pitch_data": [
-      {
-        "reading": "きさま",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1547,
@@ -147748,12 +147614,6 @@
     "known_readings": [
       "きぞく"
     ],
-    "pitch_data": [
-      {
-        "reading": "きぞく",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1547,
       830
@@ -147782,12 +147642,6 @@
     "known_readings": [
       "ふる"
     ],
-    "pitch_data": [
-      {
-        "reading": "ふる",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1548
     ]
@@ -147813,12 +147667,6 @@
     ],
     "known_readings": [
       "こうさん"
-    ],
-    "pitch_data": [
-      {
-        "reading": "こうさん",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1548,
@@ -147849,12 +147697,6 @@
     "known_readings": [
       "こうしゃ"
     ],
-    "pitch_data": [
-      {
-        "reading": "こうしゃ",
-        "pitch": "0,1\r"
-      }
-    ],
     "kanji_ids": [
       1548,
       562
@@ -147881,12 +147723,6 @@
     ],
     "known_readings": [
       "ぎゅうどん"
-    ],
-    "pitch_data": [
-      {
-        "reading": "ぎゅうどん",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       511,
@@ -147922,12 +147758,6 @@
     "known_readings": [
       "どんぶり"
     ],
-    "pitch_data": [
-      {
-        "reading": "どんぶり",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       1549
     ]
@@ -147957,12 +147787,6 @@
     "known_readings": [
       "はく"
     ],
-    "pitch_data": [
-      {
-        "reading": "はく",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1550
     ]
@@ -147990,12 +147814,6 @@
     "known_readings": [
       "やつ"
     ],
-    "pitch_data": [
-      {
-        "reading": "やつ",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1551
     ]
@@ -148021,12 +147839,6 @@
     ],
     "known_readings": [
       "どれい"
-    ],
-    "pitch_data": [
-      {
-        "reading": "どれい",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1551,
@@ -148054,12 +147866,6 @@
     "known_readings": [
       "いも"
     ],
-    "pitch_data": [
-      {
-        "reading": "いも",
-        "pitch": "2\r"
-      }
-    ],
     "kanji_ids": [
       1553
     ]
@@ -148085,12 +147891,6 @@
     ],
     "known_readings": [
       "やきいも"
-    ],
-    "pitch_data": [
-      {
-        "reading": "やきいも",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1040,
@@ -148145,12 +147945,6 @@
     "known_readings": [
       "たんじゅん"
     ],
-    "pitch_data": [
-      {
-        "reading": "たんじゅん",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       942,
       1555
@@ -148178,12 +147972,6 @@
     "known_readings": [
       "ふじゅん"
     ],
-    "pitch_data": [
-      {
-        "reading": "ふじゅん",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       563,
       1555
@@ -148209,12 +147997,6 @@
     ],
     "known_readings": [
       "じゅんもう"
-    ],
-    "pitch_data": [
-      {
-        "reading": "じゅんもう",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1555,
@@ -148242,12 +148024,6 @@
     "known_readings": [
       "たて"
     ],
-    "pitch_data": [
-      {
-        "reading": "たて",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1556
     ]
@@ -148273,12 +148049,6 @@
     ],
     "known_readings": [
       "たてがき"
-    ],
-    "pitch_data": [
-      {
-        "reading": "たてがき",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1556,
@@ -148308,16 +148078,6 @@
       "たてよこ",
       "じゅうおう"
     ],
-    "pitch_data": [
-      {
-        "reading": "たてよこ",
-        "pitch": "1\r"
-      },
-      {
-        "reading": "じゅうおう",
-        "pitch": "3,0\r"
-      }
-    ],
     "kanji_ids": [
       1556,
       768
@@ -148344,12 +148104,6 @@
     ],
     "known_readings": [
       "せいしょ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "せいしょ",
-        "pitch": "1\r"
-      }
     ],
     "kanji_ids": [
       1558,
@@ -148378,12 +148132,6 @@
     "known_readings": [
       "せいち"
     ],
-    "pitch_data": [
-      {
-        "reading": "せいち",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1558,
       608
@@ -148409,12 +148157,6 @@
     ],
     "known_readings": [
       "じき"
-    ],
-    "pitch_data": [
-      {
-        "reading": "じき",
-        "pitch": "1\r"
-      }
     ],
     "kanji_ids": [
       1559,
@@ -148444,12 +148186,6 @@
     "known_readings": [
       "じしゃく"
     ],
-    "pitch_data": [
-      {
-        "reading": "じしゃく",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1559,
       493
@@ -148475,12 +148211,6 @@
     ],
     "known_readings": [
       "じば"
-    ],
-    "pitch_data": [
-      {
-        "reading": "じば",
-        "pitch": "1,2\r"
-      }
     ],
     "kanji_ids": [
       1559,
@@ -148513,16 +148243,6 @@
       "くれない",
       "べに"
     ],
-    "pitch_data": [
-      {
-        "reading": "くれない",
-        "pitch": "0\r"
-      },
-      {
-        "reading": "べに",
-        "pitch": "1\r"
-      }
-    ],
     "kanji_ids": [
       1560
     ]
@@ -148547,12 +148267,6 @@
     ],
     "known_readings": [
       "こうちゃ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "こうちゃ",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1560,
@@ -148582,12 +148296,6 @@
     "known_readings": [
       "ちゅうしゃ"
     ],
-    "pitch_data": [
-      {
-        "reading": "ちゅうしゃ",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       794,
       1561
@@ -148614,12 +148322,6 @@
     ],
     "known_readings": [
       "はんしゃ"
-    ],
-    "pitch_data": [
-      {
-        "reading": "はんしゃ",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       855,
@@ -148648,12 +148350,6 @@
     "known_readings": [
       "はっしゃする"
     ],
-    "pitch_data": [
-      {
-        "reading": "はっしゃ",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       729,
       1561
@@ -148681,12 +148377,6 @@
     "known_readings": [
       "ほうしゃ"
     ],
-    "pitch_data": [
-      {
-        "reading": "ほうしゃ",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       791,
       1561
@@ -148712,12 +148402,6 @@
     ],
     "known_readings": [
       "まく"
-    ],
-    "pitch_data": [
-      {
-        "reading": "まく",
-        "pitch": "2\r"
-      }
     ],
     "kanji_ids": [
       1562
@@ -148748,12 +148432,6 @@
     "known_readings": [
       "くろまく"
     ],
-    "pitch_data": [
-      {
-        "reading": "くろまく",
-        "pitch": "0\r"
-      }
-    ],
     "kanji_ids": [
       677,
       1562
@@ -148783,12 +148461,6 @@
     "known_readings": [
       "おがむ"
     ],
-    "pitch_data": [
-      {
-        "reading": "おがむ",
-        "pitch": "2\r"
-      }
-    ],
     "kanji_ids": [
       1563
     ]
@@ -148814,12 +148486,6 @@
     ],
     "known_readings": [
       "はいけんする"
-    ],
-    "pitch_data": [
-      {
-        "reading": "はいけん",
-        "pitch": "0\r"
-      }
     ],
     "kanji_ids": [
       1563,
@@ -148849,12 +148515,6 @@
     ],
     "known_readings": [
       "すいり"
-    ],
-    "pitch_data": [
-      {
-        "reading": "すいり",
-        "pitch": "1\r"
-      }
     ],
     "kanji_ids": [
       1565,
@@ -166683,12 +166343,6 @@
     ],
     "known_readings": [
       "せき"
-    ],
-    "pitch_data": [
-      {
-        "reading": "せき",
-        "pitch": "2\r"
-      }
     ],
     "kanji_ids": [
       8968

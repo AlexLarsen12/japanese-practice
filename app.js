@@ -115,6 +115,8 @@ app.get('/word/:word', async function(req, res) {
   }
 });
 
+
+
 // returns all words in a list!
 // update 9/27/2022: only works with the allWords.json file.
 // Only sends back the japanese, the english, and the readings.
@@ -387,10 +389,12 @@ function isJson(str) {
 // jp (this isn't in addToDatabase)
 // EVERYTHING NEEDS TO BE IN A LIST EXCEPT FOR JP.
 async function addToDatabase(type, subject, db) {
-  if (!subject["pitch_data"] && type === "vocabulary" && subject["known_readings"]) addPitchDataToObject(subject);
 
   let fakeSubject = JSON.parse(JSON.stringify(subject)); // necessary because I want to make changes for the sake of adding to the DB but not in backend.
   fakeSubject["jp"] = [fakeSubject["jp"]];
+
+  // AS PER THE OLD FORMAT, PITCH_DATA IS NOT STORED IN THE JSON. I THINK THAT IS FINE.
+  if (!subject["pitch_data"] && type === "vocabulary" && subject["known_readings"]) addPitchDataToObject(fakeSubject);
 
   for (let key of Object.keys(KEY_TO_QUERY)) { // it's easier to go through the keys I allow it rather than what the body sends me.
     if (fakeSubject[key]) { // need to make sure the key exists.
