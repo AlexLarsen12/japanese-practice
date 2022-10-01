@@ -17,13 +17,12 @@ const fetch = require("node-fetch");
 const { runInNewContext } = require("vm");
 const { deepStrictEqual } = require("assert");
 const { ALL } = require("dns");
+const e = require("express");
 
 const TSURUKAME = "5f281d83-1537-41c0-9573-64e5e1bee876";
 const WANIKANI = "https://api.wanikani.com/v2/";
 
 const WORD_TYPES = ["radical", "kanji", "vocabulary"];
-const TABLES = ["English", "Kanji", "Notes", "PitchInfo", "Radicals", "Readings", "Sentences",
-                "Source", "Vocabulary", "WordType"]; // might be useful??
 
 // possible keys: (this format holds for all entrances/removals to the database.)
 // en
@@ -43,23 +42,13 @@ const KEY_TO_QUERY = JSON.parse(fs_sync.readFileSync("infoFiles/queryData.json")
 // [jp (of the word being inserted), otherinfo, type (if needed)].
 // with it set up like this, we are able to correctly write the above queries.
 
+// used to handle internal things like updating the kanji_ids when adding a new word.
 const TARGET_TYPES = {
-  "radical_composition": "radical",
-  "kanji_composition": "kanji",
-  "known_vocabulary": "vocabulary",
-  "known_kanji": "kanji"
+  "radical_composition": {type: "radical", alternate: "kanji_ids"},
+  "kanji_composition": {type: "kanji", alternate:"vocabulary_ids"},
+  "known_vocabulary": {type:"vocabulary", alternate:"vocabulary_ids"},
+  "known_kanji": {type:"kanji", alternate:"kanji_ids"}
 }
-
-
-// BIG NOTE: YOU HAVE THE FOLLOWING DATA THAT NEEDS TO BE IN SYNC
-//
-// ID_TO_WORD
-// WORD_TO_ID
-// ALL_WORDS
-// japanese-new.db
-//
-// anytime you make ANY modification to ANYTHING. (adding/removing/etc),
-// these 4 need to be in sync in some way.
 
 // This is a super easy way to have a global object that stores a subject_id => object with good info.
 // only question is how do we keep it up to date after the server is initialized.
@@ -97,7 +86,6 @@ function createPitchInfoDict() {
 
 // Returns the word that is specified. Requires also query parameter of "type" to be passed in.
 // "type" can be - "vocabulary", "kanji", or "radical".
-// UPDATED TO WORK WITH JAPANESE NEW.db 8/24/2022
 app.get('/word/:word', async function(req, res) {
   try {
     let type = req.query["type"];
@@ -114,8 +102,6 @@ app.get('/word/:word', async function(req, res) {
     res.type("text").status(500).send(err.message);
   }
 });
-
-
 
 // returns all words in a list!
 // update 9/27/2022: only works with the allWords.json file.
@@ -142,7 +128,6 @@ app.get("/randomWord", async function(req, res) {
     res.type("text").status(500).send(err.message);
   }
 });
-// should maybe make this grab from the object if it exists??
 
 // new endpoint (should maybe be post) that will try to see if you got the word right
 // https://en.wikipedia.org/wiki/Levenshtein_distance
@@ -174,39 +159,15 @@ app.post("/addWord", async function (req, res) {
     let existingWord = await db.get("SELECT * FROM Kanji WHERE characters = ? AND type = ?", [jp, type]);
     if (existingWord) throw new Error(jp + " is an already known " + type + ". Are you trying to modify this word?");
 
-    // addToDatabase()! should be here.
+    let subject = req.body;
+    for (let key of Object.keys(subject)) if (isJson(subject[key])) subject[key] = JSON.parse(subject[key]);
+    subject.id = createUniqueId(jp + type);
 
-    let subject = req.body // just to make it a little more clear.
-    for (let key of Object.keys(KEY_TO_QUERY)) { // it's easier to go through the keys I allow it rather than what the body sends me.
-      if (subject[key]) { // need to make sure the key exists.
-        isJson(subject[key]) ? subject[key] = JSON.parse(subject[key]) : subject[key] = [subject[key]]; // now everything will be a list and we won't break it!
-        for (let i = 0; i < subject[key].length; i++) {
-          let additions = key === "jp" ? [] : [jp];
-          typeof(subject[key][i]) === "string" ? additions.push(subject[key][i]) : subject[key][i].forEach(secondKey => additions.push(subject[key][i][secondKey]));
-          if (KEY_TO_QUERY[key].needType) additions.push(type);
-          await db.run(KEY_TO_QUERY[key].insertQuery, additions);
-          if (TARGET_TYPES[key]) {
-            subject[key][i] = WORD_TO_ID[subject[key][i]][TARGET_TYPES[key]].id;
-          } else {
-            // we didn't find it :(
-            // should create a new id for it! can maybe add it to the thing but... more work.
-          }
-        }
-      }
-    }
-    renameKey("known_kanji", "kanji_ids", subject);
-    renameKey("radical_composition", "radical_ids", subject);
-    renameKey("known_vocabulary", "vocabulary_ids", subject);
-    renameKey("kanji_composition", "kanji_ids", subject);
-    // database is completely updated. Next up comes internals.
-
-    // the words are properly formatted now!
+    // this part is f*cked...
+    translateStrings(subject);
+    await addToDatabase(type, subject, db);
     await writeToAllWords(subject, type);
-
-    // need to create a new unused ID
-    let newId = createUniqueId(jp + type);
-    subject.id = newId;
-    await writeToSubjectInformation(subject, newId, type);
+    await writeToSubjectInformation(subject, subject.id, type);
 
     await db.close();
     res.send("New " + type + " added: " + jp);
@@ -350,6 +311,29 @@ app.get("/updateLastVisited",  async function(req, res) {
 
 /** -- helper functions -- */
 
+function translateStrings(subject) {
+  for (let key of Object.keys(TARGET_TYPES)) {
+    if (subject[key]) {  // we have one of the types...
+      let newList = [];
+      for (let str of subject[key]) {
+        if (WORD_TO_ID[str]) {
+          if (WORD_TO_ID[str][TARGET_TYPES[key].type]) { // if we know this thing.
+            if (!WORD_TO_ID[str][TARGET_TYPES[key].type][TARGET_TYPES[key].alternate].includes(subject.id)) {
+              WORD_TO_ID[str][TARGET_TYPES[key].type][TARGET_TYPES[key].alternate].push(subject.id);
+              ID_TO_WORD[WORD_TO_ID[str][TARGET_TYPES[key].type].id][TARGET_TYPES[key].alternate].push(subject.id);
+            }
+            newList.push(WORD_TO_ID[str][TARGET_TYPES[key].type].id); // assumes that the thing is known...
+          } else {
+            // newList.push(createUniqueId(str + TARGET_TYPES[key].type));
+            // we are doing this to account for the fact that it may not exist, but we want to know about it in the future.
+          }
+        }
+      }
+      subject[key] = newList;
+    }
+  }
+}
+
 function addLink(target, targetType, targetId, targetList, newId) {
   // we're adding to either kanji_ids, radical_ids, or vocabulary_ids.
   if (!WORD_TO_ID[target][targetType][targetList].includes(newId))
@@ -374,7 +358,6 @@ function isJson(str) {
   return true;
 }
 
-// possible keys: (this format holds for all entrances/removals to the database.)
 // en
 // source
 // notes
@@ -389,12 +372,10 @@ function isJson(str) {
 // jp (this isn't in addToDatabase)
 // EVERYTHING NEEDS TO BE IN A LIST EXCEPT FOR JP.
 async function addToDatabase(type, subject, db) {
-
   let fakeSubject = JSON.parse(JSON.stringify(subject)); // necessary because I want to make changes for the sake of adding to the DB but not in backend.
+  if (!subject["pitch_data"] && type === "vocabulary" && subject["known_readings"]) addPitchDataToObject(fakeSubject);
   fakeSubject["jp"] = [fakeSubject["jp"]];
 
-  // AS PER THE OLD FORMAT, PITCH_DATA IS NOT STORED IN THE JSON. I THINK THAT IS FINE.
-  if (!subject["pitch_data"] && type === "vocabulary" && subject["known_readings"]) addPitchDataToObject(fakeSubject);
 
   for (let key of Object.keys(KEY_TO_QUERY)) { // it's easier to go through the keys I allow it rather than what the body sends me.
     if (fakeSubject[key]) { // need to make sure the key exists.
@@ -590,7 +571,6 @@ function createResponse(subject) {
   return subjectObject;
 }
 
-// should make this general so I can use it for any request that queries the API
 async function recursiveFetchTime(url, list) {
   if (url !== null) {
     let contents = await fetch(url, {
