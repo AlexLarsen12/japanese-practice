@@ -59329,5 +59329,444 @@
     "known_readings": [
       "せいち"
     ]
+  },
+  {
+    "jp": "込める",
+    "type": "vocabulary",
+    "en": [
+      "to put in",
+      "to load"
+    ],
+    "known_readings": [
+      "こめる"
+    ]
+  },
+  {
+    "jp": "縮まる",
+    "type": "vocabulary",
+    "en": [
+      "to shrink",
+      "to contract"
+    ],
+    "known_readings": [
+      "ちぢまる",
+      "ちじまる"
+    ]
+  },
+  {
+    "jp": "縮小",
+    "type": "vocabulary",
+    "en": [
+      "reduction",
+      "cut"
+    ],
+    "known_readings": [
+      "しゅくしょう"
+    ]
+  },
+  {
+    "jp": "自薦",
+    "type": "vocabulary",
+    "en": [
+      "self recommendation"
+    ],
+    "known_readings": [
+      "じせん"
+    ]
+  },
+  {
+    "jp": "薦める",
+    "type": "vocabulary",
+    "en": [
+      "to recommend"
+    ],
+    "known_readings": [
+      "すすめる"
+    ]
+  },
+  {
+    "jp": "純粋",
+    "type": "vocabulary",
+    "en": [
+      "pure",
+      "genuine"
+    ],
+    "known_readings": [
+      "じゅんすい"
+    ]
+  },
+  {
+    "jp": "粋",
+    "type": "vocabulary",
+    "en": [
+      "stylish"
+    ],
+    "known_readings": [
+      "いき"
+    ]
+  },
+  {
+    "jp": "字幕",
+    "type": "vocabulary",
+    "en": [
+      "subtitles"
+    ],
+    "known_readings": [
+      "じまく"
+    ]
+  },
+  {
+    "jp": "推定",
+    "type": "vocabulary",
+    "en": [
+      "estimate",
+      "estimation",
+      "assumption"
+    ],
+    "known_readings": [
+      "すいてい"
+    ]
+  },
+  {
+    "jp": "推薦",
+    "type": "vocabulary",
+    "en": [
+      "recommendation"
+    ],
+    "known_readings": [
+      "すいせん"
+    ]
+  },
+  {
+    "jp": "源",
+    "type": "vocabulary",
+    "en": [
+      "origin",
+      "source",
+      "ground spring"
+    ],
+    "known_readings": [
+      "みなもと"
+    ]
+  },
+  {
+    "jp": "源氏",
+    "type": "vocabulary",
+    "en": [
+      "genji"
+    ],
+    "known_readings": [
+      "げんじ"
+    ]
+  },
+  {
+    "jp": "電源",
+    "type": "vocabulary",
+    "en": [
+      "power source",
+      "light socket",
+      "outlet",
+      "socket"
+    ],
+    "known_readings": [
+      "でんげん"
+    ]
+  },
+  {
+    "jp": "震源地",
+    "type": "vocabulary",
+    "en": [
+      "epicenter",
+      "epicentre"
+    ],
+    "known_readings": [
+      "しんげんち"
+    ]
+  },
+  {
+    "jp": "指揮",
+    "type": "vocabulary",
+    "en": [
+      "command",
+      "lead"
+    ],
+    "known_readings": [
+      "しき"
+    ]
+  },
+  {
+    "jp": "豆",
+    "type": "vocabulary",
+    "en": [
+      "beans"
+    ],
+    "known_readings": [
+      "まめ"
+    ]
+  },
+  {
+    "jp": "小豆",
+    "type": "vocabulary",
+    "en": [
+      "azuki beans",
+      "adzuki beans"
+    ],
+    "known_readings": [
+      "あずき"
+    ]
+  },
+  {
+    "jp": "納豆",
+    "type": "vocabulary",
+    "en": [
+      "natto",
+      "fermented soybeans"
+    ],
+    "known_readings": [
+      "なっとう"
+    ]
+  },
+  {
+    "jp": "腐る",
+    "type": "vocabulary",
+    "en": [
+      "to rot"
+    ],
+    "known_readings": [
+      "くさる"
+    ]
+  },
+  {
+    "jp": "腐食",
+    "type": "vocabulary",
+    "en": [
+      "corrosion"
+    ],
+    "known_readings": [
+      "ふしょく"
+    ]
+  },
+  {
+    "jp": "沿岸",
+    "type": "vocabulary",
+    "en": [
+      "coast",
+      "shore"
+    ],
+    "known_readings": [
+      "えんがん"
+    ]
+  },
+  {
+    "jp": "沿海",
+    "type": "vocabulary",
+    "en": [
+      "coastal waters",
+      "coast"
+    ],
+    "known_readings": [
+      "えんかい"
+    ]
+  },
+  {
+    "jp": "沿線",
+    "type": "vocabulary",
+    "en": [
+      "along the train line"
+    ],
+    "known_readings": [
+      "えんせん"
+    ]
+  },
+  {
+    "jp": "沿う",
+    "type": "vocabulary",
+    "en": [
+      "to run alongside",
+      "to run parallel to"
+    ],
+    "known_readings": [
+      "そう"
+    ]
+  },
+  {
+    "jp": "承る",
+    "type": "vocabulary",
+    "en": [
+      "to hear",
+      "to understand",
+      "to listen to",
+      "to be informed",
+      "to consent"
+    ],
+    "known_readings": [
+      "うけたまわる"
+    ]
+  },
+  {
+    "jp": "承知",
+    "type": "vocabulary",
+    "en": [
+      "consent",
+      "know",
+      "aware"
+    ],
+    "known_readings": [
+      "しょうち"
+    ]
+  },
+  {
+    "jp": "承認",
+    "type": "vocabulary",
+    "en": [
+      "approval"
+    ],
+    "known_readings": [
+      "しょうにん"
+    ]
+  },
+  {
+    "jp": "勤める",
+    "type": "vocabulary",
+    "en": [
+      "to be employed at",
+      "to work for"
+    ],
+    "known_readings": [
+      "つとめる"
+    ]
+  },
+  {
+    "jp": "通勤",
+    "type": "vocabulary",
+    "en": [
+      "commute",
+      "commuting"
+    ],
+    "known_readings": [
+      "つうきん"
+    ]
+  },
+  {
+    "jp": "常勤",
+    "type": "vocabulary",
+    "en": [
+      "full time employment",
+      "full time"
+    ],
+    "known_readings": [
+      "じょうきん"
+    ]
+  },
+  {
+    "jp": "損なう",
+    "type": "vocabulary",
+    "en": [
+      "to harm",
+      "to injure",
+      "to damage"
+    ],
+    "known_readings": [
+      "そこなう"
+    ]
+  },
+  {
+    "jp": "損",
+    "type": "vocabulary",
+    "en": [
+      "disadvantage",
+      "handicap",
+      "loss"
+    ],
+    "known_readings": [
+      "そん"
+    ]
+  },
+  {
+    "jp": "損害",
+    "type": "vocabulary",
+    "en": [
+      "damage",
+      "injury"
+    ],
+    "known_readings": [
+      "そんがい"
+    ]
+  },
+  {
+    "jp": "大損",
+    "type": "vocabulary",
+    "en": [
+      "heavy loss",
+      "big loss"
+    ],
+    "known_readings": [
+      "おおぞん"
+    ]
+  },
+  {
+    "jp": "全損",
+    "type": "vocabulary",
+    "en": [
+      "total loss"
+    ],
+    "known_readings": [
+      "ぜんそん"
+    ]
+  },
+  {
+    "jp": "歓楽街",
+    "type": "vocabulary",
+    "en": [
+      "pleasure quarter"
+    ],
+    "known_readings": [
+      "かんらくがい"
+    ]
+  },
+  {
+    "jp": "爪",
+    "type": "vocabulary",
+    "en": [
+      "claw",
+      "nail",
+      "talon",
+      "hoof"
+    ],
+    "known_readings": [
+      "つめ"
+    ]
+  },
+  {
+    "jp": "爪切り",
+    "type": "vocabulary",
+    "en": [
+      "nail clipper"
+    ],
+    "known_readings": [
+      "つめきり"
+    ]
+  },
+  {
+    "jp": "神聖",
+    "type": "vocabulary",
+    "en": [
+      "holiness",
+      "holy"
+    ],
+    "known_readings": [
+      "しんせい"
+    ]
+  },
+  {
+    "jp": "刻む",
+    "type": "vocabulary",
+    "en": [
+      "to carve",
+      "to cut up"
+    ],
+    "known_readings": [
+      "きざむ"
+    ]
   }
 ]

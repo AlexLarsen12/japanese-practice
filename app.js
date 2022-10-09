@@ -374,6 +374,7 @@ function isJson(str) {
 async function addToDatabase(type, subject, db) {
   let fakeSubject = JSON.parse(JSON.stringify(subject)); // necessary because I want to make changes for the sake of adding to the DB but not in backend.
   if (!subject["pitch_data"] && type === "vocabulary" && subject["known_readings"]) addPitchDataToObject(fakeSubject);
+  if (fakeSubject["en"]) fakeSubject["en"] = fakeSubject["en"].map(en => en.toLowerCase());
   fakeSubject["jp"] = [fakeSubject["jp"]];
 
 
@@ -421,7 +422,7 @@ function translateIds(idList) {
 async function writeToAllWords(subject, type) {
   let knownReadings = subject["known_readings"] ? subject["known_readings"] : [];
   let en = subject.en ? subject.en : [];
-  ALL_WORDS.push({jp: subject.jp, type: type, en: en, known_readings: knownReadings});
+  ALL_WORDS.push({jp: subject.jp, type: type, en: en.map(en => en.toLowerCase()), known_readings: knownReadings});
   await fs.writeFile("infoFiles/allWords.json", JSON.stringify(ALL_WORDS, null, 2));
 }
 

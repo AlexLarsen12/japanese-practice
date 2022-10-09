@@ -13421,6 +13421,31 @@
       "source": [
         "WaniKani level 34"
       ]
+    },
+    "vocabulary": {
+      "jp": "豆",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5826,
+      "en": [
+        "Beans"
+      ],
+      "context_sentences": [
+        {
+          "en": "Beans, beans the magical fruit, the more you eat, the more you toot, the more you toot, the better you feel, so eat some beans at every meal. ",
+          "ja": "お豆さん、お豆さん、魔法の野菜。たくさん食べれば食べるほど、たくさん屁が出るぷっぷぷぷ。たくさんぷっぷぷ屁が出れば、気持ちが良くなるウッフフフ。だから毎食お豆を食べなさい。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "まめ"
+      ],
+      "kanji_ids": [
+        1576
+      ]
     }
   },
   "疒": {
@@ -21081,6 +21106,34 @@
       ],
       "source": [
         "WaniKani level 34"
+      ]
+    },
+    "vocabulary": {
+      "jp": "爪",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5832,
+      "en": [
+        "Claw",
+        "Nail",
+        "Talon",
+        "Hoof"
+      ],
+      "context_sentences": [
+        {
+          "en": "Her right pinky nail is six meters long.",
+          "ja": "彼女の右の小指の爪の長さはなんと六メートルもあります。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "つめ"
+      ],
+      "kanji_ids": [
+        1575
       ]
     }
   },
@@ -56027,6 +56080,32 @@
       "source": [
         "WaniKani level 34"
       ]
+    },
+    "vocabulary": {
+      "jp": "粋",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5772,
+      "en": [
+        "Stylish"
+      ],
+      "context_sentences": [
+        {
+          "en": "He believes that he carries on refined conversations, but they’re actually irritating.",
+          "ja": "自分で粋な会話をしてるって思ってるところがムカツクんだよね。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "な adjective"
+      ],
+      "known_readings": [
+        "いき"
+      ],
+      "kanji_ids": [
+        1557
+      ]
     }
   },
   "揮": {
@@ -56105,6 +56184,33 @@
       ],
       "source": [
         "WaniKani level 34"
+      ]
+    },
+    "vocabulary": {
+      "jp": "源",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5802,
+      "en": [
+        "Origin",
+        "Source",
+        "Ground Spring"
+      ],
+      "context_sentences": [
+        {
+          "en": "Music is a source of power in my daily life.",
+          "ja": "音楽が私の日々の生活のパワーの源です。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "みなもと"
+      ],
+      "kanji_ids": [
+        1568
       ]
     }
   },
@@ -56419,6 +56525,35 @@
       ],
       "source": [
         "WaniKani level 34"
+      ]
+    },
+    "vocabulary": {
+      "jp": "損",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5821,
+      "en": [
+        "Disadvantage",
+        "Handicap",
+        "Loss"
+      ],
+      "context_sentences": [
+        {
+          "en": "I had a loss of $500 in poker.",
+          "ja": "ポーカーで五百ドル損をした。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "suffix",
+        "な adjective"
+      ],
+      "known_readings": [
+        "そん"
+      ],
+      "kanji_ids": [
+        1573
       ]
     }
   },
@@ -176762,6 +176897,1072 @@
       "kanji_ids": [
         1558,
         608
+      ]
+    }
+  },
+  "込める": {
+    "vocabulary": {
+      "jp": "込める",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5729,
+      "en": [
+        "To Put In",
+        "To Load"
+      ],
+      "context_sentences": [
+        {
+          "en": "I didn’t have enough time to load rounds into the shotgun.",
+          "ja": "ショットガンに弾を込める時間がなかったんだ。"
+        },
+        {
+          "en": "Put more emotion in your performance! Are you really a professional theatrical actor?",
+          "ja": "もっと気持ちを込めて演技しろよ！それでもプロの劇団員か？"
+        },
+        {
+          "en": "",
+          "ja": ""
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "ichidan verb"
+      ],
+      "known_readings": [
+        "こめる"
+      ],
+      "kanji_ids": [
+        1504
+      ]
+    }
+  },
+  "縮まる": {
+    "vocabulary": {
+      "jp": "縮まる",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5763,
+      "en": [
+        "To Shrink",
+        "To Contract"
+      ],
+      "context_sentences": [
+        {
+          "en": "My puppy was shrinking in fear while the thunder was rumbling.",
+          "ja": "雷がゴロゴロ鳴っている間、うちの犬は怖がって縮まっていました。"
+        }
+      ],
+      "word_type": [
+        "intransitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "ちぢまる",
+        "ちじまる"
+      ],
+      "kanji_ids": [
+        1554
+      ]
+    }
+  },
+  "縮小": {
+    "vocabulary": {
+      "jp": "縮小",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5764,
+      "en": [
+        "Reduction",
+        "Cut"
+      ],
+      "context_sentences": [
+        {
+          "en": "Our company is thinking of reducing our profit margin to be competitive with another company.",
+          "ja": "うちの会社、他社との競争に勝つために、利鞘を縮小することを検討しているんだ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb",
+        "の adjective"
+      ],
+      "known_readings": [
+        "しゅくしょう"
+      ],
+      "kanji_ids": [
+        1554,
+        463
+      ]
+    }
+  },
+  "自薦": {
+    "vocabulary": {
+      "jp": "自薦",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5794,
+      "en": [
+        "Self Recommendation"
+      ],
+      "context_sentences": [
+        {
+          "en": "We accept both self recommendations and direct applications for this modeling position.",
+          "ja": "今回のモデルへの応募について、自薦・他薦は問いません。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "じせん"
+      ],
+      "kanji_ids": [
+        578,
+        1564
+      ]
+    }
+  },
+  "薦める": {
+    "vocabulary": {
+      "jp": "薦める",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5795,
+      "en": [
+        "To Recommend"
+      ],
+      "context_sentences": [
+        {
+          "en": "He recommended this show to me, but I don’t really like watching anime.",
+          "ja": "この番組を彼に薦められたんだけど、アニメを観るのはあまり好きじゃないんだよね。"
+        },
+        {
+          "en": "Koichi said the crab cakes were delicious and recommended them; when I tried them they tasted terrible.",
+          "ja": "コウイチが美味しいと薦めてきたクラブケーキを食べてみたらすごく不味かった。"
+        },
+        {
+          "en": "I recommend mystery fans go see this movie. ",
+          "ja": "ミステリーファンにはこの映画を見ることを薦めます。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "ichidan verb"
+      ],
+      "known_readings": [
+        "すすめる"
+      ],
+      "kanji_ids": [
+        1564
+      ]
+    }
+  },
+  "純粋": {
+    "vocabulary": {
+      "jp": "純粋",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5771,
+      "en": [
+        "Pure",
+        "Genuine"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’m still with my husband for purely financial reasons.",
+          "ja": "純粋に金銭的な理由だけで、夫とまだ一緒にいるんです。"
+        }
+      ],
+      "word_type": [
+        "な adjective",
+        "の adjective"
+      ],
+      "known_readings": [
+        "じゅんすい"
+      ],
+      "kanji_ids": [
+        1555,
+        1557
+      ]
+    }
+  },
+  "字幕": {
+    "vocabulary": {
+      "jp": "字幕",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5787,
+      "en": [
+        "Subtitles"
+      ],
+      "context_sentences": [
+        {
+          "en": "Subtitles can be a distraction.",
+          "ja": "字幕のせいで気が散ることもあります。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "じまく"
+      ],
+      "kanji_ids": [
+        545,
+        1562
+      ]
+    }
+  },
+  "推定": {
+    "vocabulary": {
+      "jp": "推定",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5791,
+      "en": [
+        "Estimate",
+        "Estimation",
+        "Assumption"
+      ],
+      "context_sentences": [
+        {
+          "en": "The guy, who is a savant, estimated the scope of the crowd to have 534 people and he was exactly right.",
+          "ja": "そのサバンの男は群衆の規模を534人と推定したのだが、実際の数とピッタリ当っていた。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb",
+        "の adjective"
+      ],
+      "known_readings": [
+        "すいてい"
+      ],
+      "kanji_ids": [
+        1565,
+        714
+      ]
+    }
+  },
+  "推薦": {
+    "vocabulary": {
+      "jp": "推薦",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5793,
+      "en": [
+        "Recommendation"
+      ],
+      "context_sentences": [
+        {
+          "en": "I recommended you as a good farter for the fart competition.",
+          "ja": "あなたを、優秀な屁こき野郎として、屁こき大会に推薦しておきましたよ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb",
+        "の adjective"
+      ],
+      "known_readings": [
+        "すいせん"
+      ],
+      "kanji_ids": [
+        1565,
+        1564
+      ]
+    }
+  },
+  "源氏": {
+    "vocabulary": {
+      "jp": "源氏",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5803,
+      "en": [
+        "Genji"
+      ],
+      "context_sentences": [
+        {
+          "en": "Why is the fake name for prostitutes, hostesses, and geisha called a \"Genji name?\"",
+          "ja": "どうして娼婦やホステス、キャバ嬢、芸者さんなどが使う偽名を「源氏名」って言うんですか？"
+        }
+      ],
+      "word_type": [
+        "proper noun"
+      ],
+      "known_readings": [
+        "げんじ"
+      ],
+      "kanji_ids": [
+        1568,
+        647
+      ]
+    }
+  },
+  "電源": {
+    "vocabulary": {
+      "jp": "電源",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5804,
+      "en": [
+        "Power Source",
+        "Light Socket",
+        "Outlet",
+        "Socket"
+      ],
+      "context_sentences": [
+        {
+          "en": "When I go out, I turn off all the power by unplugging everything from the electrical sockets.",
+          "ja": "出かける時は、完全に電源を切るために全部のコンセントを抜きます。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "でんげん"
+      ],
+      "kanji_ids": [
+        706,
+        1568
+      ]
+    }
+  },
+  "震源地": {
+    "vocabulary": {
+      "jp": "震源地",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5805,
+      "en": [
+        "Epicenter",
+        "Epicentre"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’m worried about my friends who live close to the epicenter.",
+          "ja": "震源地に近いところに住んでる友達が心配だよ。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "しんげんち"
+      ],
+      "kanji_ids": [
+        1099,
+        1568,
+        608
+      ]
+    }
+  },
+  "指揮": {
+    "vocabulary": {
+      "jp": "指揮",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5797,
+      "en": [
+        "Command",
+        "Lead"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’d like to meet the commanding officer of the American army.",
+          "ja": "アメリカ軍を指揮している司令官に一度会ってみたいな。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb",
+        "の adjective"
+      ],
+      "known_readings": [
+        "しき"
+      ],
+      "kanji_ids": [
+        797,
+        1566
+      ]
+    }
+  },
+  "小豆": {
+    "vocabulary": {
+      "jp": "小豆",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5827,
+      "en": [
+        "Azuki Beans",
+        "Adzuki Beans"
+      ],
+      "context_sentences": [
+        {
+          "en": "Azuki bean paste is made of azuki beans, but it’s pretty high in sugar.",
+          "ja": "餡こは小豆から作られているが、けっこう糖分が高い。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "あずき"
+      ],
+      "kanji_ids": [
+        463,
+        1576
+      ]
+    }
+  },
+  "納豆": {
+    "vocabulary": {
+      "jp": "納豆",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5828,
+      "en": [
+        "Natto",
+        "Fermented Soybeans"
+      ],
+      "context_sentences": [
+        {
+          "en": "Don’t get me wrong. I love Japanese food, but I could never just eat natto alone.",
+          "ja": "誤解しないでね。日本料理は大好きなんだけど、納豆だけはどうしても食べられないの。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "なっとう"
+      ],
+      "kanji_ids": [
+        1536,
+        1576
+      ]
+    }
+  },
+  "腐る": {
+    "vocabulary": {
+      "jp": "腐る",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5829,
+      "en": [
+        "To Rot"
+      ],
+      "context_sentences": [
+        {
+          "en": "Don’t leave milk out of the fridge because it goes bad easily.",
+          "ja": "牛乳は腐りやすいんだから冷蔵庫の外に出しっ放しにしないでね。"
+        }
+      ],
+      "word_type": [
+        "intransitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "くさる"
+      ],
+      "kanji_ids": [
+        1578
+      ]
+    }
+  },
+  "腐食": {
+    "vocabulary": {
+      "jp": "腐食",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5830,
+      "en": [
+        "Corrosion"
+      ],
+      "context_sentences": [
+        {
+          "en": "Stainless steel is supposed to withstand corrosion, isn’t it?",
+          "ja": "ステンレスは腐食作用への耐久性があるんじゃなかったっけ？"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "ふしょく"
+      ],
+      "kanji_ids": [
+        1578,
+        644
+      ]
+    }
+  },
+  "沿岸": {
+    "vocabulary": {
+      "jp": "沿岸",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5798,
+      "en": [
+        "Coast",
+        "Shore"
+      ],
+      "context_sentences": [
+        {
+          "en": "He asked me to sail along the coast in his yacht with him this Sunday.",
+          "ja": "今度の日曜日にヨットで沿岸を一緒に帆走しないかって彼に誘われたんだ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "えんがん"
+      ],
+      "kanji_ids": [
+        1567,
+        790
+      ]
+    }
+  },
+  "沿海": {
+    "vocabulary": {
+      "jp": "沿海",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5799,
+      "en": [
+        "Coastal Waters",
+        "Coast"
+      ],
+      "context_sentences": [
+        {
+          "en": "Would you like to write a monthly column about life in coastal areas?",
+          "ja": "沿海部での生活について、月一でコラムを書いてみませんか。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "えんかい"
+      ],
+      "kanji_ids": [
+        1567,
+        640
+      ]
+    }
+  },
+  "沿線": {
+    "vocabulary": {
+      "jp": "沿線",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5800,
+      "en": [
+        "Along The Train Line"
+      ],
+      "context_sentences": [
+        {
+          "en": "My brother is living along the Keio Line.",
+          "ja": "私の弟は、京王沿線に住んでいます。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "の adjective"
+      ],
+      "known_readings": [
+        "えんせん"
+      ],
+      "kanji_ids": [
+        1567,
+        767
+      ]
+    }
+  },
+  "沿う": {
+    "vocabulary": {
+      "jp": "沿う",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5801,
+      "en": [
+        "To Run Alongside",
+        "To Run Parallel To"
+      ],
+      "context_sentences": [
+        {
+          "en": "There are beautiful cherry blossom trees all along the river banks.",
+          "ja": "川の両岸に沿って、ずうっと、美しい桜並木があるんです。"
+        }
+      ],
+      "word_type": [
+        "godan verb"
+      ],
+      "known_readings": [
+        "そう"
+      ],
+      "kanji_ids": [
+        1567
+      ]
+    }
+  },
+  "承る": {
+    "vocabulary": {
+      "jp": "承る",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5816,
+      "en": [
+        "To Hear",
+        "To Understand",
+        "To Listen To",
+        "To Be Informed",
+        "To Consent"
+      ],
+      "context_sentences": [
+        {
+          "en": "Would you like to leave a message?",
+          "ja": "ご伝言を承りましょうか。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "うけたまわる"
+      ],
+      "kanji_ids": [
+        1572
+      ]
+    }
+  },
+  "承知": {
+    "vocabulary": {
+      "jp": "承知",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5817,
+      "en": [
+        "Consent",
+        "Know",
+        "Aware"
+      ],
+      "context_sentences": [
+        {
+          "en": "I know it's unreasonable, but I'm still asking you.",
+          "ja": "無理を承知でお願いしています。"
+        },
+        {
+          "en": "I am sure you are all well aware of this incident, but let me explain again.",
+          "ja": "この事件に関してはみなさまよくご承知のこととは思いますが、もう一度説明させていただきます。"
+        },
+        {
+          "en": "I can’t consent to your marrying my daughter.",
+          "ja": "わしの娘がお前と結婚することは承知できん。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "しょうち"
+      ],
+      "kanji_ids": [
+        1572,
+        631
+      ]
+    }
+  },
+  "承認": {
+    "vocabulary": {
+      "jp": "承認",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5818,
+      "en": [
+        "Approval"
+      ],
+      "context_sentences": [
+        {
+          "en": "I don't have much confidence that I can get approval from the committee.",
+          "ja": "委員会から承認を得られる自信はあまりありません。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "しょうにん"
+      ],
+      "kanji_ids": [
+        1572,
+        1152
+      ]
+    }
+  },
+  "勤める": {
+    "vocabulary": {
+      "jp": "勤める",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5813,
+      "en": [
+        "To Be Employed At",
+        "To Work For"
+      ],
+      "context_sentences": [
+        {
+          "en": "I started working at a library ever since my daughter got into primary school.",
+          "ja": "娘が小学校に上がったので、私は図書館に勤め始めました。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "ichidan verb"
+      ],
+      "known_readings": [
+        "つとめる"
+      ],
+      "kanji_ids": [
+        1570
+      ]
+    }
+  },
+  "通勤": {
+    "vocabulary": {
+      "jp": "通勤",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5814,
+      "en": [
+        "Commute",
+        "Commuting"
+      ],
+      "context_sentences": [
+        {
+          "en": "Commuting can eat up a lot of time, so I prefer to live near my office.",
+          "ja": "通勤は時間を浪費するので、私は職場の近くに住む方がいいですね。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "つうきん"
+      ],
+      "kanji_ids": [
+        665,
+        1570
+      ]
+    }
+  },
+  "常勤": {
+    "vocabulary": {
+      "jp": "常勤",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5815,
+      "en": [
+        "Full Time Employment",
+        "Full Time"
+      ],
+      "context_sentences": [
+        {
+          "en": "I won’t be able to work full-time for now until my child gets a little older.",
+          "ja": "子どもがもうちょっと大きくなるまでは、常勤でのお仕事はちょっと無理かな。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "じょうきん"
+      ],
+      "kanji_ids": [
+        1011,
+        1570
+      ]
+    }
+  },
+  "損なう": {
+    "vocabulary": {
+      "jp": "損なう",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5820,
+      "en": [
+        "To Harm",
+        "To Injure",
+        "To Damage"
+      ],
+      "context_sentences": [
+        {
+          "en": "I’m worried that you may ruin your health by working too hard.",
+          "ja": "働きすぎてあんたが健康を損なうんじゃないかって、心配してるのよ。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "そこなう"
+      ],
+      "kanji_ids": [
+        1573
+      ]
+    }
+  },
+  "損害": {
+    "vocabulary": {
+      "jp": "損害",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5822,
+      "en": [
+        "Damage",
+        "Injury"
+      ],
+      "context_sentences": [
+        {
+          "en": "The truck crash damaged the cargo, but it was only minor damage.",
+          "ja": "トラックの衝突で積荷がダメージを受けたが、小さな損害で済んだ。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "そんがい"
+      ],
+      "kanji_ids": [
+        1573,
+        1093
+      ]
+    }
+  },
+  "大損": {
+    "vocabulary": {
+      "jp": "大損",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5823,
+      "en": [
+        "Heavy Loss",
+        "Big Loss"
+      ],
+      "context_sentences": [
+        {
+          "en": "I went to a pachinko parlor in the hopes of making a lot of money, but I ended up with a heavy loss instead.",
+          "ja": "大儲けするつもりでパチンコに行ったが、結局大損してしまった。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "する verb"
+      ],
+      "known_readings": [
+        "おおぞん"
+      ],
+      "kanji_ids": [
+        453,
+        1573
+      ]
+    }
+  },
+  "全損": {
+    "vocabulary": {
+      "jp": "全損",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5824,
+      "en": [
+        "Total Loss"
+      ],
+      "context_sentences": [
+        {
+          "en": "If it turns out that the car is a total loss, many insurance companies will not pay the full repair cost.",
+          "ja": "車が全損してしまった場合、修理代は保険で全額支払われないことが多いです。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "ぜんそん"
+      ],
+      "kanji_ids": [
+        610,
+        1573
+      ]
+    }
+  },
+  "歓楽街": {
+    "vocabulary": {
+      "jp": "歓楽街",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5819,
+      "en": [
+        "Pleasure Quarter"
+      ],
+      "context_sentences": [
+        {
+          "en": "On saying that, Kuroda disappeared into the pleasure quarter.",
+          "ja": "黒田はそう言い残すと、歓楽街へと消えていった。"
+        },
+        {
+          "en": "What does the tour of the pleasure quarter include?",
+          "ja": "歓楽街のツアーには何が含まれていますか。"
+        },
+        {
+          "en": "I have traced the source of the rumour that I work in the pleasure quarter.",
+          "ja": "私が歓楽街で働いているという噂の源をつきとめました。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "かんらくがい"
+      ],
+      "kanji_ids": [
+        1571,
+        704,
+        1400
+      ]
+    }
+  },
+  "爪切り": {
+    "vocabulary": {
+      "jp": "爪切り",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5833,
+      "en": [
+        "Nail Clipper"
+      ],
+      "context_sentences": [
+        {
+          "en": "I was trying to clip my dog's nails but my mobile phone distracted me.",
+          "ja": "犬の爪を爪切りで切ってあげようとしてたんですけど、つい携帯に気を取られちゃいました。"
+        }
+      ],
+      "word_type": [
+        "noun"
+      ],
+      "known_readings": [
+        "つめきり"
+      ],
+      "kanji_ids": [
+        1575,
+        502
+      ]
+    }
+  },
+  "神聖": {
+    "vocabulary": {
+      "jp": "神聖",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5773,
+      "en": [
+        "Holiness",
+        "Holy"
+      ],
+      "context_sentences": [
+        {
+          "en": "The villagers have a holy respect for nature.",
+          "ja": "村人たちは、自然に対し神聖な敬意を持っています。"
+        }
+      ],
+      "word_type": [
+        "noun",
+        "な adjective"
+      ],
+      "known_readings": [
+        "しんせい"
+      ],
+      "kanji_ids": [
+        799,
+        1558
+      ]
+    }
+  },
+  "刻む": {
+    "vocabulary": {
+      "jp": "刻む",
+      "source": [
+        "WaniKani level 34"
+      ],
+      "id": 5834,
+      "en": [
+        "To Carve",
+        "To Cut Up"
+      ],
+      "context_sentences": [
+        {
+          "en": "I can’t be bothered to cut up the green onion.",
+          "ja": "葱を刻むのは面倒くさいよ。"
+        }
+      ],
+      "word_type": [
+        "transitive verb",
+        "godan verb"
+      ],
+      "known_readings": [
+        "きざむ"
+      ],
+      "kanji_ids": [
+        1577
       ]
     }
   }
